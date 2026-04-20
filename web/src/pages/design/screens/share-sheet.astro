@@ -1,0 +1,18 @@
+---
+import DesignLayout from "~/layouts/DesignLayout.astro";
+import ScreenStage from "~/components/design/ScreenStage.astro";
+import PhoneFrame from "~/components/design/PhoneFrame.astro";
+import ShareSheetScreen from "~/components/design/screens/ShareSheet.astro";
+---
+
+<DesignLayout title="Share sheet · Screen IV" eyebrow="Flow I · Screen IV">
+  <ScreenStage
+    eyebrow="IV · Share sheet"
+    title="The handoff."
+    note="iOS share sheet over the dimmed article. Hearth appears in the apps row with an ochre halo — the only Hearth-system touch on an otherwise system-native surface."
+  >
+    <PhoneFrame surface="neutral" tone="ink" variant="single" label="iOS share sheet over table.kitchen">
+      <ShareSheetScreen />
+    </PhoneFrame>
+  </ScreenStage>
+</DesignLayout>

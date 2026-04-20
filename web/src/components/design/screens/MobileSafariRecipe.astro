@@ -1,0 +1,241 @@
+---
+/**
+ * Screen III · Mobile Safari · recipe article.
+ *
+ * A food-blog article rendered inside Safari chrome. Typographically
+ * distinct from Hearth — this is meant to read as "the open internet."
+ * System serif + sans, no Hearth fonts. The one Hearth-system touch is
+ * a dashed ochre halo around Safari's share button, nudging the eye to
+ * the action that kicks off Screen IV.
+ */
+import SafariChrome from "../ui/SafariChrome.astro";
+
+interface Props { showTap?: boolean; }
+const { showTap = false } = Astro.props;
+---
+
+<SafariChrome url="table.kitchen/summer-corn-ragu" secure showTap={showTap}>
+  <article class="blog">
+    <header class="blog__masthead">
+      <span class="blog__brand">table.kitchen</span>
+      <span class="blog__sep" aria-hidden="true">·</span>
+      <span class="blog__section">Dinner</span>
+    </header>
+
+    <div class="blog__article">
+      <p class="blog__kicker">Late summer · July 12</p>
+      <h1 class="blog__title">Summer Corn &amp; Basil Ragù</h1>
+      <p class="blog__byline">by Mia Aquilina</p>
+
+      <div class="blog__hero" aria-hidden="true">
+        <div class="blog__hero-credit">photograph · Mia Aquilina</div>
+      </div>
+
+      <p class="blog__lede">
+        A brothy, buttery late-summer ragù that happens when you overshop at the
+        farmers' market. Almost all pantry — corn, basil, a little wine, a spoon
+        of white miso to finish.
+      </p>
+
+      <p class="blog__meta">Serves 4 · 50 minutes · One pan</p>
+
+      <h2 class="blog__h2">Ingredients</h2>
+      <ul class="blog__ul">
+        <li>6 ears sweet corn, kernels scraped (cobs reserved)</li>
+        <li>1 shallot, minced</li>
+        <li>3 garlic cloves, thinly sliced</li>
+        <li>1 cup dry white wine</li>
+        <li>1 tbsp white miso</li>
+        <li>1 cup basil leaves, torn</li>
+        <li>3 tbsp unsalted butter</li>
+        <li>olive oil, salt, black pepper</li>
+      </ul>
+
+      <h2 class="blog__h2">Method</h2>
+      <ol class="blog__ol">
+        <li>Scrape kernels into a bowl. Simmer the stripped cobs in 3 cups water for 20 minutes for a quick corn stock. Strain.</li>
+        <li>Heat a wide pan over medium. Coat with olive oil, sweat shallot until translucent, 4 minutes. Add garlic, 30 seconds.</li>
+        <li>Add kernels and a pinch of salt. Cook 3 minutes, until they pop and turn glossy.</li>
+        <li>Deglaze with wine; reduce by half. Add 2 cups stock and the miso. Simmer gently 8 minutes — it should thicken to a loose ragù.</li>
+      </ol>
+
+      <p class="blog__continue">Continue reading →</p>
+    </div>
+  </article>
+</SafariChrome>
+
+<style>
+  .blog {
+    padding: 0 22px 24px;
+    color: #1b1a19;
+    line-height: 1.55;
+    font-size: 16px;
+    font-family:
+      "Iowan Old Style", "Charter", Georgia, "Times New Roman", serif;
+  }
+
+  .blog__masthead {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 2px 0 14px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    margin-bottom: 22px;
+    width: 100%;
+  }
+
+  .blog__brand {
+    font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-weight: 500;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #0b0b0b;
+  }
+
+  .blog__sep { color: #999; }
+
+  .blog__section {
+    font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-size: 12.5px;
+    letter-spacing: 0.04em;
+    color: #6a6a6a;
+  }
+
+  .blog__kicker {
+    font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #8a5c1f;
+    margin-bottom: 10px;
+  }
+
+  .blog__title {
+    font-family: "Iowan Old Style", "Charter", Georgia, "Times New Roman", serif;
+    font-weight: 700;
+    font-size: 28px;
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+    color: #0b0b0b;
+    margin-bottom: 8px;
+    text-wrap: balance;
+  }
+
+  .blog__byline {
+    font-style: italic;
+    font-size: 14px;
+    color: #6a6a6a;
+    margin-bottom: 18px;
+  }
+
+  .blog__hero {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    border-radius: 6px;
+    background:
+      radial-gradient(ellipse at 30% 30%, #f5d990 0%, #d6a34e 45%, #8a5c1f 100%);
+    margin-bottom: 18px;
+    overflow: hidden;
+  }
+  .blog__hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-linear-gradient(
+        45deg,
+        rgba(0, 0, 0, 0.03) 0,
+        rgba(0, 0, 0, 0.03) 1px,
+        transparent 1px,
+        transparent 4px
+      );
+  }
+  .blog__hero-credit {
+    position: absolute;
+    bottom: 8px;
+    right: 10px;
+    font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.75);
+  }
+
+  .blog__lede {
+    font-size: 17px;
+    line-height: 1.5;
+    color: #2a2724;
+    margin-bottom: 14px;
+  }
+
+  .blog__meta {
+    font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-size: 12.5px;
+    color: #6a6a6a;
+    letter-spacing: 0.02em;
+    margin-bottom: 22px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  }
+
+  .blog__h2 {
+    font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #2a2724;
+    margin: 22px 0 10px;
+  }
+
+  .blog__ul, .blog__ol {
+    padding: 0;
+    margin: 0 0 16px;
+    list-style: none;
+    display: grid;
+    gap: 6px;
+    font-size: 15px;
+    line-height: 1.55;
+    color: #1b1a19;
+  }
+
+  .blog__ul li {
+    position: relative;
+    padding-left: 16px;
+  }
+  .blog__ul li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.72em;
+    width: 6px;
+    height: 1px;
+    background: #6a6a6a;
+  }
+
+  .blog__ol {
+    counter-reset: step;
+  }
+  .blog__ol li {
+    position: relative;
+    padding-left: 28px;
+    counter-increment: step;
+  }
+  .blog__ol li::before {
+    content: counter(step) ".";
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-weight: 600;
+    color: #8a5c1f;
+  }
+
+  .blog__continue {
+    margin-top: 12px;
+    font-size: 14px;
+    color: #1f5fc1;
+  }
+</style>

@@ -1,0 +1,18 @@
+---
+import DesignLayout from "~/layouts/DesignLayout.astro";
+import ScreenStage from "~/components/design/ScreenStage.astro";
+import PhoneFrame from "~/components/design/PhoneFrame.astro";
+import ImportPreviewScreen from "~/components/design/screens/ImportPreview.astro";
+---
+
+<DesignLayout title="Import preview · Screen V" eyebrow="Flow I · Screen V">
+  <ScreenStage
+    eyebrow="V · Import · preview"
+    title="Extracted, in Hearth's voice."
+    note="The share-extension UI. The moment the recipe stops looking like a food blog and starts looking like a cookbook page. Title is an editable field; everything else is tap-to-edit. Save is the primary."
+  >
+    <PhoneFrame surface="cream" variant="single" label="Hearth share extension — extracted recipe">
+      <ImportPreviewScreen />
+    </PhoneFrame>
+  </ScreenStage>
+</DesignLayout>

@@ -1,0 +1,30 @@
+---
+/**
+ * /design — every flow, rendered inline as a storyboard.
+ * The topbar handles identity (HEARTH · Design). No page-level masthead —
+ * the first flow is the first thing you see.
+ */
+import DesignLayout from "~/layouts/DesignLayout.astro";
+import FlowStoryboard from "~/components/design/FlowStoryboard.astro";
+import { flows } from "~/lib/design/flows";
+---
+
+<DesignLayout title="Design">
+  <div class="flows">
+    {flows.map((flow) => (
+      <FlowStoryboard flow={flow} />
+    ))}
+  </div>
+</DesignLayout>
+
+<style>
+  .flows {
+    display: grid;
+    gap: var(--space-4xl);
+  }
+
+  .flows > :not(:first-child) {
+    padding-top: var(--space-4xl);
+    border-top: 1px solid rgba(31, 27, 23, 0.08);
+  }
+</style>

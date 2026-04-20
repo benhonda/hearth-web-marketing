@@ -1,0 +1,18 @@
+---
+import DesignLayout from "~/layouts/DesignLayout.astro";
+import ScreenStage from "~/components/design/ScreenStage.astro";
+import PhoneFrame from "~/components/design/PhoneFrame.astro";
+import WelcomeScreen from "~/components/design/screens/WelcomeScreen.astro";
+---
+
+<DesignLayout title="Welcome · Screen I" eyebrow="Flow I · Screen I">
+  <ScreenStage
+    eyebrow="I · Welcome"
+    title="The cover."
+    note="A sage hardcover with gold-foil wordmark. Apple first — only primary on the page. Legal in Lora italic at 12px, deliberately quiet."
+  >
+    <PhoneFrame surface="sage" variant="single" label="Welcome screen — cover">
+      <WelcomeScreen />
+    </PhoneFrame>
+  </ScreenStage>
+</DesignLayout>

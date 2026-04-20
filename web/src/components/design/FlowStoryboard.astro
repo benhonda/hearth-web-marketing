@@ -1,0 +1,173 @@
+---
+/**
+ * FlowStoryboard — renders one Flow as a horizontally-scrollable strip
+ * of phone mockups with captions underneath. Used on the root /design
+ * page (one per flow) and on /design/flows/[slug] deep-link pages.
+ *
+ * Screens that have a concrete `render` key map through the
+ * `screenComponents` registry below. New screens: add a component import
+ * and register it. Placeholders render as dimmed "Next pass" phones.
+ */
+import type { Flow, ScreenRender } from "~/lib/design/flows";
+import PhoneFrame from "./PhoneFrame.astro";
+import WelcomeScreen from "./screens/WelcomeScreen.astro";
+import LibraryEmpty from "./screens/LibraryEmpty.astro";
+import MobileSafariRecipe from "./screens/MobileSafariRecipe.astro";
+import ShareSheet from "./screens/ShareSheet.astro";
+import ImportPreview from "./screens/ImportPreview.astro";
+import LibraryOneRecipe from "./screens/LibraryOneRecipe.astro";
+import RecipeDetail from "./screens/RecipeDetail.astro";
+import RecipeEdit from "./screens/RecipeEdit.astro";
+import RecipeSaved from "./screens/RecipeSaved.astro";
+
+type Props = { flow: Flow; showHeader?: boolean };
+const { flow, showHeader = true } = Astro.props;
+
+// Screen component registry. Keys match ScreenRender values in flows.ts.
+const screenComponents: Record<ScreenRender, any> = {
+  welcome: WelcomeScreen,
+  "library-empty": LibraryEmpty,
+  "mobile-safari-recipe": MobileSafariRecipe,
+  "share-sheet": ShareSheet,
+  "import-preview": ImportPreview,
+  "library-one-recipe": LibraryOneRecipe,
+  "recipe-detail": RecipeDetail,
+  "recipe-edit": RecipeEdit,
+  "recipe-saved": RecipeSaved,
+};
+---
+
+<section class="flow-storyboard" aria-labelledby={`flow-${flow.slug}`}>
+  {showHeader && (
+    <header class="flow-storyboard__head">
+      <div class="flow-storyboard__meta">
+        <span class="eyebrow">Flow · {flow.numeral}</span>
+        <hr class="design-header__rule" aria-hidden="true" />
+      </div>
+      <h2 id={`flow-${flow.slug}`} class="flow-storyboard__title">{flow.title}</h2>
+      <p class="flow-storyboard__lede">{flow.lede}</p>
+    </header>
+  )}
+
+  <div class="canvas" aria-label={`${flow.title} storyboard`}>
+    <div class="canvas__track">
+      {flow.steps.map((step) => {
+        const Component = step.render ? screenComponents[step.render] : null;
+        const screenHref = step.screenSlug ? `/design/screens/${step.screenSlug}` : null;
+
+        return (
+          <div class="cell">
+            {Component ? (
+              <PhoneFrame surface={step.surface ?? "cream"} variant="canvas" label={`${step.numeral} · ${step.name}`}>
+                <Component showTap={true} />
+              </PhoneFrame>
+            ) : (
+              <div class="cell__phone--todo">
+                <PhoneFrame surface="cream" variant="canvas" label={`${step.numeral} · ${step.name} · not yet drawn`}>
+                  <div class="todo-screen">
+                    <span class="todo-screen__numeral">{step.numeral}</span>
+                    <p class="todo-screen__name">{step.name}</p>
+                    <p class="todo-screen__state">Next pass</p>
+                  </div>
+                </PhoneFrame>
+              </div>
+            )}
+
+            <div class="screen-caption">
+              <span class="screen-caption__eyebrow">{step.numeral} · {step.name}</span>
+              <p class="screen-caption__note">{step.note}</p>
+              {step.tap && (
+                <p class={step.tapExternal ? "screen-caption__tap screen-caption__tap--external" : "screen-caption__tap"}>
+                  <span class="screen-caption__tap-arrow" aria-hidden="true">↳</span>
+                  {step.tap}
+                </p>
+              )}
+              {screenHref && (
+                <a class="screen-caption__link" href={screenHref}>
+                  <span>Inspect at 1×</span>
+                  <span class="screen-caption__chev" aria-hidden="true">→</span>
+                </a>
+              )}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </div>
+</section>
+
+<style>
+  .flow-storyboard {
+    display: grid;
+    gap: var(--space-xl);
+  }
+
+  .flow-storyboard__head {
+    display: grid;
+    gap: var(--space-sm);
+    max-width: 48rem;
+  }
+  .flow-storyboard__meta { display: grid; gap: var(--space-2xs); }
+
+  .flow-storyboard__title {
+    font-family: var(--f-display);
+    font-weight: 400;
+    font-size: clamp(1.75rem, 2vw + 1rem, 2.375rem);
+    line-height: 1.1;
+    letter-spacing: -0.012em;
+    color: var(--c-ink);
+    text-wrap: balance;
+  }
+
+  .flow-storyboard__lede {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 1rem;
+    line-height: 1.55;
+    color: var(--c-ash);
+    max-width: 52ch;
+    text-wrap: pretty;
+  }
+
+  /* Cell — one phone + its caption ────────────────────────── */
+
+  .cell {
+    display: flex;
+    flex-direction: column;
+    width: calc(var(--phone-w) * var(--phone-scale-canvas));
+  }
+
+  .cell__phone--todo { opacity: 0.6; filter: saturate(0.55); }
+
+  .todo-screen {
+    display: grid;
+    place-content: center;
+    gap: 12px;
+    text-align: center;
+    width: 100%;
+    height: 100%;
+    padding: 0 32px;
+  }
+  .todo-screen__numeral {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 42px;
+    color: var(--c-oat);
+    line-height: 1;
+  }
+  .todo-screen__name {
+    font-family: var(--f-display);
+    font-size: 17px;
+    color: var(--c-ash);
+    line-height: 1.35;
+    max-width: 20ch;
+    margin-inline: auto;
+  }
+  .todo-screen__state {
+    font-family: var(--f-body);
+    font-size: 10.5px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--c-ochre);
+  }
+</style>

@@ -1,0 +1,95 @@
+---
+/**
+ * Method list — italic lowercase Roman numerals (i. ii. iii.) in Deep
+ * Ochre, DM Sans body. Direct translation of the cookbook-step pattern
+ * defined in DESIGN.md §3.
+ */
+
+interface Props {
+  items: string[];
+  label?: string;
+  highlightIndex?: number; // optional — mark a single step visually
+}
+
+const { items, label = "Method", highlightIndex } = Astro.props;
+
+function toRoman(n: number): string {
+  const map: [number, string][] = [
+    [10, "x"], [9, "ix"], [5, "v"], [4, "iv"], [1, "i"],
+  ];
+  let result = "";
+  let v = n;
+  for (const [value, symbol] of map) {
+    while (v >= value) {
+      result += symbol;
+      v -= value;
+    }
+  }
+  return result;
+}
+---
+
+<section class="method">
+  <span class="method__eyebrow">{label}</span>
+  <ol class="method__list">
+    {items.map((item, i) => (
+      <li class={highlightIndex === i ? "method__li method__li--on" : "method__li"}>
+        <span class="method__num">{toRoman(i + 1)}.</span>
+        <span class="method__text">{item}</span>
+      </li>
+    ))}
+  </ol>
+</section>
+
+<style>
+  .method__eyebrow {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--c-ochre);
+    display: block;
+    margin-bottom: 10px;
+  }
+  .method__list {
+    display: grid;
+    gap: 12px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+  .method__li {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 2px;
+    align-items: baseline;
+  }
+  .method__li--on {
+    position: relative;
+  }
+  .method__li--on::before {
+    content: "";
+    position: absolute;
+    left: -10px;
+    top: 4px;
+    bottom: 4px;
+    width: 2px;
+    background: var(--c-ochre);
+    border-radius: 2px;
+  }
+  .method__num {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 14px;
+    color: var(--c-ochre);
+    line-height: 1.55;
+  }
+  .method__text {
+    font-family: var(--f-body);
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--c-ink);
+  }
+</style>

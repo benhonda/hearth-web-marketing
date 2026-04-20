@@ -1,0 +1,340 @@
+---
+/**
+ * Waitlist form — designed for sage surface.
+ * Progressive-enhancement: the <form> submits natively if JS fails;
+ * JS upgrades the experience with in-place state transitions and
+ * the typographic success bookplate.
+ *
+ * Two instances live on the page (hero + final CTA). Both submit to
+ * /api/waitlist. On success, both flip into bookplate state via the
+ * custom event dispatched below, so a visitor who scrolls past after
+ * submitting sees their confirmation echoed.
+ */
+
+interface Props {
+  id: string;
+  headline?: string;
+  lede?: string;
+  cta?: string;
+}
+
+const {
+  id,
+  headline,
+  lede,
+  cta = "Join the waitlist",
+} = Astro.props;
+
+const inputId = `${id}-email`;
+const errorId = `${id}-error`;
+---
+
+<section class="waitlist" data-waitlist-root data-state="idle" aria-labelledby={headline ? `${id}-heading` : undefined}>
+  {headline && (
+    <h2 id={`${id}-heading`} class="waitlist__headline">{headline}</h2>
+  )}
+  {lede && <p class="waitlist__lede lede">{lede}</p>}
+
+  <form class="waitlist__form" action="/api/waitlist" method="post" novalidate data-waitlist-form>
+    <div class="waitlist__field">
+      <label for={inputId} class="waitlist__label">Email</label>
+      <input
+        id={inputId}
+        class="waitlist__input"
+        type="email"
+        name="email"
+        autocomplete="email"
+        inputmode="email"
+        required
+        spellcheck="false"
+        placeholder="you@example.com"
+        aria-describedby={errorId}
+      />
+    </div>
+
+    <button type="submit" class="btn waitlist__submit" data-waitlist-submit>
+      <span data-waitlist-cta-text>{cta}</span>
+    </button>
+
+    <p class="waitlist__error" id={errorId} role="alert" aria-live="polite" data-waitlist-error></p>
+  </form>
+
+  <div class="waitlist__bookplate" aria-hidden="true" data-waitlist-bookplate>
+    <p class="waitlist__confirm">
+      <em>You're on the list. We'll write when the first volume ships.</em>
+    </p>
+    <span class="waitlist__reserved">— Reserved —</span>
+  </div>
+</section>
+
+<style>
+  .waitlist {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    max-width: 32rem;
+  }
+
+  .waitlist__headline {
+    font-family: var(--f-display);
+    font-weight: 400;
+    font-size: clamp(1.25rem, 1.5vw + 0.75rem, 1.75rem);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    color: var(--c-ink-inverse);
+    margin-bottom: var(--space-xs);
+  }
+
+  .waitlist__lede {
+    margin-bottom: var(--space-sm);
+  }
+
+  .waitlist__form {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: var(--space-sm);
+    align-items: end;
+    transition:
+      opacity var(--motion-state) var(--ease-state),
+      transform var(--motion-state) var(--ease-state);
+  }
+
+  .waitlist__field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+    min-width: 0;
+  }
+
+  .waitlist__label {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: var(--fs-eyebrow);
+    letter-spacing: var(--ls-eyebrow);
+    text-transform: uppercase;
+    color: var(--c-foil-light);
+    line-height: 1.4;
+  }
+
+  .waitlist__input {
+    border: var(--b-input);
+    background: var(--c-input);
+    color: var(--c-ink);
+    padding: 0.875em 1em;
+    border-radius: var(--r-page);
+    font-family: var(--f-body);
+    font-size: var(--fs-body);
+    line-height: 1.4;
+    min-width: 0;
+    width: 100%;
+    transition:
+      background-color var(--motion-state) var(--ease-state),
+      border-color var(--motion-state) var(--ease-state),
+      color var(--motion-state) var(--ease-state);
+  }
+
+  .waitlist__input::placeholder {
+    color: var(--c-oat);
+    font-style: italic;
+  }
+
+  .waitlist__input:focus {
+    border: var(--b-input-focus);
+    background: var(--c-input-focus-bg);
+    outline: none;
+  }
+
+  .waitlist__input:focus-visible {
+    outline: 2px solid var(--c-foil-light);
+    outline-offset: 2px;
+  }
+
+  .waitlist__submit {
+    height: calc(0.875em * 2 + 1em * var(--lh-body)); /* match input height */
+  }
+
+  /* Error — typographic correction, not a red ring or shake */
+  .waitlist__error {
+    grid-column: 1 / -1;
+    margin: 0;
+    min-height: 1em;
+    font-family: var(--f-body);
+    font-size: var(--fs-caption);
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--c-rust);
+    opacity: 0;
+    transition: opacity var(--motion-state) var(--ease-state);
+  }
+  [data-state="error"] .waitlist__error,
+  [data-state="invalid"] .waitlist__error {
+    opacity: 1;
+  }
+
+  /* Invalid input — border deepens to rust, nothing flashier */
+  [data-state="invalid"] .waitlist__input {
+    border-color: var(--c-rust);
+  }
+
+  /* Submitting — fade the CTA text to italic */
+  [data-state="submitting"] .waitlist__submit {
+    opacity: 0.85;
+    cursor: wait;
+  }
+  [data-state="submitting"] [data-waitlist-cta-text] {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: 0;
+  }
+
+  /* Bookplate — the typographic success state */
+  .waitlist__bookplate {
+    display: none;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-md);
+    padding-block: var(--space-md);
+    opacity: 0;
+    transform: translateY(8px);
+    transition:
+      opacity var(--motion-state) var(--ease-state),
+      transform var(--motion-state) var(--ease-state);
+  }
+  [data-state="success"] .waitlist__form { display: none; }
+  [data-state="success"] .waitlist__bookplate {
+    display: flex;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .waitlist__confirm {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(1.1rem, 1.2vw + 0.85rem, 1.4rem);
+    line-height: 1.5;
+    color: var(--c-ink-inverse);
+    max-width: 38ch;
+    margin: 0;
+  }
+
+  .waitlist__reserved {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: var(--fs-eyebrow);
+    letter-spacing: var(--ls-eyebrow);
+    text-transform: uppercase;
+    color: var(--c-foil-light);
+  }
+
+  /* Stack on narrow widths — form becomes full-width column */
+  @container (max-width: 30rem) {
+    .waitlist__form {
+      grid-template-columns: 1fr;
+    }
+    .waitlist__submit { width: 100%; }
+  }
+  @media (max-width: 32rem) {
+    .waitlist__form {
+      grid-template-columns: 1fr;
+    }
+    .waitlist__submit { width: 100%; }
+  }
+</style>
+
+<script>
+  type WaitlistState = "idle" | "invalid" | "submitting" | "success" | "error";
+
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  function setState(root: HTMLElement, state: WaitlistState, message = "") {
+    root.dataset.state = state;
+    const errEl = root.querySelector<HTMLElement>("[data-waitlist-error]");
+    if (errEl) errEl.textContent = message;
+    const submit = root.querySelector<HTMLButtonElement>("[data-waitlist-submit]");
+    if (submit) submit.disabled = state === "submitting";
+    const ctaText = root.querySelector<HTMLElement>("[data-waitlist-cta-text]");
+    if (ctaText) {
+      ctaText.textContent =
+        state === "submitting" ? "One moment." : submit?.dataset.originalCta ?? ctaText.textContent ?? "";
+    }
+    const bookplate = root.querySelector<HTMLElement>("[data-waitlist-bookplate]");
+    if (bookplate) {
+      if (state === "success") bookplate.removeAttribute("aria-hidden");
+      else bookplate.setAttribute("aria-hidden", "true");
+    }
+  }
+
+  function init(root: HTMLElement) {
+    const form = root.querySelector<HTMLFormElement>("[data-waitlist-form]");
+    const input = root.querySelector<HTMLInputElement>('input[type="email"]');
+    const submit = root.querySelector<HTMLButtonElement>("[data-waitlist-submit]");
+    if (!form || !input || !submit) return;
+
+    const cta = submit.querySelector<HTMLElement>("[data-waitlist-cta-text]");
+    if (cta) submit.dataset.originalCta = cta.textContent ?? "Join the waitlist";
+
+    input.addEventListener("blur", () => {
+      const v = input.value.trim();
+      if (!v) { setState(root, "idle"); return; }
+      if (!EMAIL_RE.test(v)) {
+        setState(root, "invalid", "That email doesn't look right — please check it.");
+      } else {
+        setState(root, "idle");
+      }
+    });
+
+    input.addEventListener("input", () => {
+      if (root.dataset.state === "invalid" || root.dataset.state === "error") {
+        setState(root, "idle");
+      }
+    });
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = input.value.trim();
+      if (!EMAIL_RE.test(email)) {
+        setState(root, "invalid", "That email doesn't look right — please check it.");
+        input.focus();
+        return;
+      }
+      setState(root, "submitting");
+
+      try {
+        const res = await fetch("/api/waitlist", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Accept": "application/json" },
+          body: JSON.stringify({ email }),
+        });
+
+        if (res.ok) {
+          document.dispatchEvent(new CustomEvent("waitlist:success", { detail: { email } }));
+          return;
+        }
+
+        if (res.status === 429) {
+          setState(root, "error", "One at a time — please wait a moment and try again.");
+          return;
+        }
+
+        const data = await res.json().catch(() => null);
+        const msg = data?.error?.message ?? "Something didn't take. Try again?";
+        setState(root, "error", msg);
+      } catch {
+        setState(root, "error", "We couldn't reach the press. Check your connection?");
+      }
+    });
+  }
+
+  function flipAllToSuccess() {
+    document.querySelectorAll<HTMLElement>("[data-waitlist-root]").forEach((root) => {
+      setState(root, "success");
+    });
+  }
+
+  document.addEventListener("waitlist:success", flipAllToSuccess);
+
+  document.querySelectorAll<HTMLElement>("[data-waitlist-root]").forEach(init);
+</script>

@@ -1,0 +1,71 @@
+---
+/**
+ * Minimal nav — wordmark left, a quiet chevron link right that scrolls
+ * to the final waitlist band. No center nav, no menu.
+ */
+---
+
+<header class="nav">
+  <a class="nav__brand" href="/" aria-label="Hearth Press — home">
+    <span class="nav__mark">HEARTH</span>
+  </a>
+  <a class="nav__cta" href="#reserve">Join the waitlist</a>
+</header>
+
+<style>
+  .nav {
+    display: flex;
+    align-items: center;
+    padding-block: 1.125rem;
+    padding-inline: var(--pad-side);
+    width: 100%;
+  }
+
+  .nav__brand {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    line-height: 1;
+  }
+
+  .nav__mark {
+    font-family: var(--f-wordmark);
+    font-weight: 400;
+    font-size: clamp(1.25rem, 0.8vw + 1rem, 1.625rem);
+    letter-spacing: 0.14em;
+    color: var(--c-foil);
+    text-transform: uppercase;
+    line-height: 1;
+  }
+
+  .surface-cream .nav__mark { color: var(--c-conifer); }
+
+  /* Self-contained nav button — does NOT inherit .btn sizing */
+  .nav__cta {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    padding: 0.55em 1.15em;
+    border-radius: var(--r-pill);
+    border: 1px solid rgba(244, 239, 230, 0.55);
+    background: transparent;
+    color: var(--c-ink-inverse);
+    font-family: var(--f-body);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    text-decoration: none;
+    transition:
+      background-color var(--motion-state) var(--ease-state),
+      border-color var(--motion-state) var(--ease-state),
+      color var(--motion-state) var(--ease-state);
+  }
+
+  .nav__cta:hover {
+    background: var(--c-ink-inverse);
+    border-color: var(--c-ink-inverse);
+    color: var(--c-conifer);
+  }
+</style>

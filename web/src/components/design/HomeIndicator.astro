@@ -1,0 +1,41 @@
+---
+/**
+ * iOS home indicator — 134×5px pill at the bottom of the screen.
+ * Color adapts to surface via `tone`.
+ */
+
+interface Props {
+  tone?: "ink" | "inverse";
+}
+
+const { tone = "ink" } = Astro.props;
+---
+
+<div class={`home-indicator home-indicator--${tone}`} aria-hidden="true">
+  <span class="home-indicator__bar" />
+</div>
+
+<style>
+  .home-indicator {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 20;
+  }
+
+  .home-indicator__bar {
+    width: 134px;
+    height: 5px;
+    border-radius: 999px;
+    background: currentColor;
+  }
+
+  .home-indicator--ink { color: var(--c-ink); opacity: 0.85; }
+  .home-indicator--inverse { color: var(--c-ink-inverse); opacity: 0.7; }
+</style>

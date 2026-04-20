@@ -1,0 +1,60 @@
+---
+/**
+ * The Hearth iOS app icon — sage squircle, gold-foil wordmark.
+ * Renders at whatever px size is set via the `size` prop.
+ */
+
+interface Props {
+  size?: number;
+}
+
+const { size = 60 } = Astro.props;
+// iOS squircle proportion — ~22.5% of side length
+const radius = Math.round(size * 0.225);
+// Scale wordmark to fit
+const fs = size * 0.24;
+const tracking = 0.08;
+---
+
+<div
+  class="hearth-icon"
+  style={`width:${size}px;height:${size}px;border-radius:${radius}px;`}
+>
+  <span
+    class="hearth-icon__mark"
+    style={`font-size:${fs}px;letter-spacing:${tracking}em;`}
+  >HEARTH</span>
+</div>
+
+<style>
+  .hearth-icon {
+    position: relative;
+    flex-shrink: 0;
+    background: var(--c-conifer);
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    /* Thin cloth-weave texture for the foil-stamp feel */
+    background-image:
+      repeating-linear-gradient(
+        45deg,
+        transparent 0,
+        transparent 2px,
+        rgba(244, 239, 230, 0.018) 2px,
+        rgba(244, 239, 230, 0.018) 3px
+      );
+    box-shadow:
+      inset 0 0 0 0.5px rgba(0, 0, 0, 0.22),
+      0 1px 2px rgba(0, 0, 0, 0.12);
+  }
+
+  .hearth-icon__mark {
+    font-family: var(--f-wordmark);
+    font-weight: 400;
+    color: var(--c-foil);
+    text-transform: uppercase;
+    line-height: 1;
+    /* faint foil press */
+    text-shadow: 0 0.5px 0 rgba(184, 147, 74, 0.12);
+  }
+</style>

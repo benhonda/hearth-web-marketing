@@ -1,0 +1,170 @@
+---
+/**
+ * In-app header — two variants.
+ *
+ *  variant="wordmark" — library/home. Centered HEARTH wordmark (Deep Conifer
+ *                       on cream), optional eyebrow underneath.
+ *  variant="title"    — detail pages. Back chevron left, quiet title centered,
+ *                       optional right action (e.g. "Edit", "Done").
+ *
+ * Sits inside a PhoneFrame screen. Reserves its own top padding to clear
+ * the status bar (54px).
+ */
+
+type Variant = "wordmark" | "title";
+type RightAction = "edit" | "done" | "plus" | "none";
+
+interface Props {
+  variant?: Variant;
+  eyebrow?: string;
+  title?: string;
+  rightAction?: RightAction;
+  /** When true, halo the right action button. */
+  tapAction?: boolean;
+}
+
+const {
+  variant = "wordmark",
+  eyebrow,
+  title,
+  rightAction = "none",
+  tapAction = false,
+} = Astro.props;
+---
+
+{variant === "wordmark" && (
+  <header class="app-header app-header--wordmark">
+    <div class="app-header__mark">HEARTH</div>
+    {eyebrow && (
+      <>
+        <hr class="app-header__rule" aria-hidden="true" />
+        <span class="app-header__eyebrow">{eyebrow}</span>
+      </>
+    )}
+  </header>
+)}
+
+{variant === "title" && (
+  <header class="app-header app-header--title">
+    <button class="app-header__back" type="button" aria-label="Back">
+      <span aria-hidden="true">‹</span>
+    </button>
+    <h1 class="app-header__h1">{title}</h1>
+    {rightAction !== "none" && (
+      <button class={tapAction ? "app-header__action app-header__action--tap" : "app-header__action"} type="button">
+        {rightAction === "edit" && "Edit"}
+        {rightAction === "done" && "Done"}
+        {rightAction === "plus" && <span aria-hidden="true">+</span>}
+      </button>
+    )}
+    {rightAction === "none" && <span class="app-header__spacer" aria-hidden="true" />}
+  </header>
+)}
+
+<style>
+  .app-header {
+    padding-top: 62px; /* 54 status bar + 8 breathing room */
+    padding-inline: 22px;
+  }
+
+  /* Wordmark variant ──────────────────────────────────────── */
+
+  .app-header--wordmark {
+    display: grid;
+    justify-items: center;
+    gap: 10px;
+    padding-bottom: 20px;
+  }
+
+  .app-header__mark {
+    font-family: var(--f-wordmark);
+    font-weight: 400;
+    font-size: 22px;
+    letter-spacing: 0.16em;
+    color: var(--c-conifer);
+    text-transform: uppercase;
+    line-height: 1;
+  }
+
+  .app-header__rule {
+    width: 28px;
+    height: 1px;
+    background: var(--c-ochre);
+    opacity: 0.5;
+    border: 0;
+    margin: 2px 0 0;
+  }
+
+  .app-header__eyebrow {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 9.5px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--c-ochre);
+    line-height: 1;
+  }
+
+  /* Title variant ─────────────────────────────────────────── */
+
+  .app-header--title {
+    display: grid;
+    grid-template-columns: 32px 1fr 32px;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 14px;
+  }
+
+  .app-header__back {
+    justify-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    font-size: 26px;
+    color: var(--c-ink);
+    cursor: pointer;
+    line-height: 1;
+    padding-bottom: 2px;
+  }
+
+  .app-header__h1 {
+    font-family: var(--f-display);
+    font-weight: 400;
+    font-size: 17px;
+    line-height: 1;
+    letter-spacing: -0.006em;
+    color: var(--c-ink);
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .app-header__action {
+    position: relative;
+    justify-self: flex-end;
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--c-ochre);
+    cursor: pointer;
+    white-space: nowrap;
+    padding: 4px 8px;
+  }
+  .app-header__action--tap::after {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    border: 3px solid var(--annotation);
+    border-radius: 999px;
+    box-shadow: var(--annotation-glow);
+    pointer-events: none;
+    opacity: var(--halo-opacity);
+    transition: opacity 180ms ease;
+    z-index: 50;
+  }
+
+  .app-header__spacer { width: 32px; height: 1px; }
+</style>

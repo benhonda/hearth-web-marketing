@@ -1,0 +1,18 @@
+---
+/**
+ * Flow I · First run → Import → Edit — deep-link route.
+ * Same storyboard that appears on /design, isolated to one flow.
+ */
+import DesignLayout from "~/layouts/DesignLayout.astro";
+import FlowStoryboard from "~/components/design/FlowStoryboard.astro";
+import { getFlow } from "~/lib/design/flows";
+
+const flow = getFlow("01-first-run-import");
+if (!flow) {
+  throw new Error("Flow 01-first-run-import missing from flows registry");
+}
+---
+
+<DesignLayout title={`Flow ${flow.numeral} · ${flow.title}`} eyebrow={`Flow · ${flow.numeral}`}>
+  <FlowStoryboard flow={flow} showHeader={true} />
+</DesignLayout>

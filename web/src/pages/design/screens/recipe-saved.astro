@@ -1,0 +1,18 @@
+---
+import DesignLayout from "~/layouts/DesignLayout.astro";
+import ScreenStage from "~/components/design/ScreenStage.astro";
+import PhoneFrame from "~/components/design/PhoneFrame.astro";
+import RecipeSavedScreen from "~/components/design/screens/RecipeSaved.astro";
+---
+
+<DesignLayout title="Recipe · saved · Screen IX" eyebrow="Flow I · Screen IX">
+  <ScreenStage
+    eyebrow="IX · Recipe · saved"
+    title="The book, quietly changed."
+    note="The edit landed. Same page, same rhythm, one word different. Folio updates to 'page 1 · version ii'; a small ochre italic 'edited just now' note sits in the meta line. At the foot, a quiet tertiary link offers to compare with the original — that view lives in a later flow."
+  >
+    <PhoneFrame surface="cream" variant="single" label="Recipe detail · saved · version ii">
+      <RecipeSavedScreen />
+    </PhoneFrame>
+  </ScreenStage>
+</DesignLayout>

@@ -1,0 +1,124 @@
+/* Design tokens — Hearth Press
+ * Canonical source: /workspace/DESIGN.md
+ * Do not introduce values that do not trace back to that document.
+ */
+
+:root {
+  /* ───────────────────────── Palette — Brand anchors ─── */
+  --c-conifer: #2f4a3c;          /* Deep Conifer — sage hardcover surface */
+  --c-foil: #b8934a;             /* Antique Foil — display foil on sage */
+  --c-foil-light: #d4b062;       /* Foil Light — small-caps on sage + CTA bg */
+  --c-foil-hover: #debd74;       /* CTA hover (280ms lift to brighter foil) */
+  --c-cream: #f4efe6;            /* White Dove — cream page interior */
+  --c-chrome: #f6f2ea;            /* Chrome Background — page canvas */
+  --c-ochre: #7a5a26;            /* Deep Ochre — cookbook ink on cream */
+
+  /* Text on cream */
+  --c-ink: #1f1b17;              /* Warm Charcoal — primary body ink */
+  --c-ash: #6c6457;              /* secondary */
+  --c-oat: #7c7465;              /* tertiary (AA-large only) */
+
+  /* Text on sage */
+  --c-ink-inverse: #f4efe6;      /* White Dove — primary on sage */
+  --c-linen: #dad5cd;            /* secondary on sage */
+  --c-stone: #b9b4ac;            /* tertiary on sage */
+
+  /* Utility */
+  --c-rust: #a55c2b;             /* Alert Rust — destructive indicators only */
+  --c-input: #faf7f1;            /* Input Fill — off-cream for form fields */
+  --c-input-focus-bg: #ffffff;
+
+  /* Semantic surface roles (mapped — do not hardcode surface colors elsewhere) */
+  --surface-page: var(--c-chrome);
+  --surface-cream: var(--c-cream);
+  --surface-sage: var(--c-conifer);
+
+  /* ───────────────────────── Typography — 3 faces, 5 tiers ─── */
+  --f-wordmark: "Marcellus", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --f-display: "Lora", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --f-body: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+
+  /* Display / Wordmark — Marcellus, all-caps, wide track */
+  --fs-wordmark: clamp(3rem, 5vw + 1.5rem, 4.5rem);
+  --lh-wordmark: 1;
+  --ls-wordmark: 0.1em;
+
+  /* H1 / Recipe & Chapter Titles — Lora, fluid */
+  --fs-h1: clamp(1.75rem, 2.5vw + 1rem, 2.625rem);
+  --lh-h1: 1.1;
+  --ls-h1: -0.012em;
+
+  /* Italic / H2–H4 / Lede — Lora italic */
+  --fs-lede: clamp(1rem, 0.8vw + 0.75rem, 1.5rem);
+  --lh-lede: 1.5;
+
+  /* Eyebrow / Overline / Small-cap Label — DM Sans 500 */
+  --fs-eyebrow: 0.6875rem;       /* 11px — mid of 9–13px range */
+  --lh-eyebrow: 1.3;
+  --ls-eyebrow: 0.28em;          /* wide-tracking is non-negotiable */
+
+  /* Body / UI — DM Sans 400 */
+  --fs-body: 0.9375rem;          /* 15px */
+  --lh-body: 1.65;
+  --lh-body-sage: 1.72;          /* +0.07 for light-on-dark legibility */
+
+  /* Secondary body sizes (UI chrome, meta) */
+  --fs-meta: 0.8125rem;          /* 13px */
+  --fs-caption: 0.75rem;         /* 12px */
+
+  /* Measure */
+  --measure-body: 56ch;          /* mid of 52–58ch brief-spec */
+  --measure-lede: 52ch;
+
+  /* ───────────────────────── Spacing — 4pt scale, semantic ─── */
+  --space-2xs: 0.25rem;          /* 4  */
+  --space-xs:  0.5rem;           /* 8  */
+  --space-sm:  0.75rem;          /* 12 */
+  --space-md:  1rem;             /* 16 */
+  --space-lg:  1.5rem;           /* 24 */
+  --space-xl:  2rem;             /* 32 */
+  --space-2xl: 3rem;             /* 48 */
+  --space-3xl: 4rem;             /* 64 */
+  --space-4xl: 6rem;             /* 96 — major section rhythm */
+
+  /* Page padding — fluid, breathes on larger screens */
+  --pad-side: clamp(1.5rem, 4vw, 4.5rem);
+  --pad-section: clamp(3.5rem, 8vw, 6rem);
+
+  /* ───────────────────────── Corner radius — disciplined 2px ─── */
+  --r-page: 2px;                  /* book-page corner — the default */
+  --r-pill: 999px;                /* tappable button — the only exception */
+
+  /* ───────────────────────── Borders ─── */
+  --b-divider: 1px solid rgba(31, 27, 23, 0.08);    /* list-item whisper */
+  --b-divider-sage: 1px solid rgba(244, 239, 230, 0.1);
+  --b-card: 1px solid rgba(0, 0, 0, 0.06);
+  --b-input: 1px solid rgba(31, 27, 23, 0.18);
+  --b-input-focus: 1px solid var(--c-ink);
+
+  /* ───────────────────────── Shadows — warm, brown-biased ─── */
+  --shadow-paper: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-lift: 0 20px 40px -20px rgba(30, 20, 10, 0.2);
+  --shadow-button: 0 1px 2px rgba(122, 90, 38, 0.22);
+
+  /* ───────────────────────── Decorative rules ─── */
+  --rule-short: 36px;             /* hero eyebrow rule */
+  --rule-chapter: 44px;            /* chapter-mark rule */
+  --rule-weight: 1px;
+  --rule-weight-chapter: 1.5px;
+
+  /* ───────────────────────── Motion ─── */
+  --motion-state: 280ms;           /* DESIGN.md canonical state-change duration */
+  --ease-state: ease;              /* DESIGN.md specifies plain ease */
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1); /* hero stagger only */
+
+  /* Page-load stagger timing (hero orchestration — the single allowed delight) */
+  --stagger-offset: 60ms;
+  --stagger-duration: 400ms;
+  --stagger-translate: 8px;
+
+  /* Focus ring (keyboard only) — tokens per surface */
+  --focus-ring-cream: 2px solid var(--c-ochre);
+  --focus-ring-sage: 2px solid var(--c-foil-light);
+  --focus-ring-offset: 2px;
+}

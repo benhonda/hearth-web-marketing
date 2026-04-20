@@ -1,0 +1,18 @@
+---
+import DesignLayout from "~/layouts/DesignLayout.astro";
+import ScreenStage from "~/components/design/ScreenStage.astro";
+import PhoneFrame from "~/components/design/PhoneFrame.astro";
+import LibraryOneRecipeScreen from "~/components/design/screens/LibraryOneRecipe.astro";
+---
+
+<DesignLayout title="Library · one recipe · Screen VI" eyebrow="Flow I · Screen VI">
+  <ScreenStage
+    eyebrow="VI · Library · one recipe"
+    title="A library of one."
+    note="The emotional payoff. Same header and folio as the empty state, but the chapter-opener is replaced by a single Apple-Music-style row. Nothing celebrates; it just IS — that's where the feeling comes from."
+  >
+    <PhoneFrame surface="cream" variant="single" label="Library · one recipe saved">
+      <LibraryOneRecipeScreen />
+    </PhoneFrame>
+  </ScreenStage>
+</DesignLayout>

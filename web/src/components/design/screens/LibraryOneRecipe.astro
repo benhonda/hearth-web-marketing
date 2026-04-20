@@ -1,0 +1,96 @@
+---
+/**
+ * Screen VI · Library · one recipe.
+ *
+ * The emotional payoff — a library of one. Same header and folio as the
+ * empty state, but the chapter-opener block is replaced by a single
+ * Apple-Music-style row. Nothing celebrates; it just IS. The power
+ * comes from the row being the only thing there.
+ */
+import AppHeader from "../ui/AppHeader.astro";
+import RecipeRow from "../ui/RecipeRow.astro";
+import { sampleRecipe } from "~/lib/design/sample-recipe";
+
+interface Props { showTap?: boolean; }
+const { showTap = false } = Astro.props;
+---
+
+<div class="lib-one">
+  <AppHeader variant="wordmark" eyebrow="A private library" />
+
+  <div class="lib-one__count">
+    <span class="lib-one__n">1</span>
+    <span class="lib-one__label">recipe</span>
+  </div>
+
+  <div class={showTap ? "lib-one__list lib-one__list--tap" : "lib-one__list"}>
+    <RecipeRow
+      title={sampleRecipe.title}
+      meta={`${sampleRecipe.minutes} min · Serves ${sampleRecipe.serves}`}
+      source={sampleRecipe.source}
+      thumbTone="corn"
+    />
+  </div>
+
+  <p class="lib-one__folio">— page one —</p>
+</div>
+
+<style>
+  .lib-one {
+    display: grid;
+    grid-template-rows: auto auto 1fr auto;
+    min-height: 100%;
+    padding-bottom: 44px;
+  }
+
+  .lib-one__count {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    padding: 0 22px;
+    margin: 4px 0 14px;
+  }
+  .lib-one__n {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 15px;
+    color: var(--c-ochre);
+  }
+  .lib-one__label {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 9.5px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--c-oat);
+  }
+
+  .lib-one__list {
+    align-self: flex-start;
+    position: relative;
+  }
+  .lib-one__list--tap::after {
+    content: "";
+    position: absolute;
+    inset: 0 12px;
+    border: 3px solid var(--annotation);
+    border-radius: 4px;
+    box-shadow: var(--annotation-glow);
+    pointer-events: none;
+    opacity: var(--halo-opacity);
+    transition: opacity 180ms ease;
+    z-index: 50;
+  }
+
+  .lib-one__folio {
+    align-self: flex-end;
+    text-align: center;
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 12.5px;
+    color: var(--c-ochre);
+    letter-spacing: 0.02em;
+    padding-bottom: 8px;
+  }
+</style>

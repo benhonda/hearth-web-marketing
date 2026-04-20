@@ -1,0 +1,88 @@
+---
+/**
+ * iPhone 15 Pro frame — 393 × 852 pts. Wraps its slot in a scrollable
+ * screen area, overlays a status bar + home indicator, and paints the
+ * titanium bezel + Dynamic Island.
+ *
+ * Props:
+ *   surface  — "cream" | "sage" | "neutral" — screen background
+ *   tone     — "ink" | "inverse" — status bar + home indicator color
+ *   variant  — "canvas" (0.58×) or "single" (1×) — rendering context
+ *   time     — status bar clock string, default 9:41
+ *   id       — optional anchor id, used by FlowArrow to draw between phones
+ */
+
+import StatusBar from "./StatusBar.astro";
+import HomeIndicator from "./HomeIndicator.astro";
+
+interface Props {
+  surface?: "cream" | "sage" | "neutral";
+  tone?: "ink" | "inverse";
+  variant?: "canvas" | "single";
+  time?: string;
+  id?: string;
+  label?: string;
+}
+
+const {
+  surface = "cream",
+  tone,
+  variant = "single",
+  time,
+  id,
+  label,
+} = Astro.props;
+
+// Sensible default: tone follows surface if not overridden.
+const resolvedTone = tone ?? (surface === "sage" ? "inverse" : "ink");
+---
+
+<div
+  class={`phone phone--${variant} phone--surface-${surface}`}
+  id={id}
+  data-label={label}
+  role={label ? "figure" : undefined}
+  aria-label={label}
+>
+  <div class={`phone__screen phone__screen--${surface}`}>
+    <StatusBar tone={resolvedTone} time={time} />
+    <div class="phone__scroll">
+      <slot />
+    </div>
+    <HomeIndicator tone={resolvedTone} />
+  </div>
+</div>
+
+<style>
+  .phone__screen--cream {
+    background: var(--c-cream);
+    background-image: radial-gradient(
+      ellipse at 50% 0%,
+      rgba(122, 90, 38, 0.03) 0%,
+      transparent 65%
+    );
+  }
+
+  .phone__screen--sage {
+    background: var(--c-conifer);
+    background-image:
+      repeating-linear-gradient(
+        45deg,
+        transparent 0,
+        transparent 3px,
+        rgba(244, 239, 230, 0.012) 3px,
+        rgba(244, 239, 230, 0.012) 4px
+      ),
+      repeating-linear-gradient(
+        -45deg,
+        transparent 0,
+        transparent 3px,
+        rgba(0, 0, 0, 0.03) 3px,
+        rgba(0, 0, 0, 0.03) 4px
+      );
+  }
+
+  .phone__screen--neutral {
+    background: #ffffff;
+  }
+</style>

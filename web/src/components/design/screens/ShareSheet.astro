@@ -1,0 +1,391 @@
+---
+/**
+ * Screen IV · Share sheet.
+ *
+ * The dim-over-Safari moment. The iOS share sheet slides up over the
+ * article from screen III. Hearth appears in the apps row with an ochre
+ * halo marking the next tap.
+ *
+ * Renders the Safari article behind as context (dimmed), then the sheet
+ * on top at ~72% height.
+ */
+import MobileSafariRecipe from "./MobileSafariRecipe.astro";
+import HearthAppIcon from "../ui/HearthAppIcon.astro";
+
+interface Props { showTap?: boolean; }
+const { showTap = false } = Astro.props;
+---
+
+<div class="share">
+  <div class="share__back" aria-hidden="true">
+    <MobileSafariRecipe />
+  </div>
+  <div class="share__dim" aria-hidden="true" />
+
+  <section class="sheet" role="dialog" aria-label="Share recipe">
+    <span class="sheet__grab" aria-hidden="true" />
+
+    <div class="sheet__scroll">
+      <div class="page-card">
+        <div class="page-card__fav" aria-hidden="true">
+          <div class="page-card__fav-dot" />
+        </div>
+        <div class="page-card__body">
+          <p class="page-card__title">Summer Corn &amp; Basil Ragù</p>
+          <p class="page-card__url">table.kitchen · Options &gt;</p>
+        </div>
+      </div>
+
+      <div class="apps">
+        <div class="apps__row" role="list">
+          <div class="app" role="listitem">
+            <div class="app__icon app__icon--messages">
+              <svg viewBox="0 0 24 24" width="28" height="28" fill="#fff" aria-hidden="true">
+                <path d="M12 3C6.5 3 2 6.7 2 11.2c0 2.3 1.2 4.4 3.1 5.9-.1 1-.6 2.4-1.3 3.4-.2.3 0 .7.4.6 2-.4 3.9-1.3 5-2 .9.2 1.8.4 2.8.4 5.5 0 10-3.7 10-8.3C22 6.7 17.5 3 12 3z"/>
+              </svg>
+            </div>
+            <span class="app__label">Messages</span>
+          </div>
+
+          <div class="app" role="listitem">
+            <div class="app__icon app__icon--mail">
+              <svg viewBox="0 0 24 24" width="28" height="22" fill="none" stroke="#fff" stroke-width="1.5" aria-hidden="true">
+                <rect x="3" y="6" width="18" height="13" rx="2" fill="#fff"/>
+                <path d="M4 8l8 5.5L20 8" stroke="#1f8ef1" fill="none"/>
+              </svg>
+            </div>
+            <span class="app__label">Mail</span>
+          </div>
+
+          <div class="app app--highlight" role="listitem">
+            <div class={showTap ? "app__halo app__halo--tap" : "app__halo"}>
+              <HearthAppIcon size={60} />
+            </div>
+            <span class="app__label app__label--hearth">Hearth</span>
+          </div>
+
+          <div class="app" role="listitem">
+            <div class="app__icon app__icon--notes">
+              <div class="app__notes-lines" aria-hidden="true"></div>
+            </div>
+            <span class="app__label">Notes</span>
+          </div>
+
+          <div class="app" role="listitem">
+            <div class="app__icon app__icon--reminders">
+              <div class="app__reminders-dot" aria-hidden="true"></div>
+            </div>
+            <span class="app__label">Reminders</span>
+          </div>
+
+          <div class="app" role="listitem">
+            <div class="app__icon app__icon--more">
+              <span aria-hidden="true">···</span>
+            </div>
+            <span class="app__label">More</span>
+          </div>
+        </div>
+      </div>
+
+      <ul class="actions" role="list">
+        <li class="actions__row">
+          <span class="actions__label">Copy</span>
+          <span class="actions__icon" aria-hidden="true">
+            <svg viewBox="0 0 18 18" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.3">
+              <rect x="4" y="4" width="10" height="12" rx="1.5" />
+              <path d="M6.5 4V2.5A1 1 0 0 1 7.5 1.5h7a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H14" />
+            </svg>
+          </span>
+        </li>
+        <li class="actions__row">
+          <span class="actions__label">Add to Reading List</span>
+          <span class="actions__icon" aria-hidden="true">
+            <svg viewBox="0 0 18 18" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.3">
+              <path d="M3 3h9a3 3 0 0 1 3 3v10l-4-2-4 2-4-2V3z" />
+            </svg>
+          </span>
+        </li>
+        <li class="actions__row">
+          <span class="actions__label">Add Bookmark</span>
+          <span class="actions__icon" aria-hidden="true">
+            <svg viewBox="0 0 18 18" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round">
+              <path d="M5 2h8v14l-4-2.5L5 16V2z" />
+            </svg>
+          </span>
+        </li>
+        <li class="actions__row">
+          <span class="actions__label">Find on Page</span>
+          <span class="actions__icon" aria-hidden="true">
+            <svg viewBox="0 0 18 18" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.3">
+              <circle cx="8" cy="8" r="4.5" />
+              <path d="M11.5 11.5 15 15" />
+            </svg>
+          </span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="sheet__foot">
+      <button class="sheet__cancel" type="button">Cancel</button>
+    </div>
+  </section>
+</div>
+
+<style>
+  .share {
+    position: relative;
+    width: 100%;
+    min-height: 100%;
+    overflow: hidden;
+  }
+
+  .share__back {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .share__dim {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.36);
+  }
+
+  /* Sheet ─────────────────────────────────────────────────── */
+
+  .sheet {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    height: 72%;
+    border-radius: 14px;
+    background: #f5f5f7; /* opaque iOS chrome cream-gray */
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+  }
+
+  .sheet__grab {
+    width: 36px;
+    height: 4px;
+    border-radius: 999px;
+    background: rgba(60, 60, 67, 0.3);
+    margin: 6px auto 10px;
+  }
+
+  .sheet__scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 6px 16px 16px;
+  }
+
+  /* Page card ─────────────────────────────────────────────── */
+
+  .page-card {
+    display: grid;
+    grid-template-columns: 36px 1fr;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: #ffffff;
+    border-radius: 12px;
+    margin-bottom: 18px;
+  }
+
+  .page-card__fav {
+    width: 36px;
+    height: 36px;
+    border-radius: 9px;
+    background: linear-gradient(135deg, #f5d990, #d6a34e);
+    display: grid;
+    place-items: center;
+  }
+  .page-card__fav-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 999px;
+    background: #fff;
+    opacity: 0.7;
+  }
+
+  .page-card__title {
+    font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    color: #111;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .page-card__url {
+    font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-size: 12px;
+    color: #8a8a8f;
+    margin-top: 1px;
+  }
+
+  /* Apps row ──────────────────────────────────────────────── */
+
+  .apps {
+    margin: 0 -16px 18px;
+    padding: 0 16px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+  }
+  .apps::-webkit-scrollbar { display: none; }
+
+  .apps__row {
+    display: inline-flex;
+    gap: 18px;
+    padding: 2px 0 10px;
+  }
+
+  .app {
+    display: grid;
+    justify-items: center;
+    gap: 6px;
+    width: 60px;
+  }
+
+  .app__icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 13px;
+    display: grid;
+    place-items: center;
+    box-shadow:
+      inset 0 0 0 0.5px rgba(0, 0, 0, 0.12),
+      0 1px 2px rgba(0, 0, 0, 0.06);
+  }
+
+  .app__icon--messages { background: linear-gradient(180deg, #5ce26e, #2ecb41); }
+  .app__icon--mail     { background: #fff; }
+  .app__icon--notes    {
+    background: linear-gradient(180deg, #fff4c2 0%, #ffeb8b 40%, #f7d74d 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .app__icon--notes::before {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; top: 14%;
+    height: 22%;
+    background: #fff;
+  }
+  .app__notes-lines {
+    position: relative;
+    width: 70%;
+    height: 45%;
+    background:
+      linear-gradient(#c0a94c 0 1px, transparent 1px) 0 20% / 100% 10px repeat-y;
+  }
+  .app__icon--reminders {
+    background: #fff;
+    position: relative;
+  }
+  .app__reminders-dot {
+    width: 18px; height: 18px;
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background:
+      linear-gradient(#fff, #fff) padding-box,
+      conic-gradient(from 180deg, #ff5a5f, #ff8a00, #ffd200, #ff5a5f) border-box;
+  }
+  .app__icon--more {
+    background: #e5e5ea;
+    color: #1f1f1f;
+    font-size: 18px;
+    letter-spacing: 1px;
+    padding-bottom: 10px;
+  }
+
+  .app__halo {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    border-radius: 13px;
+    padding: 0;
+  }
+  .app__halo--tap::after {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    border-radius: 18px;
+    border: 3px solid var(--annotation);
+    box-shadow: var(--annotation-glow);
+    pointer-events: none;
+    opacity: var(--halo-opacity);
+    transition: opacity 180ms ease;
+    z-index: 50;
+  }
+
+  .app__label {
+    font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-size: 10.5px;
+    color: #1f1f1f;
+    text-align: center;
+    line-height: 1.2;
+    letter-spacing: -0.005em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 62px;
+  }
+  .app__label--hearth {
+    color: var(--c-ochre);
+    font-weight: 500;
+  }
+
+  /* Actions list ──────────────────────────────────────────── */
+
+  .actions {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  .actions__row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 16px;
+    border-bottom: 1px solid rgba(60, 60, 67, 0.1);
+    color: #1f5fc1;
+  }
+  .actions__row:last-child { border-bottom: 0; }
+
+  .actions__label {
+    font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-size: 15px;
+    color: #111;
+    letter-spacing: -0.005em;
+  }
+  .actions__icon { display: inline-flex; color: #1f5fc1; }
+
+  /* Foot ──────────────────────────────────────────────────── */
+
+  .sheet__foot {
+    padding: 8px 16px 18px;
+    border-top: 1px solid rgba(60, 60, 67, 0.08);
+    background: #f5f5f7;
+  }
+
+  .sheet__cancel {
+    width: 100%;
+    padding: 14px 0;
+    background: #fff;
+    border-radius: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    color: #1f5fc1;
+    cursor: pointer;
+  }
+</style>

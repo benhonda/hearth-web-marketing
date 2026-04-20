@@ -1,0 +1,529 @@
+---
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import Nav from "~/components/Nav.astro";
+import HeroBook from "~/components/HeroBook.astro";
+import WaitlistForm from "~/components/WaitlistForm.astro";
+---
+
+<BaseLayout>
+  <!-- ══════════ 1 · Hero (sage hardcover) ══════════ -->
+  <section class="hero surface-sage" data-stagger-root>
+    <Nav />
+
+    <div class="hero__grid container">
+      <div class="hero__text" data-stagger-group>
+        <span class="eyebrow" data-stagger>Hearth&nbsp;Press&nbsp;·&nbsp;Vol.&nbsp;One</span>
+        <span class="rule rule--short" data-stagger></span>
+        <h1 class="title title--hero" data-stagger>A beautiful home for your recipes.</h1>
+        <p class="lede" data-stagger>
+          And a beautiful cookbook whenever you want one.
+          Save every recipe you love — when the occasion calls for it,
+          turn your library into a hardcover.
+        </p>
+        <div class="hero__actions" data-stagger>
+          <a class="link--chevron" href="#reserve">Join the waitlist</a>
+          <span class="hero__note">— iOS, arriving 2026.</span>
+        </div>
+      </div>
+
+      <div class="hero__object" data-stagger>
+        <HeroBook />
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 2 · The thesis (cream interior) ══════════ -->
+  <section class="section surface-cream">
+    <article class="container spread thesis">
+      <aside class="spread__marker">
+        <span class="eyebrow">Chapter&nbsp;I&nbsp;·&nbsp;The&nbsp;Thesis</span>
+        <span class="rule" aria-hidden="true"></span>
+      </aside>
+      <div class="spread__body">
+        <h2 class="title">The app is the book, made digital.</h2>
+        <div class="prose">
+          <p>
+            The idea is a simple one. Hearth is a place to keep the
+            recipes you love — a library that feels, from the first save,
+            like the pages of a cookbook you have not yet made.
+          </p>
+          <p>
+            The app and the book are the same object. Every recipe sits
+            inside a typographic system designed for cloth and foil:
+            small-caps chapter marks, italic Roman numerals on the steps,
+            a folio at the foot of the page. The photograph on your screen
+            is the photograph in the book. The recipe you scroll is the
+            recipe you will hold.
+          </p>
+          <p>
+            When the occasion calls for it — a birthday, a wedding, a life
+            beginning or turning — you choose the recipes that belong
+            together, pick a cover, and we press it in cloth and
+            hardcover. No templates to wrestle. No blank canvas. A
+            cookbook, already book-worthy from day one.
+          </p>
+        </div>
+        <p class="folio" aria-hidden="true">— i —</p>
+      </div>
+    </article>
+  </section>
+
+  <!-- ══════════ 3 · How it works (cream, three steps) ══════════ -->
+  <section class="section surface-cream">
+    <div class="container spread how">
+      <aside class="spread__marker">
+        <span class="eyebrow">How&nbsp;It&nbsp;Works</span>
+        <span class="rule" aria-hidden="true"></span>
+      </aside>
+      <div class="spread__body">
+        <ol class="how__list" role="list">
+          <li class="how__item">
+            <em class="how__numeral">i.</em>
+            <div class="how__text">
+              <h3 class="how__title">Save anything.</h3>
+              <p class="prose">
+                A recipe from anywhere on the internet becomes a recipe in
+                your library. Share sheet, URL, or typed by hand — it
+                arrives structured, edited, yours.
+              </p>
+            </div>
+          </li>
+          <li class="how__item">
+            <em class="how__numeral">ii.</em>
+            <div class="how__text">
+              <h3 class="how__title">Let it live beautifully.</h3>
+              <p class="prose">
+                Every recipe is formatted as though it were already
+                printed. No food-blog preamble, no ads, no scroll-past.
+                Just the recipe, set well.
+              </p>
+            </div>
+          </li>
+          <li class="how__item">
+            <em class="how__numeral">iii.</em>
+            <div class="how__text">
+              <h3 class="how__title">Print it as a cookbook.</h3>
+              <p class="prose">
+                Multi-select the recipes that belong together. Give them
+                a title. We press and bind it in 8&times;10 hardcover,
+                shipped within the week.
+              </p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 4 · The cookbook (cream, editorial colophon) ══════════ -->
+  <section class="section surface-cream">
+    <div class="container spread book-section">
+      <aside class="spread__marker">
+        <span class="eyebrow">The&nbsp;Cookbook</span>
+        <span class="rule" aria-hidden="true"></span>
+      </aside>
+      <div class="spread__body">
+        <header class="book-section__head">
+          <h2 class="title">Hardcover. 8&times;10. Premium paper.</h2>
+          <p class="lede">
+            Cloth binding, foil-stamped spine, acid-free interior stock —
+            made to sit on a coffee table, not in a drawer.
+          </p>
+        </header>
+
+        <div class="book-detail">
+          <div class="book-detail__col">
+            <span class="eyebrow">Materials</span>
+            <ul class="book-detail__list" role="list">
+              <li>Deep Conifer cloth over board</li>
+              <li>Antique Foil stamping on spine and cover</li>
+              <li>Uncoated, acid-free interior stock</li>
+              <li>Smyth-sewn binding — lies flat when open</li>
+            </ul>
+          </div>
+          <div class="book-detail__col">
+            <span class="eyebrow">Format</span>
+            <ul class="book-detail__list" role="list">
+              <li>Eight by ten inches, portrait</li>
+              <li>Recipes selected from your library</li>
+              <li>Designed at Hearth; printed and bound at the press</li>
+              <li>Typically shipped within the week of order</li>
+            </ul>
+          </div>
+        </div>
+
+        <p class="folio" aria-hidden="true">— ii —</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 5 · Final CTA (sage) ══════════ -->
+  <section class="section surface-sage reserve" id="reserve">
+    <div class="container spread reserve__inner">
+      <aside class="spread__marker">
+        <span class="eyebrow">Reserve&nbsp;Your&nbsp;Place</span>
+        <span class="rule" aria-hidden="true"></span>
+      </aside>
+      <div class="spread__body">
+        <WaitlistForm
+          id="reserve"
+          headline="Write the first volume with us."
+          lede="A small iOS launch, a first printing. You'll be the first to know when the press opens."
+          cta="Join the waitlist"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ Footer (sage) ══════════ -->
+  <footer class="site-footer surface-sage">
+    <div class="container site-footer__inner">
+      <div class="site-footer__top">
+        <div class="site-footer__brand">
+          <a class="site-footer__mark" href="/" aria-label="Hearth Press — home">HEARTH</a>
+          <em class="site-footer__tag">A beautiful home for your recipes.</em>
+        </div>
+        <div class="site-footer__contact">
+          <span class="eyebrow">Write&nbsp;to&nbsp;the&nbsp;press</span>
+          <a href="mailto:press@hearth.press" class="site-footer__email">press@hearth.press</a>
+        </div>
+      </div>
+
+      <div class="site-footer__legal">
+        <span>&copy; MMXXVI &nbsp;Hearth&nbsp;Press</span>
+        <span aria-hidden="true" class="site-footer__dot">·</span>
+        <span><em>Made slowly, in small editions.</em></span>
+      </div>
+    </div>
+  </footer>
+</BaseLayout>
+
+<style>
+  /* ──────────────────────── 1 · Hero ───────────────── */
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .hero__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+    gap: clamp(var(--space-xl), 5vw, var(--space-4xl));
+    align-items: center;
+    padding-block: clamp(var(--space-2xl), 8vw, var(--space-4xl));
+    flex: 1;
+  }
+
+  .hero__text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    max-width: 34rem;
+  }
+
+  /* Hero title override — larger fluid scale */
+  .title--hero {
+    font-size: clamp(2.5rem, 4.5vw + 1rem, 4.25rem);
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-md);
+    margin-top: var(--space-sm);
+  }
+  .hero__note {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: var(--fs-meta);
+    color: var(--c-stone);
+  }
+
+  .hero__object {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  @media (max-width: 52rem) {
+    .hero__grid {
+      grid-template-columns: 1fr;
+      gap: var(--space-2xl);
+    }
+    .hero__object { order: -1; max-width: 18rem; margin-inline: auto; }
+    .hero__text { max-width: none; }
+  }
+
+  /* ──────────────────────── Editorial spread grid ────
+   * Desktop: left gutter holds the chapter marker (eyebrow + rule),
+   *          right column holds the reading content at ~58ch.
+   * Mobile: single column, marker stacks above body.
+   */
+  .spread {
+    display: grid;
+    grid-template-columns: minmax(160px, 220px) minmax(0, 58ch);
+    gap: clamp(var(--space-xl), 4vw, var(--space-3xl));
+    align-items: start;
+  }
+
+  .spread__marker {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    padding-top: 0.35rem; /* optically align eyebrow baseline with title cap height */
+  }
+
+  .spread__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    min-width: 0;
+  }
+
+  @media (max-width: 56rem) {
+    .spread {
+      grid-template-columns: 1fr;
+      gap: var(--space-lg);
+    }
+    .spread__marker { padding-top: 0; }
+  }
+
+  /* ──────────────────────── 2 · Thesis ──────────────── */
+  .thesis .title { max-width: 20ch; }
+  .thesis .folio { margin-top: var(--space-xl); }
+
+  /* ──────────────────────── 3 · How it works ─────────── */
+  .how__list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .how__item {
+    display: grid;
+    grid-template-columns: 3rem 1fr;
+    gap: var(--space-lg);
+    padding-block: clamp(var(--space-xl), 4vw, var(--space-2xl));
+    border-top: var(--b-divider);
+  }
+  .how__item:first-child { padding-top: 0; border-top: 0; }
+  .how__item:last-child { border-bottom: var(--b-divider); }
+
+  .how__numeral {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(1.5rem, 2vw + 0.5rem, 2rem);
+    line-height: 1;
+    color: var(--c-ochre);
+    letter-spacing: 0.02em;
+    padding-top: 0.15em;
+  }
+
+  .how__title {
+    font-family: var(--f-display);
+    font-weight: 400;
+    font-size: clamp(1.35rem, 1.5vw + 0.85rem, 1.75rem);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    color: var(--c-ink);
+    margin-bottom: var(--space-sm);
+  }
+
+  .how__text .prose {
+    max-width: 52ch;
+  }
+
+  /* ──────────────────────── 4 · The cookbook ────────── */
+  .book-section__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    margin-bottom: var(--space-xl);
+  }
+  .book-section__head .title { max-width: 18ch; }
+
+  .book-detail {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(var(--space-xl), 4vw, var(--space-3xl));
+    border-top: var(--b-divider);
+    border-bottom: var(--b-divider);
+    padding-block: clamp(var(--space-xl), 4vw, var(--space-2xl));
+  }
+
+  .book-detail__col {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .book-detail__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: var(--fs-body);
+    line-height: 1.55;
+    color: var(--c-ash);
+  }
+  .book-detail__list li {
+    position: relative;
+    padding-left: 1.25em;
+  }
+  .book-detail__list li::before {
+    content: "·";
+    position: absolute;
+    left: 0;
+    color: var(--c-ochre);
+    font-style: normal;
+    font-weight: 500;
+  }
+
+  @media (max-width: 52rem) {
+    .book-detail { grid-template-columns: 1fr; }
+  }
+
+  /* ──────────────────────── 5 · Reserve ──────────── */
+  /* layout comes from .spread; no extra rules needed here */
+
+  /* ──────────────────────── Footer ─────────────────── */
+  .site-footer {
+    padding-block: clamp(var(--space-2xl), 5vw, var(--space-3xl));
+    border-top: 1px solid rgba(244, 239, 230, 0.08);
+  }
+
+  .site-footer__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+  }
+
+  .site-footer__top {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: var(--space-2xl);
+    align-items: start;
+  }
+
+  .site-footer__brand {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .site-footer__mark {
+    font-family: var(--f-wordmark);
+    font-weight: 400;
+    font-size: clamp(1.35rem, 1.5vw + 0.75rem, 1.75rem);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--c-foil);
+    line-height: 1;
+    text-decoration: none;
+  }
+
+  .site-footer__tag {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: var(--fs-body);
+    line-height: 1.5;
+    color: var(--c-linen);
+    max-width: 28ch;
+  }
+
+  .site-footer__contact {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    align-items: flex-start;
+  }
+
+  .site-footer__email {
+    font-family: var(--f-body);
+    font-size: var(--fs-body);
+    color: var(--c-ink-inverse);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in oklab, var(--c-foil-light) 45%, transparent);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition: text-decoration-color var(--motion-state) var(--ease-state),
+                color var(--motion-state) var(--ease-state);
+  }
+  .site-footer__email:hover {
+    text-decoration-color: var(--c-foil-light);
+    color: var(--c-foil-light);
+  }
+
+  .site-footer__legal {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-sm);
+    padding-top: var(--space-md);
+    border-top: 1px solid rgba(244, 239, 230, 0.06);
+    font-family: var(--f-body);
+    font-size: var(--fs-caption);
+    color: var(--c-stone);
+    letter-spacing: 0.02em;
+  }
+  .site-footer__legal em {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: var(--fs-meta);
+    color: var(--c-linen);
+    letter-spacing: 0;
+  }
+  .site-footer__dot {
+    color: var(--c-foil-light);
+    opacity: 0.55;
+  }
+
+  @media (max-width: 40rem) {
+    .site-footer__top {
+      grid-template-columns: 1fr;
+      gap: var(--space-xl);
+    }
+  }
+
+  /* Shared folio helper on cream */
+  .surface-cream .folio {
+    margin-top: var(--space-2xl);
+    color: var(--c-ochre);
+  }
+
+  /* ──────────────────────── Hero stagger reveal ────── */
+  [data-stagger] {
+    opacity: 0;
+    transform: translateY(var(--stagger-translate));
+    animation: stagger-in var(--stagger-duration) var(--ease-out-quart) forwards;
+    animation-delay: calc(var(--i, 0) * var(--stagger-offset));
+  }
+  [data-stagger-group] > [data-stagger]:nth-child(1) { --i: 0; }
+  [data-stagger-group] > [data-stagger]:nth-child(2) { --i: 1; }
+  [data-stagger-group] > [data-stagger]:nth-child(3) { --i: 2; }
+  [data-stagger-group] > [data-stagger]:nth-child(4) { --i: 3; }
+  [data-stagger-group] > [data-stagger]:nth-child(5) { --i: 4; }
+  .hero__object[data-stagger] { --i: 5; }
+
+  @keyframes stagger-in {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-stagger] {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+  }
+</style>

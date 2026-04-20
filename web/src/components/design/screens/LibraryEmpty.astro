@@ -1,0 +1,108 @@
+---
+/**
+ * Screen II · Library · empty.
+ *
+ * Empty state as a chapter-opener — typographic, confident, no CTA button.
+ * Design principle #4: "empty state is a designed object, not a to-do."
+ *
+ * No in-screen tap target — the user leaves to Safari. The flow caption
+ * conveys the handoff.
+ */
+import AppHeader from "../ui/AppHeader.astro";
+
+interface Props { showTap?: boolean; }
+// Prop declared for registry consistency; this screen has no halo target.
+void Astro.props;
+---
+
+<div class="lib-empty">
+  <AppHeader variant="wordmark" eyebrow="A private library" />
+
+  <div class="lib-empty__body">
+    <div class="opener">
+      <hr class="opener__rule" aria-hidden="true" />
+      <span class="opener__eyebrow">I · Beginning</span>
+
+      <p class="opener__title">The beginning<br />of a library.</p>
+
+      <p class="opener__teach">
+        Every recipe you save becomes a page.<br />
+        Share from Safari, TikTok or Instagram<br />
+        to set the first one.
+      </p>
+    </div>
+  </div>
+
+  <p class="lib-empty__folio">— page one —</p>
+</div>
+
+<style>
+  .lib-empty {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    min-height: 100%;
+    padding-bottom: 44px; /* home indicator clearance */
+  }
+
+  .lib-empty__body {
+    display: grid;
+    place-items: center;
+    padding: 0 32px;
+  }
+
+  .opener {
+    display: grid;
+    justify-items: center;
+    gap: 14px;
+    text-align: center;
+    max-width: 30ch;
+  }
+
+  .opener__rule {
+    width: 44px;
+    height: 1.5px;
+    background: var(--c-ochre);
+    border: 0;
+    margin: 0;
+  }
+
+  .opener__eyebrow {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--c-ochre);
+  }
+
+  .opener__title {
+    margin-top: 6px;
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 30px;
+    line-height: 1.15;
+    letter-spacing: -0.006em;
+    color: var(--c-ink);
+    text-wrap: balance;
+  }
+
+  .opener__teach {
+    margin-top: 6px;
+    font-family: var(--f-body);
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--c-ash);
+    max-width: 28ch;
+  }
+
+  .lib-empty__folio {
+    text-align: center;
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 12.5px;
+    color: var(--c-ochre);
+    letter-spacing: 0.02em;
+    padding-bottom: 8px;
+  }
+</style>

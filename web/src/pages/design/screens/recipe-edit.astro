@@ -1,0 +1,18 @@
+---
+import DesignLayout from "~/layouts/DesignLayout.astro";
+import ScreenStage from "~/components/design/ScreenStage.astro";
+import PhoneFrame from "~/components/design/PhoneFrame.astro";
+import RecipeEditScreen from "~/components/design/screens/RecipeEdit.astro";
+---
+
+<DesignLayout title="Recipe · edit · Screen VIII" eyebrow="Flow I · Screen VIII">
+  <ScreenStage
+    eyebrow="VIII · Recipe · edit"
+    title="Editing step iv."
+    note="Inline edit, no separate form screen. The focused step swaps to a bordered textarea on white; other steps stay as they are. A quiet line under method reminds the user the original stays in history."
+  >
+    <PhoneFrame surface="cream" variant="single" label="Recipe edit · step iv focused">
+      <RecipeEditScreen />
+    </PhoneFrame>
+  </ScreenStage>
+</DesignLayout>

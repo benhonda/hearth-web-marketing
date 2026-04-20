@@ -1,0 +1,258 @@
+---
+/**
+ * Screen V · Import preview.
+ *
+ * Hearth's share-extension UI. After tapping Hearth in the iOS share
+ * sheet, this appears as a full-screen cream page with the extracted
+ * recipe rendered in Hearth's own typography. User taps Save — or
+ * edits any section before saving.
+ *
+ * Top nav: Cancel (quiet) · centered "Import recipe" eyebrow · Save
+ *         (the primary-style inline). Title is an input showing the
+ *         extracted value to signal "you can change this." Ingredients
+ *         and method are display-only with a tertiary Edit affordance.
+ */
+import IngredientsList from "../ui/IngredientsList.astro";
+import MethodList from "../ui/MethodList.astro";
+import { sampleRecipe } from "~/lib/design/sample-recipe";
+
+interface Props { showTap?: boolean; }
+const { showTap = false } = Astro.props;
+---
+
+<div class="import">
+  <header class="import-bar">
+    <button class="import-bar__cancel" type="button">Cancel</button>
+    <span class="import-bar__eyebrow">Import recipe</span>
+    <button class={showTap ? "import-bar__save import-bar__save--tap" : "import-bar__save"} type="button">Save</button>
+  </header>
+
+  <div class="import__body">
+    <div class="from-card">
+      <span class="from-card__eyebrow">From</span>
+      <span class="from-card__url">{sampleRecipe.source}</span>
+    </div>
+
+    <div class="hero" aria-hidden="true">
+      <span class="hero__credit">photograph · Mia Aquilina</span>
+    </div>
+
+    <div class="title-field">
+      <label class="title-field__label">Recipe title</label>
+      <input
+        class="title-field__input"
+        type="text"
+        value={sampleRecipe.title}
+        aria-label="Recipe title"
+      />
+    </div>
+
+    <p class="import__meta">
+      <em>Serves {sampleRecipe.serves}</em>
+      <span aria-hidden="true"> · </span>
+      <em>{sampleRecipe.minutes} min</em>
+    </p>
+
+    <hr class="import__rule" />
+
+    <IngredientsList items={sampleRecipe.ingredients} />
+
+    <hr class="import__rule" />
+
+    <MethodList items={sampleRecipe.method} />
+
+    <div class="edit-hint">
+      <span class="edit-hint__text">Tap any section to edit before saving.</span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .import {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    min-height: 100%;
+    padding-bottom: 44px; /* home indicator clearance */
+  }
+
+  .import-bar {
+    padding: 62px 22px 14px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid rgba(31, 27, 23, 0.08);
+  }
+  .import-bar__cancel {
+    justify-self: flex-start;
+    font-family: var(--f-body);
+    font-size: 14px;
+    color: var(--c-ash);
+  }
+  .import-bar__eyebrow {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--c-ochre);
+  }
+  .import-bar__save {
+    position: relative;
+    justify-self: flex-end;
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--c-ochre);
+    padding: 4px 8px;
+  }
+  .import-bar__save--tap::after {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    border-radius: 999px;
+    border: 3px solid var(--annotation);
+    box-shadow: var(--annotation-glow);
+    pointer-events: none;
+    opacity: var(--halo-opacity);
+    transition: opacity 180ms ease;
+    z-index: 50;
+  }
+
+  .import__body {
+    padding: 20px 22px 0;
+    display: grid;
+    gap: 18px;
+  }
+
+  /* From card ─────────────────────────────────────────────── */
+
+  .from-card {
+    display: inline-flex;
+    gap: 10px;
+    align-items: baseline;
+    padding: 10px 12px;
+    background: rgba(122, 90, 38, 0.06);
+    border-radius: 2px;
+    justify-self: flex-start;
+  }
+  .from-card__eyebrow {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 9.5px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--c-ochre);
+  }
+  .from-card__url {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 13px;
+    color: var(--c-ink);
+  }
+
+  /* Hero ──────────────────────────────────────────────────── */
+
+  .hero {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    border-radius: 2px;
+    background: radial-gradient(ellipse at 30% 30%, #f5d990 0%, #d6a34e 45%, #8a5c1f 100%);
+    overflow: hidden;
+  }
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      rgba(0, 0, 0, 0.03) 0,
+      rgba(0, 0, 0, 0.03) 1px,
+      transparent 1px,
+      transparent 4px
+    );
+  }
+  .hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 55%, rgba(0, 0, 0, 0.4) 100%);
+  }
+  .hero__credit {
+    position: absolute;
+    bottom: 8px;
+    right: 10px;
+    font-family: var(--f-body);
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.78);
+    z-index: 1;
+  }
+
+  /* Title field ───────────────────────────────────────────── */
+
+  .title-field { display: grid; gap: 6px; }
+  .title-field__label {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--c-ochre);
+  }
+  .title-field__input {
+    font-family: var(--f-display);
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 1.15;
+    letter-spacing: -0.008em;
+    color: var(--c-ink);
+    background: var(--c-input);
+    border: 1px solid rgba(31, 27, 23, 0.14);
+    border-radius: 2px;
+    padding: 10px 12px;
+    width: 100%;
+  }
+  .title-field__input:focus {
+    outline: none;
+    background: #ffffff;
+    border-color: var(--c-ink);
+  }
+
+  /* Meta line ─────────────────────────────────────────────── */
+
+  .import__meta {
+    font-family: var(--f-display);
+    font-size: 14px;
+    color: var(--c-ash);
+  }
+  .import__meta em {
+    font-style: italic;
+    color: var(--c-ink);
+  }
+
+  /* Rule ──────────────────────────────────────────────────── */
+
+  .import__rule {
+    border: 0;
+    height: 1px;
+    background: rgba(31, 27, 23, 0.08);
+    margin: 4px 0;
+  }
+
+  /* Edit hint ─────────────────────────────────────────────── */
+
+  .edit-hint {
+    text-align: center;
+    padding: 14px 0 16px;
+    margin-top: 4px;
+  }
+  .edit-hint__text {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 12.5px;
+    color: var(--c-oat);
+  }
+</style>

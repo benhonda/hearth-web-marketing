@@ -1,0 +1,58 @@
+---
+/**
+ * Ingredients list — small-caps eyebrow + DM Sans body with thin
+ * ochre dash markers. Used inside import preview, recipe detail, edit.
+ */
+
+interface Props {
+  items: string[];
+  label?: string;
+}
+
+const { items, label = "Ingredients" } = Astro.props;
+---
+
+<section class="ing">
+  <span class="ing__eyebrow">{label}</span>
+  <ul class="ing__list">
+    {items.map((item) => <li>{item}</li>)}
+  </ul>
+</section>
+
+<style>
+  .ing__eyebrow {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--c-ochre);
+    display: block;
+    margin-bottom: 10px;
+  }
+  .ing__list {
+    display: grid;
+    gap: 6px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    font-family: var(--f-body);
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--c-ink);
+  }
+  .ing__list li {
+    padding-left: 14px;
+    position: relative;
+  }
+  .ing__list li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.72em;
+    width: 6px;
+    height: 1px;
+    background: var(--c-ochre);
+    opacity: 0.85;
+  }
+</style>

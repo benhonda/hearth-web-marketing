@@ -1,0 +1,51 @@
+---
+/**
+ * Stage wrapper for a single screen rendered at 1× scale
+ * on /design/screens/[slug] routes. Centers the phone on the workspace
+ * canvas and gives it breathing room.
+ */
+
+interface Props {
+  eyebrow?: string;
+  title?: string;
+  note?: string;
+}
+
+const { eyebrow, title, note } = Astro.props;
+---
+
+<section class="stage">
+  <div class="stage__inner">
+    {(eyebrow || title || note) && (
+      <header class="design-header">
+        {eyebrow && <span class="eyebrow design-header__eyebrow">{eyebrow}</span>}
+        {eyebrow && <hr class="design-header__rule" aria-hidden="true" />}
+        {title && <h1 class="design-header__title">{title}</h1>}
+        {note && <p class="design-header__lede">{note}</p>}
+      </header>
+    )}
+    <div class="stage__phone">
+      <slot />
+    </div>
+  </div>
+</section>
+
+<style>
+  .stage {
+    display: flex;
+    justify-content: center;
+  }
+
+  .stage__inner {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-xl);
+    width: 100%;
+    max-width: 72rem;
+  }
+
+  .stage__phone {
+    display: flex;
+    justify-content: center;
+  }
+</style>

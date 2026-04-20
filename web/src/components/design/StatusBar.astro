@@ -1,0 +1,94 @@
+---
+/**
+ * iOS status bar — 9:41, signal, wifi, battery.
+ * Color adapts to surface via the `tone` prop: "ink" (default — dark glyphs
+ * for cream screens) or "inverse" (light glyphs for sage screens).
+ *
+ * Sits absolutely at the top of the screen. Reserves 54px of vertical space
+ * via the `.status-bar` height so screen content can offset cleanly.
+ */
+
+interface Props {
+  tone?: "ink" | "inverse";
+  time?: string;
+}
+
+const { tone = "ink", time = "9:41" } = Astro.props;
+---
+
+<div class={`status-bar status-bar--${tone}`} aria-hidden="true">
+  <div class="status-bar__time">{time}</div>
+  <div class="status-bar__island" />
+  <div class="status-bar__indicators">
+    {/* Signal */}
+    <svg viewBox="0 0 17 11" width="17" height="11" fill="currentColor">
+      <rect x="0"  y="7" width="3" height="4" rx="0.7" opacity="1" />
+      <rect x="4.5"  y="5" width="3" height="6" rx="0.7" opacity="1" />
+      <rect x="9"  y="3" width="3" height="8" rx="0.7" opacity="1" />
+      <rect x="13.5" y="0" width="3" height="11" rx="0.7" opacity="0.45" />
+    </svg>
+    {/* Wifi */}
+    <svg viewBox="0 0 16 12" width="16" height="12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+      <path d="M2 5.2 Q8 0.8 14 5.2" />
+      <path d="M4.1 7.3 Q8 4.4 11.9 7.3" />
+      <path d="M6.3 9.4 Q8 8.3 9.7 9.4" />
+      <circle cx="8" cy="10.8" r="0.6" fill="currentColor" stroke="none" />
+    </svg>
+    {/* Battery */}
+    <svg viewBox="0 0 26 12" width="26" height="12" fill="none">
+      <rect x="0.5" y="0.5" width="22" height="11" rx="3" stroke="currentColor" stroke-opacity="0.5" />
+      <rect x="2"   y="2"   width="19" height="8"  rx="1.6" fill="currentColor" />
+      <rect x="23.2" y="3.8" width="1.6" height="4.4" rx="0.6" fill="currentColor" opacity="0.55" />
+    </svg>
+  </div>
+</div>
+
+<style>
+  .status-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 54px;
+    padding: 17px 32px 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    pointer-events: none;
+    z-index: 20;
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 15.5px;
+    letter-spacing: 0;
+    line-height: 1;
+    /* San Francisco on real devices; fall back via DM Sans for mock. */
+  }
+
+  .status-bar--ink { color: var(--c-ink); }
+  .status-bar--inverse { color: var(--c-ink-inverse); }
+
+  .status-bar__time {
+    min-width: 56px;
+    letter-spacing: 0.01em;
+  }
+
+  /* Dynamic Island — physical cutout, always black (device hardware, not UI) */
+  .status-bar__island {
+    position: absolute;
+    top: 11px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 126px;
+    height: 37px;
+    border-radius: 999px;
+    background: #000;
+    pointer-events: none;
+  }
+
+  .status-bar__indicators {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding-top: 2px;
+  }
+</style>
