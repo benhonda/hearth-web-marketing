@@ -261,7 +261,9 @@
    * Transitional book serif, 400 + 400 italic. Carries display headings,
    * recipe titles, chapter openers, ledes, italic metadata, italic
    * Roman-numeral step markers, folios. NEVER use bold. Hierarchy comes
-   * from size/color, not weight. */
+   * from size/color, not weight. Also permitted as a single-letter "H"
+   * monogram on the FAVICON only — the one surface where a non-Marcellus
+   * mark ships. Everywhere else the mark is Marcellus. */
   --f-display: "Lora", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
 
   /* DM Sans — body + UI.
@@ -372,9 +374,16 @@
    * =======================================================================
    *
    * Disciplined 2px. The radius of a well-cut book page — not sharp, not
-   * rounded. Pills are the ONE intentional exception, used only to
-   * signal "this is tappable." Inputs and pill buttons sit next to each
-   * other in forms and SHOULD feel different: 2px vs 999px.
+   * rounded. Two intentional exceptions, and ONLY these two:
+   *   (a) Pills for tappable buttons (--r-pill = 999px).
+   *   (b) The app-icon squircle (~22% iOS radius), because the platform
+   *       masks to its own squircle at install time — shipping a sharp
+   *       2px icon just defeats the OS. Documented in COMPONENT
+   *       TREATMENTS below under IDENTITY.
+   * Everything else stays at 2px — including the FAVICON, which keeps
+   * the book-page corner to distinguish it from the platform-squircled
+   * app icon. Inputs and pill buttons sit next to each other in forms
+   * and SHOULD feel different: 2px vs 999px.
    *
    * Banned: nested cards-in-cards, pill radii on containers, large
    * rounded corners on anything that isn't a button, iOS-ish 12-14px
@@ -499,6 +508,32 @@
  * tokens themselves — they're reference recipes for how Hearth things
  * look. Implementation lives in individual components.
  *
+ * IDENTITY — four physical reductions of the wordmark
+ *   Same grammar everywhere: Antique Foil stamped on sage cloth, cloth-
+ *   weave texture visible on second glance, subtle inner-rim shadow.
+ *   Covers, spines, and app icons stay TYPOGRAPHIC — never photography.
+ *
+ *   · Cover            Marcellus wordmark HEARTH, centered, foil on sage
+ *                      cloth. 4:5 aspect. Typographic only. Dedication
+ *                      copy lives here. Components/HeroBook.astro.
+ *   · Spine            Marcellus wordmark HEARTH, top-to-bottom (US/UK
+ *                      convention), positioned at the FOOT of the spine —
+ *                      publisher's-stamp placement. Nothing else competes
+ *                      on the spine. 1:10 aspect. Components/BookSpine.astro.
+ *   · App icon         Marcellus wordmark HEARTH in Antique Foil, nearly
+ *                      filling the icon horizontally. iOS squircle radius
+ *                      (~22%) — the SECOND intentional radius exception
+ *                      (see §4). Documented because the OS masks to its
+ *                      own squircle at install time. Components/AppIcon.astro
+ *                      (variant="wordmark").
+ *   · Favicon          Lora upright H monogram in Antique Foil on sage
+ *                      cloth. 2px paper-square radius (no squircle —
+ *                      favicons don't get OS-masked). THE ONE SURFACE
+ *                      where a non-Marcellus mark ships; documented
+ *                      exception in §2. Components/AppIcon.astro
+ *                      (variant="lora") with --r-page radius applied
+ *                      externally.
+ *
  * BUTTONS — six-token system, all pill except tertiary/inline
  *   · Primary          Foil Light bg, Warm Charcoal text, pill,
  *                      --shadow-button, 280ms hover to Foil Hover.
@@ -550,9 +585,22 @@
  *   Photography lives in EXACTLY TWO PLACES and nowhere else:
  *     (1) Full-bleed recipe-detail hero, with a gradient scrim from
  *         transparent → rgba(0,0,0,0.55) for title legibility.
- *     (2) Small square library thumbnails, 2px radius, 32-40px.
+ *     (2) Library surface — a two-column photo waterfall.
+ *           · Tile width: half-column on phone (10px gutter, 16px
+ *             edge padding).
+ *           · Aspect ratios: 4:5, 3:4, or 1:1 — portrait and square
+ *             only. No landscape (reads as web, not cookbook).
+ *           · Border radius: 2px (the printing-plate feel).
+ *           · No scrims, no overlays on tiles — scrims are for hero
+ *             only.
+ *           · Caption sits BELOW the tile, never on it: Lora 13.5px
+ *             title, DM Sans 10.5px meta, left-aligned. No source
+ *             small-caps at tile scale; that lives on detail.
+ *           · Tap target is the whole tile + caption block.
  *   Covers, chapter openers, and cookbook interiors stay TYPOGRAPHIC
- *   ONLY.
+ *   ONLY. (The library is a browsing surface, not a book interior —
+ *   app photo-forward, book typographic. Continuity holds at the
+ *   recipe level: hero + typographic body, same as today.)
  *
  *   Voice: user-uploaded photos, honest, true-to-phone. NO AI
  *   enhancement, NO filters that fake moodiness. The rule is

@@ -2,8 +2,8 @@
 /**
  * In-app header — two variants.
  *
- *  variant="wordmark" — library/home. Centered HEARTH wordmark (Deep Conifer
- *                       on cream), optional eyebrow underneath.
+ *  variant="wordmark" — library/home. The HEARTH wordmark stands alone,
+ *                       centered (Deep Conifer on cream). Nothing below it.
  *  variant="title"    — detail pages. Back chevron left, quiet title centered,
  *                       optional right action (e.g. "Edit", "Done").
  *
@@ -16,7 +16,6 @@ type RightAction = "edit" | "done" | "plus" | "none";
 
 interface Props {
   variant?: Variant;
-  eyebrow?: string;
   title?: string;
   rightAction?: RightAction;
   /** When true, halo the right action button. */
@@ -25,7 +24,6 @@ interface Props {
 
 const {
   variant = "wordmark",
-  eyebrow,
   title,
   rightAction = "none",
   tapAction = false,
@@ -35,12 +33,6 @@ const {
 {variant === "wordmark" && (
   <header class="app-header app-header--wordmark">
     <div class="app-header__mark">HEARTH</div>
-    {eyebrow && (
-      <>
-        <hr class="app-header__rule" aria-hidden="true" />
-        <span class="app-header__eyebrow">{eyebrow}</span>
-      </>
-    )}
   </header>
 )}
 
@@ -72,7 +64,9 @@ const {
   .app-header--wordmark {
     display: grid;
     justify-items: center;
-    gap: 10px;
+    /* Extra top breathing room above the mark — wordmark is a cover
+       moment, not a chrome bar. */
+    padding-top: 72px;
     padding-bottom: 20px;
   }
 
@@ -83,25 +77,6 @@ const {
     letter-spacing: 0.16em;
     color: var(--c-conifer);
     text-transform: uppercase;
-    line-height: 1;
-  }
-
-  .app-header__rule {
-    width: 28px;
-    height: 1px;
-    background: var(--c-ochre);
-    opacity: 0.5;
-    border: 0;
-    margin: 2px 0 0;
-  }
-
-  .app-header__eyebrow {
-    font-family: var(--f-body);
-    font-weight: 500;
-    font-size: 9.5px;
-    letter-spacing: 0.28em;
-    text-transform: uppercase;
-    color: var(--c-ochre);
     line-height: 1;
   }
 

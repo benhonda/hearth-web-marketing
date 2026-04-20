@@ -1,0 +1,174 @@
+---
+/**
+ * App icon — sage hardcover compressed to a square.
+ *
+ * Documented exception to the 2px corner rule: iOS applies its own squircle
+ * mask at install time, so shipping a sharp 2px icon defeats the platform.
+ * We render at iOS 22% radius to match the home screen result. tokens.css
+ * §4 permits this explicitly (Marcellus wordmark appears on "spines, covers,
+ * app icon, nav").
+ *
+ * Size prop lets this render at hero (120px+) or favicon (~32px) scale.
+ */
+interface Props {
+  size?: number;
+  /**
+   * Monogram face:
+   *   "marcellus"  — canonical wordmark face (default, matches cover + spine)
+   *   "lora"       — upright book serif; departs from the Marcellus-only
+   *                  wordmark rule in tokens.css §2.
+   *   "lora-stack" — Lora H over HEARTH wordmark in Marcellus; mixes both
+   *                  serif faces, same departure caveat as "lora".
+   *   "wordmark"   — no monogram; just the Marcellus HEARTH wordmark,
+   *                  like a miniature cover stamp.
+   */
+  variant?: "marcellus" | "lora" | "lora-stack" | "wordmark";
+  /**
+   * Corner treatment:
+   *   "squircle" — app-icon surface (iOS ~22% radius, default). Documented
+   *                §4 exception; iOS masks to its own squircle anyway.
+   *   "paper"    — favicon surface (--r-page = 2px). Favicons don't get
+   *                OS-masked, so they keep the book-page corner.
+   */
+  radius?: "squircle" | "paper";
+}
+const { size = 120, variant = "marcellus", radius = "squircle" } = Astro.props;
+---
+
+<figure
+  class="icon"
+  aria-hidden="true"
+  data-variant={variant}
+  data-radius={radius}
+  style={`--icon-size: ${size}px`}
+>
+  <div class="icon__cloth">
+    <div class="icon__weave"></div>
+    <div class="icon__frame">
+      {variant !== "wordmark" && <span class="icon__mark">H</span>}
+      {(variant === "lora-stack" || variant === "wordmark") && (
+        <span class="icon__wordmark">HEARTH</span>
+      )}
+    </div>
+  </div>
+  <figcaption class="sr">App icon — HEARTH wordmark stamped in foil on sage cloth.</figcaption>
+</figure>
+
+<style>
+  .icon {
+    position: relative;
+    margin: 0;
+    width: var(--icon-size);
+    height: var(--icon-size);
+    filter: drop-shadow(0 10px 20px rgba(20, 14, 4, 0.28))
+      drop-shadow(0 2px 6px rgba(20, 14, 4, 0.2));
+  }
+
+  .icon__cloth {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    /* Default: iOS squircle (22%) — documented §4 exception. Favicon
+     * uses radius="paper" to drop back to --r-page (book-page corner). */
+    border-radius: 22%;
+    background: var(--c-conifer);
+    overflow: hidden;
+    box-shadow:
+      inset 0 0 0 1px rgba(244, 239, 230, 0.04),
+      inset 0 0 30px 6px rgba(0, 0, 0, 0.22);
+  }
+
+  .icon__weave {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      repeating-linear-gradient(
+        45deg,
+        transparent 0,
+        transparent 2px,
+        rgba(244, 239, 230, 0.018) 2px,
+        rgba(244, 239, 230, 0.018) 3px
+      ),
+      repeating-linear-gradient(
+        -45deg,
+        transparent 0,
+        transparent 2px,
+        rgba(0, 0, 0, 0.05) 2px,
+        rgba(0, 0, 0, 0.05) 3px
+      );
+    mix-blend-mode: overlay;
+    opacity: 0.9;
+  }
+
+  .icon__frame {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3em;
+  }
+
+  .icon__mark {
+    font-family: var(--f-wordmark);
+    font-weight: 400;
+    /* Single-letter monogram — fills roughly half the icon */
+    font-size: calc(var(--icon-size) * 0.52);
+    line-height: 1;
+    color: var(--c-foil);
+    text-shadow:
+      0 1px 0 rgba(244, 239, 230, 0.18),
+      0 -1px 0 rgba(0, 0, 0, 0.35);
+  }
+
+  /* Concept II — Lora upright serif monogram. */
+  .icon[data-variant="lora"] .icon__mark {
+    font-family: var(--f-display);
+    font-size: calc(var(--icon-size) * 0.58);
+    letter-spacing: 0;
+  }
+
+  /* Concept III — Lora H stacked over a Marcellus HEARTH wordmark. */
+  .icon[data-variant="lora-stack"] .icon__mark {
+    font-family: var(--f-display);
+    font-size: calc(var(--icon-size) * 0.44);
+    letter-spacing: 0;
+  }
+  .icon__wordmark {
+    font-family: var(--f-wordmark);
+    font-weight: 400;
+    font-size: calc(var(--icon-size) * 0.085);
+    letter-spacing: 0.22em;
+    line-height: 1;
+    text-transform: uppercase;
+    color: var(--c-foil);
+    padding-inline: 0.3em;
+    text-shadow:
+      0 1px 0 rgba(244, 239, 230, 0.18),
+      0 -1px 0 rgba(0, 0, 0, 0.35);
+  }
+
+  /* Concept IV — wordmark only. Cover-wordmark tracking, scaled to almost
+   * fill the icon horizontally. */
+  .icon[data-variant="wordmark"] .icon__wordmark {
+    font-size: calc(var(--icon-size) * 0.18);
+    letter-spacing: 0.1em;
+    padding-inline: 0;
+  }
+
+  /* Favicon corner — book-page 2px, no squircle. */
+  .icon[data-radius="paper"] .icon__cloth {
+    border-radius: var(--r-page);
+  }
+
+  .sr {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+</style>

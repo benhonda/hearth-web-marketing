@@ -4,7 +4,21 @@
 
 - refactor: Consolidated design system into a single source of truth at `web/src/styles/tokens.css` (brand book with ~570 lines of inline rationale on palette, type, motion, bans, and principles); removed `DESIGN.md` and `.impeccable.md` so no file can contradict tokens.css.
 
-- feat: Added `/design/brand` page as the rendered brand book and a three-tile library preview screen (`library-preview-three.astro`) to prototype the VSCO-style waterfall grid.
+- feat: Added `/design/brand` page as the rendered brand book, now including an Identity section that renders the Cover, Spine, App Icon, and Favicon side-by-side as live specimens.
+
+- feat: Added `BookSpine.astro` (1:10 vertical hardcover spine with top-to-bottom wordmark at the foot) and `AppIcon.astro` (sage-cloth icon with Marcellus-wordmark, Lora-H, and stacked-monogram variants at squircle or paper radius) so the wordmark has canonical typographic reductions for spine, app icon, and favicon surfaces.
+
+- refactor: Simplified `HeroBook.astro` to draw its sage cloth from `--c-conifer` (no more hardcoded gradients) and dropped the subtitle/colophon/rules so the cover reads as one dominant mark plus dedication — matches the new Identity grammar in tokens.css.
+
+- refactor: Extracted library waterfall into shared `LibraryGrid.astro` + `LibraryTile.astro` components (even/odd column distribution, portrait-or-square aspect enforcement, placeholder gradients for tiles without photos); removed the one-off `RecipeRow.astro` and retired the throwaway `library-preview-three.astro` prototype page.
+
+- feat: Formalized the library photography rules in `tokens.css` §PHOTOGRAPHY (two-column waterfall, 4:5/3:4/1:1 aspects only, 2px radius, no scrims on tiles, caption below) and added a documented second radius exception for the iOS app-icon squircle.
+
+- refactor: `AppHeader`'s wordmark variant drops the eyebrow and rule entirely — the HEARTH wordmark stands alone as a cover moment with 72px top breathing room; library screens updated to match.
+
+- fix: Library empty state now centers its chapter-opener on the true phone viewport midpoint (absolute-positioned body) instead of the smaller space below the wordmark, and the folio anchors to the home-indicator clearance.
+
+- chore: Recompressed `summer-corn-pasta.png` from 5.9 MB to 1.2 MB — the library-of-one placeholder was shipping an unnecessarily heavy hero photo.
 
 - refactor: Extracted the `/design/*` topbar into `DesignTopbar.astro` with a section nav (Binder · Brand · Flow I) and an ochre-hairline active indicator; `DesignLayout` no longer owns chrome, eyebrow, or up-crumb props.
 

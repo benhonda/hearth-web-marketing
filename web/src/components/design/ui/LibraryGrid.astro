@@ -1,0 +1,69 @@
+---
+/**
+ * Library surface — two-column photo waterfall. See tokens.css
+ * §PHOTOGRAPHY (2) for the canonical rules (tile width, aspect
+ * ratios, caption treatment).
+ *
+ * Tiles are distributed into the two columns by their order in the
+ * `tiles` prop — even indices go left, odd indices go right. That's
+ * intentional and predictable for the storyboard; a real masonry can
+ * balance column heights later if needed.
+ *
+ * `tapIndex` marks one tile as the flow-binder tap target so the
+ * storyboard can highlight it with the annotation halo.
+ */
+import LibraryTile from "./LibraryTile.astro";
+
+export type LibraryTileData = {
+  title: string;
+  meta: string;
+  photo?: string;
+  aspect?: "4 / 5" | "3 / 4" | "1 / 1";
+  tone?: "corn" | "sage" | "ochre";
+  href?: string;
+};
+
+interface Props {
+  tiles: LibraryTileData[];
+  showTap?: boolean;
+  tapIndex?: number; // which tile (by order) gets the halo when showTap is true
+}
+
+const { tiles, showTap = false, tapIndex = 0 } = Astro.props;
+
+const left: Array<{ tile: LibraryTileData; i: number }> = [];
+const right: Array<{ tile: LibraryTileData; i: number }> = [];
+tiles.forEach((tile, i) => {
+  (i % 2 === 0 ? left : right).push({ tile, i });
+});
+---
+
+<div class="grid">
+  <div class="grid__col">
+    {left.map(({ tile, i }) => (
+      <LibraryTile {...tile} showTap={showTap && i === tapIndex} />
+    ))}
+  </div>
+  <div class="grid__col">
+    {right.map(({ tile, i }) => (
+      <LibraryTile {...tile} showTap={showTap && i === tapIndex} />
+    ))}
+  </div>
+</div>
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 0 16px;
+    width: 100%;
+  }
+
+  .grid__col {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 22px;
+    align-content: start;
+  }
+</style>

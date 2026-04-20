@@ -10,6 +10,9 @@
  * from global.css (.btn, .eyebrow, .rule, .title, .lede, .link, .surface-*).
  */
 import DesignLayout from "~/layouts/DesignLayout.astro";
+import HeroBook from "~/components/HeroBook.astro";
+import BookSpine from "~/components/BookSpine.astro";
+import AppIcon from "~/components/AppIcon.astro";
 
 const palette = [
   { name: "Deep Conifer", hex: "#2F4A3C", token: "--c-conifer", role: "Sage hardcover · dark surface · brand deep" },
@@ -38,6 +41,15 @@ const sections = [
       { id: "shadows", label: "Shadows" },
       { id: "motion", label: "Motion" },
       { id: "focus", label: "Focus" },
+    ],
+  },
+  {
+    heading: "Identity",
+    items: [
+      { id: "cover", label: "Cover" },
+      { id: "spine", label: "Spine" },
+      { id: "icon", label: "App icon" },
+      { id: "favicon", label: "Favicon" },
     ],
   },
   {
@@ -350,6 +362,79 @@ const spacing = [
             <div class="surface-sage focus-row__sage">
               <button class="btn btn--outlined" type="button">Focus on sage</button>
             </div>
+          </div>
+        </section>
+
+        {/* ──────────── IDENTITY ──────────── */}
+        <section id="cover" class="spec">
+          <div class="spec__head">
+            <p class="eyebrow">Identity · Surfaces</p>
+            <hr class="rule" />
+            <h2 class="spec__title">One wordmark, three physical reductions.</h2>
+            <p class="lede">
+              Marcellus stamped in Antique Foil on sage cloth. The cover
+              introduces the object; the spine identifies it on a shelf; the
+              app icon miniaturizes it on a phone. Every decision must look
+              right on a hardcover spine — if it would embarrass the object
+              in a bookshop, it fails.
+            </p>
+          </div>
+          <div class="spec__body identity-row">
+            <figure class="identity-cell identity-cell--cover">
+              <div class="identity-cell__stage">
+                <HeroBook />
+              </div>
+              <figcaption>
+                <p class="eyebrow">Cover</p>
+                <p class="identity-cell__note">
+                  <em>4:5 aspect · cloth-weave sage · Antique Foil wordmark
+                  with pressmark and dedication. Covers stay typographic —
+                  never photography.</em>
+                </p>
+              </figcaption>
+            </figure>
+
+            <figure class="identity-cell identity-cell--spine" id="spine">
+              <div class="identity-cell__stage identity-cell__stage--tall">
+                <BookSpine />
+              </div>
+              <figcaption>
+                <p class="eyebrow">Spine</p>
+                <p class="identity-cell__note">
+                  <em>1:10 aspect · wordmark runs top-to-bottom (US/UK
+                  convention) and sits at the foot — publisher's-stamp
+                  placement, nothing else competing on the spine.</em>
+                </p>
+              </figcaption>
+            </figure>
+
+            <figure class="identity-cell identity-cell--icon" id="icon">
+              <div class="identity-cell__stage">
+                <AppIcon size={128} variant="wordmark" />
+              </div>
+              <figcaption>
+                <p class="eyebrow">App icon</p>
+                <p class="identity-cell__note">
+                  <em>Marcellus wordmark HEARTH in Antique Foil on sage
+                  cloth, nearly filling the icon horizontally · iOS squircle
+                  radius (~22%). A miniature cover stamp.</em>
+                </p>
+              </figcaption>
+            </figure>
+
+            <figure class="identity-cell identity-cell--favicon" id="favicon">
+              <div class="identity-cell__stage">
+                <AppIcon size={72} variant="lora" radius="paper" />
+              </div>
+              <figcaption>
+                <p class="eyebrow">Favicon</p>
+                <p class="identity-cell__note">
+                  <em>Lora upright H monogram in Antique Foil on sage cloth
+                  · 2px paper-square radius (no squircle). The one surface
+                  where a non-Marcellus mark ships.</em>
+                </p>
+              </figcaption>
+            </figure>
           </div>
         </section>
 
@@ -1023,6 +1108,54 @@ const spacing = [
   .focus-row__sage {
     padding: var(--space-md) var(--space-xl);
     border-radius: var(--r-page);
+  }
+
+  /* ───────── Identity — cover hero row + 3-up specimen row ───────── */
+  .identity-row {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    gap: var(--space-4xl) var(--space-2xl);
+    align-items: start;
+    justify-content: start;
+  }
+  /* Cover takes the full top row on its own — it's the dominant artifact. */
+  .identity-cell--cover { grid-column: 1 / -1; }
+  /* Cover sizing override for the brand specimen only (HeroBook's default
+   * max-width is 26rem, tuned for the marketing hero). Scoped :global()
+   * reaches across component boundaries. */
+  .identity-cell--cover :global(.book) { max-width: 36rem; }
+
+  @media (max-width: 960px) {
+    .identity-row { grid-template-columns: 1fr 1fr; justify-items: center; }
+    .identity-cell--cover :global(.book) { max-width: 28rem; }
+  }
+  @media (max-width: 560px) {
+    .identity-row { grid-template-columns: 1fr; }
+  }
+  .identity-cell {
+    display: grid;
+    gap: var(--space-lg);
+    margin: 0;
+    scroll-margin-top: 5rem;
+  }
+  .identity-cell__stage {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 22rem;
+  }
+  .identity-cell__stage--tall { min-height: 26rem; }
+  .identity-cell figcaption {
+    display: grid;
+    gap: var(--space-xs);
+    max-width: 22ch;
+  }
+  .identity-cell__note {
+    font-family: var(--f-display);
+    font-size: var(--fs-meta);
+    line-height: 1.55;
+    color: var(--c-ash);
+    text-wrap: pretty;
   }
 
   /* ───────── Buttons demo ───────── */

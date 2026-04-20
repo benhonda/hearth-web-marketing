@@ -16,7 +16,7 @@ void Astro.props;
 ---
 
 <div class="lib-empty">
-  <AppHeader variant="wordmark" eyebrow="A private library" />
+  <AppHeader variant="wordmark" />
 
   <div class="lib-empty__body">
     <div class="opener">
@@ -38,16 +38,19 @@ void Astro.props;
 
 <style>
   .lib-empty {
-    display: grid;
-    grid-template-rows: auto 1fr auto;
+    position: relative;
     min-height: 100%;
-    padding-bottom: 44px; /* home indicator clearance */
   }
 
+  /* Body is absolutely positioned over the full phone so the opener
+     centers on the true viewport midpoint — not on the midpoint of
+     the space below the wordmark. */
   .lib-empty__body {
+    position: absolute;
+    inset: 0;
     display: grid;
     place-items: center;
-    padding: 0 32px;
+    padding: 0 32px 44px; /* clear home indicator */
   }
 
   .opener {
@@ -97,12 +100,15 @@ void Astro.props;
   }
 
   .lib-empty__folio {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 52px; /* 44 home indicator + 8 breathing */
     text-align: center;
     font-family: var(--f-display);
     font-style: italic;
     font-size: 12.5px;
     color: var(--c-ochre);
     letter-spacing: 0.02em;
-    padding-bottom: 8px;
   }
 </style>
