@@ -9,6 +9,7 @@
  * the action that kicks off Screen IV.
  */
 import SafariChrome from "../ui/SafariChrome.astro";
+import { sampleRecipe } from "~/lib/design/sample-recipe";
 
 interface Props { showTap?: boolean; }
 const { showTap = false } = Astro.props;
@@ -27,7 +28,7 @@ const { showTap = false } = Astro.props;
       <h1 class="blog__title">Summer Corn &amp; Basil Ragù</h1>
       <p class="blog__byline">by Mia Aquilina</p>
 
-      <div class="blog__hero" aria-hidden="true">
+      <div class="blog__hero" aria-hidden="true" style={`background-image: url(${sampleRecipe.photo})`}>
         <div class="blog__hero-credit">photograph · Mia Aquilina</div>
       </div>
 
@@ -135,23 +136,12 @@ const { showTap = false } = Astro.props;
     width: 100%;
     aspect-ratio: 4 / 3;
     border-radius: 6px;
-    background:
-      radial-gradient(ellipse at 30% 30%, #f5d990 0%, #d6a34e 45%, #8a5c1f 100%);
+    background-color: #e8dcc2;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     margin-bottom: 18px;
     overflow: hidden;
-  }
-  .blog__hero::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background:
-      repeating-linear-gradient(
-        45deg,
-        rgba(0, 0, 0, 0.03) 0,
-        rgba(0, 0, 0, 0.03) 1px,
-        transparent 1px,
-        transparent 4px
-      );
   }
   .blog__hero-credit {
     position: absolute;

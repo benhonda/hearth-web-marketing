@@ -1,0 +1,86 @@
+---
+/**
+ * Shared topbar for /design/*. Owns the brand mark, the section nav
+ * (Binder · Brand · Flow I), and the tap-marker toggle. DesignLayout.astro
+ * renders exactly one of these at the top of every route.
+ */
+import { flows } from "~/lib/design/flows";
+
+const path = Astro.url.pathname.replace(/\/$/, "") || "/design";
+
+type NavItem = { href: string; label: string; match: (p: string) => boolean };
+
+const navItems: NavItem[] = [
+  {
+    href: "/design",
+    label: "Binder",
+    match: (p) => p === "/design" || p.startsWith("/design/screens"),
+  },
+  {
+    href: "/design/brand",
+    label: "Brand",
+    match: (p) => p.startsWith("/design/brand"),
+  },
+  ...flows.map((f) => ({
+    href: `/design/flows/${f.slug}`,
+    label: `Flow ${f.numeral}`,
+    match: (p: string) => p === `/design/flows/${f.slug}`,
+  })),
+];
+---
+
+<header class="design-topbar">
+  <a class="design-topbar__brand" href="/design">
+    <span class="design-topbar__mark">HEARTH</span>
+    <span class="design-topbar__tag">Design</span>
+  </a>
+
+  <nav class="design-topbar__nav" aria-label="Design sections">
+    {navItems.map((item) => {
+      const active = item.match(path);
+      return (
+        <a
+          href={item.href}
+          class="design-topbar__link"
+          class:list={[{ "is-active": active }]}
+          aria-current={active ? "page" : undefined}
+        >
+          {item.label}
+        </a>
+      );
+    })}
+  </nav>
+
+  <button
+    class="design-topbar__toggle"
+    type="button"
+    id="tap-toggle"
+    aria-pressed="true"
+    aria-label="Toggle tap markers"
+  >
+    <span class="design-topbar__toggle-dot" aria-hidden="true"></span>
+    <span>Tap markers</span>
+  </button>
+</header>
+
+<script is:inline>
+  (function () {
+    var KEY = "hearth-design-tap";
+    var btn = document.getElementById("tap-toggle");
+    var root = document.documentElement;
+    function apply(on) {
+      root.classList.toggle("no-tap-halos", !on);
+      if (btn) btn.setAttribute("aria-pressed", String(on));
+    }
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (_) {}
+    apply(stored !== "off");
+    if (btn) {
+      btn.addEventListener("click", function () {
+        var next = btn.getAttribute("aria-pressed") !== "true";
+        try { localStorage.setItem(KEY, next ? "on" : "off"); } catch (_) {}
+        apply(next);
+      });
+    }
+  })();
+</script>

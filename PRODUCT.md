@@ -8,7 +8,13 @@ Mobile app where home cooks save and organize recipes, and turn them into premiu
 
 ## Who
 
-Home cooks. Archetype: my girlfriend. Not chefs, not food creators, not professionals.
+Home cooks. Archetype: my girlfriend — not chefs, not food creators, not professionals. She saves recipes from TikTok, Instagram, and web pages day-to-day, and occasionally wants a permanent artifact (a hardcover cookbook) for an occasion: Mother's Day, wedding, anniversary, a phase of life.
+
+Context of use: phone in hand, kitchen or couch, unhurried. Not under time pressure. Not tracking macros. Not meal-planning.
+
+Job to be done: *"Save every recipe I love, let it live beautifully, and — when the moment calls for it — turn it into a real book."*
+
+Emotional goals: **confidence, calm, quiet pride in the object.** Never urgency, never gamified delight, never FOMO.
 
 ## Positioning
 
@@ -24,6 +30,32 @@ Not a scrapbook. Not a photo book. A *cookbook* that belongs on a coffee table, 
 - **Tagline (short)**: *A beautiful home for your recipes.*
 - **Tagline (long)**: *A beautiful home for your recipes — and a beautiful cookbook whenever you want one.*
 - **Conversion CTA**: *Turn your recipes into a real cookbook.*
+
+## Voice
+
+**Three words: literary · hand-made · confident.**
+
+- A boutique publishing house, not a SaaS app.
+- Factual where factual serves — "50 min · Serves 4" stays that way, with the em-middot separator.
+- Warmth from phrasing, never from emoji or exclamation marks.
+- No tutorials, no tooltips, no walkthroughs. A beautiful object doesn't need instructions.
+- Conversational only where it helps: empty states, toasts after non-trivial actions, conversion moments. Confirm with a noun: *"Saved — it's in your library."* Never *"Great job!"*.
+
+## References
+
+**Pro (what Hearth should feel like):**
+- Chez Panisse monograph
+- Phaidon cookbook
+- Foil-stamped hardcover in a bookshop window
+- Cloth-bound library reference under candlelight
+
+**Anti (what Hearth must not be):**
+- Modern SaaS dashboards
+- Food-blog farmhouse aesthetic
+- Rustic-chic
+- Notion / Linear tech-UI
+- Anything neon, glossy, bouncy, or emoji-forward
+- Paprika. Do not become Paprika.
 
 ## Wedge
 

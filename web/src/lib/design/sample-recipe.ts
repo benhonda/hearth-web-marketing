@@ -11,6 +11,7 @@ export type SampleRecipe = {
   title: string;
   source: string;
   url: string;
+  photo: string; // public path, served from /public
   serves: number;
   minutes: number;
   lede: string;
@@ -23,6 +24,7 @@ export const sampleRecipe: SampleRecipe = {
   title: "Summer Corn & Basil Ragù",
   source: "table.kitchen",
   url: "table.kitchen/summer-corn-ragu",
+  photo: "/summer-corn-pasta.png",
   serves: 4,
   minutes: 50,
   lede:

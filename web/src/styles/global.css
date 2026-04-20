@@ -43,10 +43,25 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  /* Hearth loads 400-only for Marcellus and Lora (DM Sans adds 500).
+   * font-synthesis: none prevents the browser from faking bold/italic
+   * from a 400 file when a component forgets to set weight — fake-bold
+   * Lora is the ugliest possible render and breaks the brand. */
+  font-synthesis: none;
 }
 
 p, h1, h2, h3, h4, h5, h6, figure, blockquote {
   margin: 0;
+}
+
+/* Heading weight reset — Hearth hierarchy is SIZE + COLOR + FACE, never
+ * weight. The browser default of bold headings actively violates this:
+ * <h1>…</h1> with font-family: Lora would fake-bold a face we only ship
+ * at 400. Reset here so every heading inherits 400 unless a component
+ * has a documented reason to override (there is no such reason). Pair
+ * with font-synthesis: none above as defense-in-depth. */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 400;
 }
 
 ul, ol {

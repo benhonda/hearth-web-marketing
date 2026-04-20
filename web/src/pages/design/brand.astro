@@ -1,0 +1,1501 @@
+---
+/**
+ * /design/brand — Hearth Press Brand Guidelines.
+ *
+ * A single-page book-jacket showcase: foundations, components, patterns, voice.
+ * Structured in shadcn-docs spirit (sidebar + live specimens) but every example
+ * is hand-rolled Hearth — same language as the rest of /design/*.
+ *
+ * Demo-only styles live scoped to this page. Canonical primitives are consumed
+ * from global.css (.btn, .eyebrow, .rule, .title, .lede, .link, .surface-*).
+ */
+import DesignLayout from "~/layouts/DesignLayout.astro";
+
+const palette = [
+  { name: "Deep Conifer", hex: "#2F4A3C", token: "--c-conifer", role: "Sage hardcover · dark surface · brand deep" },
+  { name: "Antique Foil", hex: "#B8934A", token: "--c-foil", role: "Display foil on sage (wordmark, covers)" },
+  { name: "Foil Light", hex: "#D4B062", token: "--c-foil-light", role: "Small-caps on sage · Primary CTA background" },
+  { name: "White Dove", hex: "#F4EFE6", token: "--c-cream", role: "Cream page interior · light surface" },
+  { name: "Chrome", hex: "#F6F2EA", token: "--c-chrome", role: "Workspace canvas behind cream artifacts" },
+  { name: "Deep Ochre", hex: "#7A5A26", token: "--c-ochre", role: "Cookbook ink on cream · chapter marks" },
+  { name: "Warm Charcoal", hex: "#1F1B17", token: "--c-ink", role: "Primary body ink on cream · 14.94:1 AAA" },
+  { name: "Ash", hex: "#6C6457", token: "--c-ash", role: "Secondary ink on cream · 5.10:1 AA" },
+  { name: "Oat", hex: "#7C7465", token: "--c-oat", role: "Tertiary ink · AA-large only" },
+  { name: "Linen", hex: "#DAD5CD", token: "--c-linen", role: "Secondary on sage · 6.64:1 AA" },
+  { name: "Stone", hex: "#B9B4AC", token: "--c-stone", role: "Tertiary on sage · 4.70:1 AA" },
+  { name: "Alert Rust", hex: "#A55C2B", token: "--c-rust", role: "Destructive only · reserved" },
+];
+
+const sections = [
+  {
+    heading: "Foundations",
+    items: [
+      { id: "atmosphere", label: "Atmosphere" },
+      { id: "palette", label: "Palette" },
+      { id: "typography", label: "Typography" },
+      { id: "spacing", label: "Spacing" },
+      { id: "radius", label: "Radius" },
+      { id: "shadows", label: "Shadows" },
+      { id: "motion", label: "Motion" },
+      { id: "focus", label: "Focus" },
+    ],
+  },
+  {
+    heading: "Components",
+    items: [
+      { id: "buttons", label: "Buttons" },
+      { id: "cards", label: "Cards" },
+      { id: "inputs", label: "Inputs" },
+      { id: "nav", label: "Navigation" },
+      { id: "sidebar", label: "Sidebar" },
+      { id: "tags", label: "Tags" },
+      { id: "alerts", label: "Alerts" },
+      { id: "photography", label: "Photography" },
+    ],
+  },
+  {
+    heading: "Patterns",
+    items: [
+      { id: "rhythm", label: "Chapter rhythm" },
+      { id: "hero-split", label: "Recipe hero" },
+      { id: "folio", label: "Folio" },
+      { id: "thumbs", label: "Library thumbs" },
+    ],
+  },
+  {
+    heading: "Voice",
+    items: [{ id: "voice", label: "Voice & tone" }],
+  },
+];
+
+const typeTiers = [
+  {
+    tier: "1",
+    name: "Display · Wordmark",
+    sample: "HEARTH",
+    className: "tier-wordmark",
+    meta: "Marcellus 400 · 48–72px · tracking 0.08–0.10em · line-height 1 · Antique Foil",
+    note: "Reserved exclusively for the wordmark. Never used elsewhere.",
+  },
+  {
+    tier: "2",
+    name: "H1 · Recipe & Chapter",
+    sample: "Slow-braised shoulder with preserved lemon",
+    className: "tier-h1",
+    meta: "Lora 400 · 28–42px · tracking −0.012em · line-height 1.08–1.15",
+    note: "Hierarchy is size + color, never bold — Lora never goes bold.",
+  },
+  {
+    tier: "3",
+    name: "Italic · Lede",
+    sample: "A winter bowl that keeps giving long after the oven cools.",
+    className: "tier-lede",
+    meta: "Lora italic 400 · 16–24px · line-height 1.4–1.6",
+    note: "All italic jobs live here — meta, ledes, folios, Roman numerals.",
+  },
+  {
+    tier: "4",
+    name: "Eyebrow · Small-cap",
+    sample: "INGREDIENTS",
+    className: "tier-eyebrow",
+    meta: "DM Sans 500 · 11px · uppercase · tracking 0.28em · Deep Ochre",
+    note: "Wide tracking is non-negotiable — it's what signals \"chapter mark.\"",
+  },
+  {
+    tier: "5",
+    name: "Body · UI",
+    sample: "Remove the lid, baste, and return to the oven uncovered for a final thirty minutes. The sauce should coat the back of a spoon.",
+    className: "tier-body",
+    meta: "DM Sans 400 · 13–15px · line-height 1.55–1.75",
+    note: "Neutral, quiet, lets the serifs do the emotional work.",
+  },
+];
+
+const spacing = [
+  { token: "--space-2xs", px: 4 },
+  { token: "--space-xs", px: 8 },
+  { token: "--space-sm", px: 12 },
+  { token: "--space-md", px: 16 },
+  { token: "--space-lg", px: 24 },
+  { token: "--space-xl", px: 32 },
+  { token: "--space-2xl", px: 48 },
+  { token: "--space-3xl", px: 64 },
+  { token: "--space-4xl", px: 96 },
+];
+---
+
+<DesignLayout title="Brand">
+  <div class="brand">
+    {/* ───────── Masthead ───────── */}
+    <header class="brand-masthead">
+      <p class="eyebrow">Hearth Press · Brand Book v1</p>
+      <hr class="rule" aria-hidden="true" />
+      <h1 class="brand-masthead__title">The book is the app made physical.</h1>
+      <p class="lede">
+        A literary, candlelit system — <em>warm, unhurried, foil-stamped</em> — with three
+        typefaces, twelve colors, and the discipline of a hardcover. This page is the
+        canonical reference for every surface we ship.
+      </p>
+      <div class="brand-masthead__meta">
+        <span>Last revised 2026-04</span>
+        <span aria-hidden="true">·</span>
+        <a class="link--chevron" href="/design">Back to binder</a>
+      </div>
+    </header>
+
+    <div class="brand-grid">
+      {/* ───────── Sidebar ───────── */}
+      <aside class="brand-nav" aria-label="On this page">
+        {sections.map((group) => (
+          <div class="brand-nav__group">
+            <p class="eyebrow brand-nav__heading">{group.heading}</p>
+            <ul class="brand-nav__list">
+              {group.items.map((item) => (
+                <li><a href={`#${item.id}`}>{item.label}</a></li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </aside>
+
+      {/* ───────── Body ───────── */}
+      <article class="brand-body">
+        {/* ──────────── FOUNDATIONS ──────────── */}
+        <section id="atmosphere" class="spec">
+          <div class="spec__head">
+            <p class="eyebrow">Foundations · Atmosphere</p>
+            <hr class="rule" />
+            <h2 class="spec__title">Editorial, not farmhouse.</h2>
+            <p class="lede">
+              Closer to a Chez Panisse monograph than a SaaS dashboard. Every surface
+              should feel like a page from a thoughtfully art-directed cookbook.
+            </p>
+          </div>
+          <div class="spec__body mood">
+            <div class="mood__col">
+              <p class="eyebrow">Moods</p>
+              <ul class="mood__list">
+                <li>Literary</li><li>Calm</li><li>Hand-made</li>
+                <li>Foil-stamped</li><li>Candlelit</li><li>Confident</li>
+                <li>Considered</li>
+              </ul>
+            </div>
+            <div class="mood__col mood__col--warn">
+              <p class="eyebrow">Anti-moods</p>
+              <ul class="mood__list">
+                <li>Tech-y</li><li>Neon</li><li>Glossy</li>
+                <li>Bouncy</li><li>Exclamatory</li><li>Emoji-forward</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section id="palette" class="spec">
+          <div class="spec__head">
+            <p class="eyebrow">Foundations · Palette</p>
+            <hr class="rule" />
+            <h2 class="spec__title">Ink, paper, gold leaf — nothing else.</h2>
+            <p class="lede">
+              Zero saturated accent colors. The only chromatic range is sage ↔ cream ↔
+              gold/ochre ↔ charcoal. Every swatch must feel mixable from those four.
+            </p>
+          </div>
+          <div class="spec__body">
+            <div class="swatches">
+              {palette.map((c) => (
+                <figure class="swatch">
+                  <div class="swatch__chip" style={`background:${c.hex}`} aria-hidden="true" />
+                  <figcaption>
+                    <p class="swatch__name">{c.name}</p>
+                    <p class="swatch__hex"><code>{c.hex}</code></p>
+                    <p class="swatch__token"><code>{c.token}</code></p>
+                    <p class="swatch__role">{c.role}</p>
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="typography" class="spec">
+          <div class="spec__head">
+            <p class="eyebrow">Foundations · Typography</p>
+            <hr class="rule" />
+            <h2 class="spec__title">Three faces, five tiers.</h2>
+            <p class="lede">
+              Marcellus for the wordmark. Lora for anything literary. DM Sans for
+              everything that isn't. Hierarchy is scale and color — never bold.
+            </p>
+          </div>
+          <div class="spec__body">
+            <ol class="tiers">
+              {typeTiers.map((t) => (
+                <li class="tier">
+                  <div class="tier__label">
+                    <span class="tier__num">{t.tier}</span>
+                    <span class="tier__name">{t.name}</span>
+                  </div>
+                  <p class={`tier__sample ${t.className}`}>{t.sample}</p>
+                  <p class="tier__meta">{t.meta}</p>
+                  <p class="tier__note">{t.note}</p>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+
+        <section id="spacing" class="spec">
+          <div class="spec__head">
+            <p class="eyebrow">Foundations · Spacing</p>
+            <hr class="rule" />
+            <h2 class="spec__title">A 4pt scale, named for the job.</h2>
+            <p class="lede">
+              Section rhythm: 96px between major sections, 40–56px between subsections,
+              24–28px heading-to-body. Line measure holds at 52–58ch.
+            </p>
+          </div>
+          <div class="spec__body">
+            <ul class="spacing-ladder">
+              {spacing.map((s) => (
+                <li>
+                  <span class="spacing-ladder__bar" style={`width:${s.px}px`} />
+                  <code class="spacing-ladder__token">{s.token}</code>
+                  <span class="spacing-ladder__px">{s.px}px</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        <section id="radius" class="spec">
+          <div class="spec__head">
+            <p class="eyebrow">Foundations · Radius</p>
+            <hr class="rule" />
+            <h2 class="spec__title">2px for paper, pills for taps.</h2>
+            <p class="lede">
+              The whole system lives at 2px — the radius of a well-cut book page.
+              Pills are the one intentional exception, and they mean <em>tappable.</em>
+            </p>
+          </div>
+          <div class="spec__body radius-row">
+            <figure>
+              <div class="radius-demo radius-demo--page" />
+              <figcaption><code>--r-page · 2px</code><br/>cards, inputs, thumbnails</figcaption>
+            </figure>
+            <figure>
+              <div class="radius-demo radius-demo--pill">Button</div>
+              <figcaption><code>--r-pill · 9999px</code><br/>buttons only</figcaption>
+            </figure>
+          </div>
+        </section>
+
+        <section id="shadows" class="spec">
+          <div class="spec__head">
+            <p class="eyebrow">Foundations · Shadows</p>
+            <hr class="rule" />
+            <h2 class="spec__title">Warm, brown-biased, whisper-soft.</h2>
+            <p class="lede">
+              Shadows are always warm and brown-biased — never blue. Treat them as
+              paper lift, not UI chrome.
+            </p>
+          </div>
+          <div class="spec__body shadow-row">
+            <figure>
+              <div class="shadow-demo" style="box-shadow: var(--shadow-paper)" />
+              <figcaption><code>--shadow-paper</code><br/>lifted-paper default</figcaption>
+            </figure>
+            <figure>
+              <div class="shadow-demo" style="box-shadow: var(--shadow-lift)" />
+              <figcaption><code>--shadow-lift</code><br/>deep lift, hero cards</figcaption>
+            </figure>
+            <figure>
+              <div class="shadow-demo shadow-demo--button" style="box-shadow: var(--shadow-button)" />
+              <figcaption><code>--shadow-button</code><br/>pill button only</figcaption>
+            </figure>
+          </div>
+        </section>
+
+        <section id="motion" class="spec">
+          <div class="spec__head">
+            <p class="eyebrow">Foundations · Motion</p>
+            <hr class="rule" />
+            <h2 class="spec__title">280ms ease. That's it.</h2>
+            <p class="lede">
+              Every state change is a 280ms ease fade — background, color, shadow.
+              No springs, no bounces. The 3px chevron nudge on T2 links is the
+              entire scope of delight.
+            </p>
+          </div>
+          <div class="spec__body motion-row">
+            <button class="btn" type="button">Hover me · 280ms</button>
+            <a href="#motion" class="link--chevron">Continue reading</a>
+            <p class="tier__meta">
+              <code>--motion-state</code> · <code>--ease-state</code>
+            </p>
+          </div>
+        </section>
+
+        <section id="focus" class="spec">
+          <div class="spec__head">
+            <p class="eyebrow">Foundations · Focus</p>
+            <hr class="rule" />
+            <h2 class="spec__title">Keyboard-only, surface-aware.</h2>
+            <p class="lede">
+              Tab through the demos. Rings use Deep Ochre on cream, Foil Light on sage.
+              Mouse clicks never show a ring.
+            </p>
+          </div>
+          <div class="spec__body focus-row">
+            <button class="btn btn--outlined" type="button">Focus on cream</button>
+            <div class="surface-sage focus-row__sage">
+              <button class="btn btn--outlined" type="button">Focus on sage</button>
+            </div>
+          </div>
+        </section>
+
+        {/* ──────────── COMPONENTS ──────────── */}
+        <section id="buttons" class="spec">
+          <div class="spec__head">
+            <p class="eyebrow">Components · Buttons</p>
+            <hr class="rule" />
+            <h2 class="spec__title">Six tokens, one pill.</h2>
+            <p class="lede">
+              One primary per screen, maximum. Secondary and tertiary cover everything
+              that isn't the hero action. Pills are reserved for buttons.
+            </p>
+          </div>
+          <div class="spec__body">
+            <div class="demo-card demo-card--cream">
+              <p class="eyebrow demo-card__label">On cream</p>
+              <div class="btn-row">
+                <button class="btn" type="button">Primary · Save recipe</button>
+                <button class="btn btn--outlined" type="button">S1 · Continue reading</button>
+                <button class="btn btn--soft" type="button">S3 · Filter</button>
+                <button class="btn-text" type="button">T1 · Delete recipe</button>
+                <a href="#buttons" class="link--chevron">T2 · Continue reading</a>
+                <a href="#buttons" class="link">Inline link</a>
+              </div>
+            </div>
+            <div class="demo-card demo-card--sage surface-sage">
+              <p class="eyebrow demo-card__label">On sage</p>
+              <div class="btn-row">
+                <button class="btn" type="button">Primary · Start cooking</button>
+                <button class="btn btn--outlined" type="button">S1 · Book jacket</button>
+                <button class="btn btn--soft" type="button">S3 · Save</button>
+                <button class="btn-text" type="button">T1 · Dismiss</button>
+                <a href="#buttons" class="link--chevron">T2 · See more</a>
+                <a href="#buttons" class="link">Inline link</a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="cards" class="spec">
+          <div class="spec__head">
+            <p class="eyebrow">Components · Cards</p>
+            <hr class="rule" />
+            <h2 class="spec__title">Subtly squared, barely bordered.</h2>
+            <p class="lede">
+              2px radius, 1px whisper border, brown-biased shadow. Book-layout,
+              not card-UI.
+            </p>
+          </div>
+          <div class="spec__body card-grid">
+            <article class="card card--cream">
+              <p class="eyebrow">Saved · 2 days ago</p>
+              <h3 class="card__title">Preserved-lemon shoulder</h3>
+              <p class="card__meta"><em>50 min · Serves 4</em></p>
+              <p class="card__body">
+                Slow oven, shallow bath of stock and citrus, lid on for the first
+                hour. The sauce reduces to glaze.
+              </p>
+            </article>
+            <article class="card card--cream card--lift">
+              <p class="eyebrow">Chapter 3</p>
+              <h3 class="card__title">Braises & slow things</h3>
+              <p class="card__meta"><em>Twelve recipes</em></p>
+              <p class="card__body">
+                The chapter for winter afternoons. Patience does most of the work.
+              </p>
+              <a href="#cards" class="link--chevron">Open chapter</a>
+            </article>
+            <article class="card card--sage">
+              <p class="eyebrow">Cover treatment</p>
+              <h3 class="card__title">On the sage side</h3>
+              <p class="card__meta"><em>Hardcover surface</em></p>
+              <p class="card__body">
+                Same card grammar, dark interior. Text shifts to White Dove and Linen;
+                the eyebrow lifts to Foil Light.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section id="inputs" class="spec">
+          <div class="spec__head">
+            <p class="eyebrow">Components · Inputs</p>
+            <hr class="rule" />
+            <h2 class="spec__title">Printed-form discipline.</h2>
+            <p class="lede">
+              2px corners, off-cream fill, barely-there border until focus deepens it
+              to charcoal. Inputs and pills sit side-by-side and <em>should</em> feel
+              different.
+            </p>
+          </div>
+          <div class="spec__body">
+            <form class="form-demo" onsubmit="return false">
+              <label class="field">
+                <span class="field__label">Recipe title</span>
+                <input class="input" type="text" placeholder="e.g. Shoulder with preserved lemon" />
+              </label>
+              <label class="field">
+                <span class="field__label">Search library</span>
+                <input class="input" type="search" placeholder="Search 147 recipes" />
+              </label>
+              <label class="field">
+                <span class="field__label">Notes</span>
+                <textarea class="input input--area" rows="3" placeholder="What worked, what didn't"></textarea>
+              </label>
+              <fieldset class="fieldset">
+                <legend class="field__label">Course</legend>
+                <label class="radio"><input type="radio" name="course" /><span>Main</span></label>
+                <label class="radio"><input type="radio" name="course" /><span>Side</span></label>
+                <label class="radio"><input type="radio" name="course" /><span>Dessert</span></label>
+              </fieldset>
+              <div class="form-demo__actions">
+                <button class="btn" type="submit">Save recipe</button>
+                <button class="btn-text" type="button">Cancel</button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <section id="nav" class="spec">
+          <div class="spec__head">
+            <p class="eyebrow">Components · Navigation</p>
+            <hr class="rule" />
+            <h2 class="spec__title">Marketing nav, cream surface.</h2>
+            <p class="lede">
+              Wordmark left, DM Sans links centered, 2px search field, pill CTA right.
+              Sticky, subtle backdrop blur.
+            </p>
+          </div>
+          <div class="spec__body">
+            <nav class="nav-demo" aria-label="Marketing nav demo">
+              <a class="nav-demo__mark" href="#nav">HEARTH</a>
+              <ul class="nav-demo__links">
+                <li><a href="#nav" class="is-active">The book</a></li>
+                <li><a href="#nav">The app</a></li>
+                <li><a href="#nav">Kitchen journal</a></li>
+                <li><a href="#nav">About</a></li>
+              </ul>
+              <div class="nav-demo__search">
+                <input class="input" type="search" placeholder="Search" />
+              </div>
+              <a href="#nav" class="btn nav-demo__cta">Join waitlist</a>
+            </nav>
+          </div>
+        </section>
+
+        <section id="sidebar" class="spec">
+          <div class="spec__head">
+            <p class="eyebrow">Components · Sidebar</p>
+            <hr class="rule" />
+            <h2 class="spec__title">Library side-rail.</h2>
+            <p class="lede">
+              Chapter-mark eyebrows open each group; list items read like a table of
+              contents, not like nav chrome. 1px whisper between items.
+            </p>
+          </div>
+          <div class="spec__body">
+            <div class="sidebar-demo">
+              <aside class="sidebar-demo__rail" aria-label="Library">
+                <div class="sidebar-demo__group">
+                  <p class="eyebrow">Library</p>
+                  <ul>
+                    <li><a href="#sidebar" class="is-active">All recipes <span>147</span></a></li>
+                    <li><a href="#sidebar">Saved <span>34</span></a></li>
+                    <li><a href="#sidebar">Cooked <span>62</span></a></li>
+                  </ul>
+                </div>
+                <div class="sidebar-demo__group">
+                  <p class="eyebrow">Chapters</p>
+                  <ul>
+                    <li><a href="#sidebar">Mornings</a></li>
+                    <li><a href="#sidebar">Weeknight</a></li>
+                    <li><a href="#sidebar">Braises & slow things</a></li>
+                    <li><a href="#sidebar">Preserves</a></li>
+                    <li><a href="#sidebar">Sundays</a></li>
+                  </ul>
+                </div>
+                <div class="sidebar-demo__group">
+                  <p class="eyebrow">Settings</p>
+                  <ul>
+                    <li><a href="#sidebar">Account</a></li>
+                    <li><a href="#sidebar">Printing</a></li>
+                  </ul>
+                </div>
+              </aside>
+              <div class="sidebar-demo__stage">
+                <p class="eyebrow">Chapter 3</p>
+                <hr class="rule" />
+                <h3 class="spec__title">Braises & slow things</h3>
+                <p class="lede">Twelve recipes for winter afternoons.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="tags" class="spec">
+          <div class="spec__head">
+            <p class="eyebrow">Components · Tags</p>
+            <hr class="rule" />
+            <h2 class="spec__title">Small-cap text tags, soft pill chips.</h2>
+            <p class="lede">
+              Tags read as metadata, not decoration. Text tags for structure,
+              soft pills for filters.
+            </p>
+          </div>
+          <div class="spec__body tag-row">
+            <span class="tag">VEGETARIAN</span>
+            <span class="tag">UNDER 30 MIN</span>
+            <span class="tag">SUNDAY</span>
+            <span class="chip">Filter · Seasonal</span>
+            <span class="chip">Filter · Saved</span>
+            <span class="chip chip--sage">On sage surface</span>
+          </div>
+        </section>
+
+        <section id="alerts" class="spec">
+          <div class="spec__head">
+            <p class="eyebrow">Components · Alerts</p>
+            <hr class="rule" />
+            <h2 class="spec__title">Quiet margins, Rust for destruction only.</h2>
+            <p class="lede">
+              Alerts sit in the margin of the page — a vertical Deep-Ochre rule, a
+              small-cap label, Lora italic copy. Alert Rust is reserved for destructive.
+            </p>
+          </div>
+          <div class="spec__body alert-col">
+            <aside class="alert">
+              <p class="eyebrow">Note</p>
+              <hr class="rule rule--short" />
+              <p class="alert__body">
+                <em>Preserved lemons take three weeks to cure. Start yours before
+                you need them.</em>
+              </p>
+            </aside>
+            <aside class="alert alert--warn">
+              <p class="eyebrow">Destructive</p>
+              <hr class="rule rule--short" />
+              <p class="alert__body">
+                <em>Deleting this recipe also removes the six variations saved from it.
+                This cannot be undone.</em>
+              </p>
+            </aside>
+          </div>
+        </section>
+
+        <section id="photography" class="spec">
+          <div class="spec__head">
+            <p class="eyebrow">Components · Photography</p>
+            <hr class="rule" />
+            <h2 class="spec__title">Two places, imperfect & true-to-phone.</h2>
+            <p class="lede">
+              Photography lives in the recipe-detail hero and in square library
+              thumbs. No filters, no AI enhancement. Covers and chapter openers
+              remain typographic.
+            </p>
+          </div>
+          <div class="spec__body photo-row">
+            <figure class="photo-hero" aria-label="Hero with gradient scrim">
+              <div class="photo-hero__scrim">
+                <p class="eyebrow">Chapter 3 · Braises</p>
+                <h3 class="photo-hero__title">Preserved-lemon shoulder</h3>
+                <p class="photo-hero__meta"><em>50 min · Serves 4</em></p>
+              </div>
+            </figure>
+            <div class="thumb-row">
+              <div class="thumb" /><div class="thumb" /><div class="thumb" />
+              <div class="thumb" /><div class="thumb" />
+            </div>
+          </div>
+        </section>
+
+        {/* ──────────── PATTERNS ──────────── */}
+        <section id="rhythm" class="spec">
+          <div class="spec__head">
+            <p class="eyebrow">Patterns · Chapter rhythm</p>
+            <hr class="rule" />
+            <h2 class="spec__title">Mark · rule · title · lede · labels · folio.</h2>
+            <p class="lede">
+              The canonical rhythm of any long-form page. Keep the beats; let the
+              content change.
+            </p>
+          </div>
+          <div class="spec__body rhythm-demo">
+            <p class="eyebrow">Chapter III</p>
+            <hr class="rule" />
+            <h3 class="rhythm-demo__title">Braises & slow things</h3>
+            <p class="lede">
+              <em>A chapter for winter afternoons — the oven doing most of the work,
+              the kitchen warm for hours.</em>
+            </p>
+            <p class="eyebrow rhythm-demo__label">Ingredients</p>
+            <ul class="rhythm-demo__list">
+              <li><em>i.</em> Shoulder, 1.5kg, trimmed</li>
+              <li><em>ii.</em> Preserved lemon, two, rind only</li>
+              <li><em>iii.</em> Bay, three leaves</li>
+              <li><em>iv.</em> Stock, warm, a generous bath</li>
+            </ul>
+            <p class="folio">— 47 —</p>
+          </div>
+        </section>
+
+        <section id="hero-split" class="spec">
+          <div class="spec__head">
+            <p class="eyebrow">Patterns · Recipe hero</p>
+            <hr class="rule" />
+            <h2 class="spec__title">Sage cover, cream interior.</h2>
+            <p class="lede">
+              Upper ~48% sage hero with Foil accent rule; lower portion drops onto
+              cream with Deep Ochre small-cap labels. Two sides of the same object.
+            </p>
+          </div>
+          <div class="spec__body">
+            <div class="hero-split">
+              <div class="hero-split__top surface-sage">
+                <p class="eyebrow">Main · Sunday</p>
+                <hr class="rule rule--short" />
+                <h3 class="hero-split__title">Preserved-lemon shoulder</h3>
+                <p class="hero-split__meta"><em>50 min · Serves 4</em></p>
+              </div>
+              <div class="hero-split__bottom surface-cream">
+                <p class="eyebrow">Ingredients</p>
+                <p class="hero-split__body">
+                  Shoulder, preserved lemon, stock, bay. A short list — the oven
+                  is the ingredient you can't see.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="folio" class="spec">
+          <div class="spec__head">
+            <p class="eyebrow">Patterns · Folio</p>
+            <hr class="rule" />
+            <h2 class="spec__title">Em-dash page marker.</h2>
+            <p class="lede">Centered, Lora italic, 12–13px, Deep Ochre on cream.</p>
+          </div>
+          <div class="spec__body folio-row">
+            <p class="folio">— 47 —</p>
+            <div class="surface-sage folio-row__sage">
+              <p class="folio">— 48 —</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="thumbs" class="spec">
+          <div class="spec__head">
+            <p class="eyebrow">Patterns · Library thumbs</p>
+            <hr class="rule" />
+            <h2 class="spec__title">Small squares, 2px corners.</h2>
+            <p class="lede">
+              32–40px, square, 2px radius, 1px whisper border. The only other place
+              photography is allowed besides the recipe hero.
+            </p>
+          </div>
+          <div class="spec__body">
+            <div class="thumb-row thumb-row--lg">
+              <div class="thumb" /><div class="thumb" /><div class="thumb" />
+              <div class="thumb" /><div class="thumb" /><div class="thumb" />
+              <div class="thumb" /><div class="thumb" />
+            </div>
+          </div>
+        </section>
+
+        {/* ──────────── VOICE ──────────── */}
+        <section id="voice" class="spec">
+          <div class="spec__head">
+            <p class="eyebrow">Voice &amp; tone</p>
+            <hr class="rule" />
+            <h2 class="spec__title">Warmth from phrasing, never from exclamation.</h2>
+            <p class="lede">
+              Factual when factual serves. Conversational where it helps — empty
+              states, toasts, the occasional turn-of-phrase in conversion copy.
+            </p>
+          </div>
+          <div class="spec__body voice-grid">
+            <div class="voice-col">
+              <p class="eyebrow">Do</p>
+              <ul class="voice-list">
+                <li><em>"Your library is empty. Save a recipe to begin."</em></li>
+                <li><em>"Saved — it's in your library."</em></li>
+                <li><em>"Turn your library into a cookbook."</em></li>
+                <li><em>50 min · Serves 4</em> <span class="voice-note">— em-middot separator, no "mins"</span></li>
+              </ul>
+            </div>
+            <div class="voice-col voice-col--dont">
+              <p class="eyebrow">Don't</p>
+              <ul class="voice-list">
+                <li>"Woohoo! Saved! 🎉"</li>
+                <li>"Nothing here yet :("</li>
+                <li>"Transform your digital recipes!"</li>
+                <li>"50 mins, 4 servings"</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <footer class="brand-foot">
+          <p class="folio">— fin —</p>
+          <p class="brand-foot__meta">
+            Rendered from the SSOT at <code>web/src/styles/tokens.css</code> ·
+            Brand Book v1 · 2026. Anything shipped that contradicts the SSOT is
+            the contradiction, not the book.
+          </p>
+        </footer>
+      </article>
+    </div>
+  </div>
+</DesignLayout>
+
+<style>
+  /* ───────── Page shell ───────── */
+  .brand {
+    max-width: 84rem;
+    margin-inline: auto;
+  }
+
+  .brand-masthead {
+    display: grid;
+    gap: var(--space-md);
+    max-width: 44rem;
+    margin-bottom: var(--space-4xl);
+  }
+  .brand-masthead__title {
+    font-family: var(--f-display);
+    font-weight: 400; /* Lora never bold — enforced globally but stated here too */
+    font-size: clamp(2.25rem, 3vw + 1rem, 3.25rem);
+    line-height: 1.05;
+    letter-spacing: -0.014em;
+    color: var(--c-ink);
+    text-wrap: balance;
+  }
+  .brand-masthead__meta {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--space-sm);
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: var(--fs-meta);
+    color: var(--c-ash);
+    margin-top: var(--space-md);
+  }
+
+  .brand-grid {
+    display: grid;
+    grid-template-columns: 14rem minmax(0, 1fr);
+    gap: var(--space-3xl);
+    align-items: start;
+  }
+  @media (max-width: 960px) {
+    .brand-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ───────── Sidebar ───────── */
+  .brand-nav {
+    position: sticky;
+    top: 5rem;
+    max-height: calc(100dvh - 6rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    display: grid;
+    gap: var(--space-xl);
+    padding-right: var(--space-md);
+    padding-bottom: var(--space-3xl);
+    border-right: var(--b-divider);
+  }
+  /* Hairline warm-biased scrollbar — matches the phone-scroll treatment in design.css */
+  .brand-nav::-webkit-scrollbar { width: 4px; }
+  .brand-nav::-webkit-scrollbar-thumb {
+    background: rgba(31, 27, 23, 0.22);
+    border-radius: 999px;
+  }
+  .brand-nav::-webkit-scrollbar-track { background: transparent; }
+  @media (max-width: 960px) {
+    .brand-nav {
+      position: static;
+      max-height: none;
+      overflow: visible;
+      border-right: 0;
+      border-bottom: var(--b-divider);
+      padding: 0 0 var(--space-xl);
+    }
+  }
+  .brand-nav__group { display: grid; gap: var(--space-sm); }
+  .brand-nav__heading { color: var(--c-ochre); }
+  .brand-nav__list {
+    display: grid;
+    gap: 2px;
+  }
+  .brand-nav__list a {
+    display: block;
+    padding: 6px 0;
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: var(--fs-meta);
+    color: var(--c-ash);
+    transition: color var(--motion-state) var(--ease-state);
+  }
+  .brand-nav__list a:hover { color: var(--c-ochre); }
+
+  /* ───────── Spec — the repeating section frame ───────── */
+  .spec {
+    display: grid;
+    gap: var(--space-xl);
+    padding-block: var(--space-3xl);
+    border-bottom: var(--b-divider);
+    scroll-margin-top: 5rem;
+  }
+  .spec:last-of-type { border-bottom: 0; }
+  .spec__head { display: grid; gap: var(--space-md); max-width: 48rem; }
+  .spec__title {
+    font-family: var(--f-display);
+    font-weight: 400;
+    font-size: clamp(1.5rem, 1.5vw + 1rem, 2rem);
+    line-height: 1.1;
+    letter-spacing: -0.012em;
+    color: var(--c-ink);
+    text-wrap: balance;
+  }
+
+  /* ───────── Mood (atmosphere) ───────── */
+  .mood { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2xl); }
+  @media (max-width: 640px) { .mood { grid-template-columns: 1fr; } }
+  .mood__col { display: grid; gap: var(--space-md); }
+  .mood__list {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 1.0625rem;
+    line-height: 1.8;
+    color: var(--c-ink);
+  }
+  .mood__col--warn .mood__list { color: var(--c-ash); text-decoration: line-through; text-decoration-color: color-mix(in oklab, var(--c-rust) 45%, transparent); text-decoration-thickness: 1px; }
+
+  /* ───────── Swatches (palette) ───────── */
+  .swatches {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+    gap: var(--space-lg);
+  }
+  .swatch {
+    display: grid;
+    gap: var(--space-sm);
+    padding: var(--space-md);
+    background: var(--c-cream);
+    border: var(--b-card);
+    border-radius: var(--r-page);
+    box-shadow: var(--shadow-paper);
+  }
+  .swatch__chip {
+    height: 4.5rem;
+    border-radius: var(--r-page);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+  }
+  .swatch__name { font-family: var(--f-body); font-weight: 500; font-size: var(--fs-body); color: var(--c-ink); }
+  .swatch__hex code, .swatch__token code {
+    font-family: var(--f-mono);
+    font-size: 12px;
+    color: var(--c-ash);
+  }
+  .swatch__role { font-family: var(--f-display); font-style: italic; font-size: 13px; color: var(--c-ash); line-height: 1.4; }
+
+  /* ───────── Typography tiers ───────── */
+  .tiers { display: grid; gap: var(--space-2xl); }
+  .tier {
+    display: grid;
+    gap: var(--space-sm);
+    padding-bottom: var(--space-xl);
+    border-bottom: var(--b-divider);
+  }
+  .tier:last-child { border-bottom: 0; padding-bottom: 0; }
+  .tier__label {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--space-sm);
+    font-family: var(--f-body);
+    font-size: var(--fs-eyebrow);
+    font-weight: 500;
+    letter-spacing: var(--ls-eyebrow);
+    text-transform: uppercase;
+    color: var(--c-ochre);
+  }
+  .tier__num { font-family: var(--f-display); font-style: italic; font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--c-ash); }
+  .tier__meta {
+    font-family: var(--f-mono);
+    font-size: 12px;
+    color: var(--c-ash);
+  }
+  .tier__note { font-family: var(--f-display); font-style: italic; color: var(--c-ash); font-size: 14px; line-height: 1.5; }
+
+  .tier-wordmark { font-family: var(--f-wordmark); font-size: 4rem; letter-spacing: 0.1em; line-height: 1; color: var(--c-foil); text-transform: uppercase; }
+  .tier-h1 { font-family: var(--f-display); font-size: 2.25rem; line-height: 1.1; letter-spacing: -0.012em; color: var(--c-ink); }
+  .tier-lede { font-family: var(--f-display); font-style: italic; font-size: 1.25rem; line-height: 1.5; color: var(--c-ash); }
+  .tier-eyebrow { font-family: var(--f-body); font-weight: 500; font-size: 0.6875rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--c-ochre); }
+  .tier-body { font-family: var(--f-body); font-size: var(--fs-body); line-height: var(--lh-body); color: var(--c-ink); max-width: var(--measure-body); }
+
+  /* ───────── Spacing ladder ───────── */
+  .spacing-ladder { display: grid; gap: var(--space-sm); }
+  .spacing-ladder li {
+    display: grid;
+    grid-template-columns: 12rem 1fr auto;
+    gap: var(--space-md);
+    align-items: center;
+  }
+  .spacing-ladder__bar {
+    display: block;
+    height: 8px;
+    background: var(--c-ochre);
+    border-radius: 2px;
+    max-width: 100%;
+  }
+  .spacing-ladder__token {
+    font-family: var(--f-mono);
+    font-size: 12px;
+    color: var(--c-ash);
+  }
+  .spacing-ladder__px {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: var(--fs-meta);
+    color: var(--c-ash);
+  }
+
+  /* ───────── Radius ───────── */
+  .radius-row { display: flex; gap: var(--space-2xl); flex-wrap: wrap; align-items: flex-end; }
+  .radius-row figcaption { margin-top: var(--space-sm); font-family: var(--f-display); font-style: italic; font-size: var(--fs-meta); color: var(--c-ash); line-height: 1.5; }
+  .radius-row code { font-family: var(--f-mono); font-style: normal; font-size: 12px; color: var(--c-ochre); }
+  .radius-demo--page {
+    width: 8rem; height: 5rem;
+    background: var(--c-cream);
+    border: var(--b-card);
+    border-radius: var(--r-page);
+    box-shadow: var(--shadow-paper);
+  }
+  .radius-demo--pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75em 1.5em;
+    background: var(--c-foil-light);
+    color: var(--c-ink);
+    border-radius: var(--r-pill);
+    font-family: var(--f-body);
+    font-weight: 500;
+    box-shadow: var(--shadow-button);
+  }
+
+  /* ───────── Shadows ───────── */
+  .shadow-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); gap: var(--space-2xl); }
+  .shadow-row figure { display: grid; gap: var(--space-md); }
+  .shadow-row figcaption { font-family: var(--f-display); font-style: italic; font-size: var(--fs-meta); color: var(--c-ash); line-height: 1.5; }
+  .shadow-row code { font-family: var(--f-mono); font-style: normal; font-size: 12px; color: var(--c-ochre); }
+  .shadow-demo {
+    height: 6rem;
+    background: var(--c-cream);
+    border: var(--b-card);
+    border-radius: var(--r-page);
+  }
+  .shadow-demo--button {
+    background: var(--c-foil-light);
+    border-radius: var(--r-pill);
+    width: 8rem;
+    height: 2.75rem;
+  }
+
+  /* ───────── Motion & focus ───────── */
+  .motion-row { display: inline-flex; gap: var(--space-xl); align-items: center; flex-wrap: wrap; }
+  .motion-row code { font-family: var(--f-mono); color: var(--c-ochre); font-style: normal; }
+
+  .focus-row { display: flex; gap: var(--space-lg); flex-wrap: wrap; align-items: center; }
+  .focus-row__sage {
+    padding: var(--space-md) var(--space-xl);
+    border-radius: var(--r-page);
+  }
+
+  /* ───────── Buttons demo ───────── */
+  /* Base carries no background — every demo-card declares --cream or --sage.
+   * Sage keeps the surface-sage class in markup so global.css handles text,
+   * eyebrow, outlined-button, and link inversion with no duplication. */
+  .demo-card {
+    padding: var(--space-xl);
+    border: var(--b-card);
+    border-radius: var(--r-page);
+    box-shadow: var(--shadow-paper);
+    margin-bottom: var(--space-lg);
+  }
+  .demo-card--cream { background: var(--c-cream); }
+  .demo-card--sage { box-shadow: var(--shadow-lift); }
+  .demo-card__label { margin-bottom: var(--space-md); }
+
+  /* On-sage variants for the two scoped-only components (S3 soft, T1 text).
+   * .surface-sage covers the rest from global.css. */
+  .surface-sage .btn--soft {
+    background: rgba(244, 239, 230, 0.14);
+    color: var(--c-ink-inverse);
+  }
+  .surface-sage .btn--soft:hover:not(:disabled) { background: rgba(244, 239, 230, 0.22); }
+  .surface-sage .btn-text { color: var(--c-linen); }
+  .surface-sage .btn-text:hover { color: var(--c-ink-inverse); }
+  .btn-row {
+    display: flex;
+    gap: var(--space-md);
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  /* Soft-filled secondary (S3) — not in global.css yet; scoped for demo.
+   * On-sage variant lives on .demo-card--sage .btn--soft above. */
+  .btn--soft {
+    background: #e8e1d1;
+    color: var(--c-ink);
+    box-shadow: none;
+    padding-block: 0.875em;
+    padding-inline: 1.5em;
+  }
+  .btn--soft:hover:not(:disabled) { background: #ddd4bf; }
+
+  /* Tertiary T1 — plain text. On-sage variant lives on .demo-card--sage .btn-text above. */
+  .btn-text {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: var(--fs-body);
+    color: var(--c-ash);
+    padding: 0.5em 0;
+    transition: color var(--motion-state) var(--ease-state);
+  }
+  .btn-text:hover { color: var(--c-ink); text-decoration: underline; text-underline-offset: 3px; }
+
+  /* ───────── Cards demo ───────── */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+    gap: var(--space-lg);
+  }
+  /* Card base — NO background. Every card must declare .card--cream or
+   * .card--sage. This removes cream-as-default and the cascade fights that
+   * come with overriding it. */
+  .card {
+    display: grid;
+    gap: var(--space-sm);
+    padding: var(--space-xl);
+    border: var(--b-card);
+    border-radius: var(--r-page);
+    box-shadow: var(--shadow-paper);
+  }
+  .card--lift { box-shadow: var(--shadow-lift); }
+  .card--cream { background: var(--c-cream); }
+  .card--sage {
+    background: var(--c-conifer);
+    color: var(--c-ink-inverse);
+    box-shadow: var(--shadow-lift);
+  }
+  .card__title {
+    font-family: var(--f-display);
+    font-weight: 400;
+    font-size: 1.375rem;
+    line-height: 1.15;
+    letter-spacing: -0.012em;
+    color: var(--c-ink);
+    text-wrap: balance;
+  }
+  .card--sage .card__title { color: var(--c-ink-inverse); }
+  .card--sage .eyebrow { color: var(--c-foil-light); }
+  .card__meta {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: var(--fs-meta);
+    color: var(--c-ash);
+  }
+  .card--sage .card__meta { color: var(--c-linen); }
+  .card__body {
+    font-family: var(--f-body);
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--c-ash);
+  }
+  .card--sage .card__body { color: var(--c-linen); line-height: var(--lh-body-sage); }
+
+  /* ───────── Inputs / form ───────── */
+  .form-demo {
+    display: grid;
+    gap: var(--space-lg);
+    max-width: 32rem;
+    padding: var(--space-xl);
+    background: var(--c-cream);
+    border: var(--b-card);
+    border-radius: var(--r-page);
+    box-shadow: var(--shadow-paper);
+  }
+  .field { display: grid; gap: var(--space-xs); }
+  .field__label {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--c-ash);
+  }
+  .input {
+    padding: 0.75em 0.875em;
+    background: var(--c-input);
+    border: var(--b-input);
+    border-radius: var(--r-page);
+    font-family: var(--f-body);
+    font-size: var(--fs-body);
+    color: var(--c-ink);
+    transition:
+      border-color var(--motion-state) var(--ease-state),
+      background-color var(--motion-state) var(--ease-state);
+  }
+  .input::placeholder { color: var(--c-oat); }
+  .input:focus {
+    outline: none;
+    background: var(--c-input-focus-bg);
+    border: var(--b-input-focus);
+  }
+  .input--area { min-height: 5rem; resize: vertical; font-family: var(--f-body); }
+
+  .fieldset {
+    display: flex;
+    gap: var(--space-md);
+    flex-wrap: wrap;
+    padding: 0;
+    border: 0;
+  }
+  .fieldset .field__label { grid-column: 1 / -1; width: 100%; margin-bottom: var(--space-xs); }
+  .radio {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-family: var(--f-body);
+    font-size: var(--fs-body);
+    color: var(--c-ink);
+    cursor: pointer;
+  }
+  .radio input { accent-color: var(--c-ochre); }
+
+  .form-demo__actions {
+    display: inline-flex;
+    gap: var(--space-md);
+    align-items: center;
+    margin-top: var(--space-sm);
+  }
+
+  /* ───────── Nav demo ───────── */
+  .nav-demo {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+    align-items: center;
+    gap: var(--space-xl);
+    padding: var(--space-md) var(--space-xl);
+    background: color-mix(in oklab, var(--c-cream) 96%, transparent);
+    border: var(--b-card);
+    border-radius: var(--r-page);
+    box-shadow: var(--shadow-paper);
+    backdrop-filter: saturate(140%) blur(8px);
+  }
+  .nav-demo__mark {
+    font-family: var(--f-wordmark);
+    font-size: 18px;
+    letter-spacing: 0.12em;
+    color: var(--c-conifer);
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+  .nav-demo__links {
+    display: inline-flex;
+    justify-content: center;
+    gap: var(--space-xl);
+  }
+  .nav-demo__links a {
+    font-family: var(--f-body);
+    font-size: 13px;
+    color: var(--c-ash);
+    text-decoration: none;
+    transition: color var(--motion-state) var(--ease-state);
+  }
+  .nav-demo__links a:hover { color: var(--c-ink); }
+  .nav-demo__links a.is-active { color: var(--c-ink); font-weight: 500; }
+  .nav-demo__search { width: 13rem; }
+  .nav-demo__search .input { width: 100%; padding-block: 0.5em; }
+  .nav-demo__cta { padding: 0.625em 1.25em; }
+  @media (max-width: 720px) {
+    .nav-demo { grid-template-columns: 1fr auto; gap: var(--space-md); }
+    .nav-demo__links, .nav-demo__search { display: none; }
+  }
+
+  /* ───────── Sidebar demo ───────── */
+  .sidebar-demo {
+    display: grid;
+    grid-template-columns: 14rem 1fr;
+    background: var(--c-cream);
+    border: var(--b-card);
+    border-radius: var(--r-page);
+    box-shadow: var(--shadow-paper);
+    overflow: hidden;
+    min-height: 22rem;
+  }
+  @media (max-width: 640px) {
+    .sidebar-demo { grid-template-columns: 1fr; }
+  }
+  .sidebar-demo__rail {
+    display: grid;
+    gap: var(--space-xl);
+    padding: var(--space-xl);
+    border-right: var(--b-divider);
+    background: var(--c-chrome);
+  }
+  @media (max-width: 640px) {
+    .sidebar-demo__rail { border-right: 0; border-bottom: var(--b-divider); }
+  }
+  .sidebar-demo__group { display: grid; gap: var(--space-sm); }
+  .sidebar-demo__group ul { display: grid; gap: 2px; }
+  .sidebar-demo__group a {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 6px 0;
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: var(--fs-body);
+    color: var(--c-ink);
+    border-bottom: var(--b-divider);
+    transition: color var(--motion-state) var(--ease-state);
+  }
+  .sidebar-demo__group li:last-child a { border-bottom: 0; }
+  .sidebar-demo__group a span {
+    font-family: var(--f-body);
+    font-style: normal;
+    font-size: var(--fs-caption);
+    color: var(--c-oat);
+    letter-spacing: 0.04em;
+  }
+  .sidebar-demo__group a:hover { color: var(--c-ochre); }
+  .sidebar-demo__group a.is-active { color: var(--c-ochre); }
+  .sidebar-demo__stage {
+    display: grid;
+    gap: var(--space-md);
+    align-content: center;
+    padding: var(--space-2xl);
+  }
+
+  /* ───────── Tags / chips ───────── */
+  .tag-row { display: flex; gap: var(--space-md); flex-wrap: wrap; align-items: center; }
+  .tag {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 10.5px;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: var(--c-ochre);
+    padding: 4px 0;
+    border-top: 1px solid color-mix(in oklab, var(--c-ochre) 40%, transparent);
+    border-bottom: 1px solid color-mix(in oklab, var(--c-ochre) 40%, transparent);
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5em 1em;
+    background: #e8e1d1;
+    border-radius: var(--r-pill);
+    font-family: var(--f-body);
+    font-size: 13px;
+    color: var(--c-ink);
+  }
+  .chip--sage { background: var(--c-conifer); color: var(--c-ink-inverse); }
+
+  /* ───────── Alerts — typographic margin notes, no accent stripes ───────── */
+  .alert-col { display: grid; gap: var(--space-2xl); max-width: 40rem; }
+  .alert { display: grid; gap: var(--space-xs); }
+  .alert .rule { margin-bottom: var(--space-2xs); }
+  .alert__body {
+    font-family: var(--f-display);
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--c-ash);
+  }
+  .alert--warn .eyebrow { color: var(--c-rust); }
+  .alert--warn .rule { background: var(--c-rust); }
+
+  /* ───────── Photography ───────── */
+  .photo-row { display: grid; gap: var(--space-xl); }
+  .photo-hero {
+    position: relative;
+    aspect-ratio: 16/9;
+    border-radius: var(--r-page);
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 25% 30%, #8a5c3a 0%, transparent 55%),
+      radial-gradient(circle at 75% 70%, #5e3a20 0%, transparent 60%),
+      linear-gradient(135deg, #3a2a1a 0%, #1e160e 100%);
+    box-shadow: var(--shadow-lift);
+  }
+  .photo-hero__scrim {
+    position: absolute;
+    inset: 0;
+    padding: var(--space-2xl);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: var(--space-xs);
+    background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.55) 100%);
+    color: var(--c-ink-inverse);
+  }
+  .photo-hero__scrim .eyebrow { color: var(--c-foil-light); }
+  .photo-hero__title {
+    font-family: var(--f-display);
+    font-weight: 400;
+    font-size: clamp(1.5rem, 2.5vw, 2rem);
+    line-height: 1.1;
+    letter-spacing: -0.012em;
+    color: var(--c-ink-inverse);
+    text-wrap: balance;
+  }
+  .photo-hero__meta {
+    font-family: var(--f-display);
+    font-style: italic;
+    color: var(--c-linen);
+  }
+
+  .thumb-row { display: flex; gap: var(--space-sm); flex-wrap: wrap; }
+  .thumb-row--lg .thumb { width: 3rem; height: 3rem; }
+  .thumb {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: var(--r-page);
+    background:
+      radial-gradient(circle at 30% 30%, #b8934a 0%, transparent 55%),
+      linear-gradient(135deg, #5e3a20 0%, #1e160e 100%);
+    border: var(--b-card);
+  }
+
+  /* ───────── Rhythm pattern ───────── */
+  .rhythm-demo {
+    display: grid;
+    gap: var(--space-md);
+    padding: var(--space-2xl);
+    background: var(--c-cream);
+    border: var(--b-card);
+    border-radius: var(--r-page);
+    max-width: 36rem;
+    box-shadow: var(--shadow-paper);
+  }
+  .rhythm-demo__title {
+    font-family: var(--f-display);
+    font-weight: 400;
+    font-size: 2rem;
+    line-height: 1.1;
+    letter-spacing: -0.012em;
+    color: var(--c-ink);
+  }
+  .rhythm-demo__label { margin-top: var(--space-lg); }
+  .rhythm-demo__list {
+    display: grid;
+    gap: var(--space-xs);
+    font-family: var(--f-body);
+    font-size: var(--fs-body);
+    color: var(--c-ink);
+  }
+  .rhythm-demo__list em {
+    display: inline-block;
+    width: 1.75em;
+    font-family: var(--f-display);
+    font-style: italic;
+    color: var(--c-ochre);
+  }
+
+  /* ───────── Hero split pattern ───────── */
+  .hero-split {
+    border-radius: var(--r-page);
+    overflow: hidden;
+    box-shadow: var(--shadow-lift);
+    max-width: 32rem;
+  }
+  .hero-split__top {
+    padding: var(--space-2xl);
+    display: grid;
+    gap: var(--space-sm);
+    min-height: 10rem;
+  }
+  .hero-split__title {
+    font-family: var(--f-display);
+    font-weight: 400;
+    font-size: 1.75rem;
+    line-height: 1.1;
+    letter-spacing: -0.012em;
+    color: var(--c-ink-inverse);
+    text-wrap: balance;
+  }
+  .hero-split__meta { font-family: var(--f-display); font-style: italic; color: var(--c-linen); font-size: var(--fs-meta); }
+  .hero-split__bottom { padding: var(--space-xl) var(--space-2xl); display: grid; gap: var(--space-sm); }
+  .hero-split__body { font-family: var(--f-body); font-size: var(--fs-body); line-height: var(--lh-body); color: var(--c-ash); }
+
+  /* ───────── Folio ───────── */
+  .folio-row { display: flex; gap: var(--space-2xl); align-items: center; flex-wrap: wrap; }
+  .folio-row__sage {
+    padding: var(--space-lg) var(--space-2xl);
+    border-radius: var(--r-page);
+  }
+
+  /* ───────── Voice ───────── */
+  .voice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2xl); }
+  @media (max-width: 640px) { .voice-grid { grid-template-columns: 1fr; } }
+  .voice-col { display: grid; gap: var(--space-md); }
+  .voice-list {
+    display: grid;
+    gap: var(--space-md);
+    font-family: var(--f-display);
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--c-ink);
+  }
+  .voice-col--dont .voice-list li {
+    color: var(--c-ash);
+    text-decoration: line-through;
+    text-decoration-color: color-mix(in oklab, var(--c-rust) 45%, transparent);
+    text-decoration-thickness: 1px;
+  }
+  .voice-note {
+    font-family: var(--f-body);
+    font-style: normal;
+    font-size: var(--fs-meta);
+    color: var(--c-oat);
+  }
+
+  /* ───────── Footer ───────── */
+  .brand-foot {
+    display: grid;
+    gap: var(--space-md);
+    padding: var(--space-3xl) 0 var(--space-2xl);
+    margin-top: var(--space-3xl);
+    border-top: var(--b-divider);
+    text-align: center;
+  }
+  .brand-foot__meta {
+    font-family: var(--f-display);
+    font-style: italic;
+    color: var(--c-ash);
+    font-size: var(--fs-meta);
+    max-width: 44ch;
+    margin-inline: auto;
+    text-wrap: balance;
+  }
+  .brand-foot__meta code {
+    font-family: var(--f-mono);
+    font-style: normal;
+    color: var(--c-ochre);
+  }
+</style>

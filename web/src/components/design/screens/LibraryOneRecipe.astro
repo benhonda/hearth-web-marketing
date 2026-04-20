@@ -2,13 +2,15 @@
 /**
  * Screen VI · Library · one recipe.
  *
- * The emotional payoff — a library of one. Same header and folio as the
- * empty state, but the chapter-opener block is replaced by a single
- * Apple-Music-style row. Nothing celebrates; it just IS. The power
- * comes from the row being the only thing there.
+ * VSCO-style two-column waterfall. The library-of-one is the first tile
+ * sitting in the left column of a grid that will fill in as the user
+ * saves more recipes. Photo leads; tiny caption underneath.
+ *
+ * Note: this deliberately goes beyond tokens.css §PHOTOGRAPHY for the
+ * library surface — trying the aesthetic first, formalising the token
+ * rule only if it lands.
  */
 import AppHeader from "../ui/AppHeader.astro";
-import RecipeRow from "../ui/RecipeRow.astro";
 import { sampleRecipe } from "~/lib/design/sample-recipe";
 
 interface Props { showTap?: boolean; }
@@ -23,13 +25,15 @@ const { showTap = false } = Astro.props;
     <span class="lib-one__label">recipe</span>
   </div>
 
-  <div class={showTap ? "lib-one__list lib-one__list--tap" : "lib-one__list"}>
-    <RecipeRow
-      title={sampleRecipe.title}
-      meta={`${sampleRecipe.minutes} min · Serves ${sampleRecipe.serves}`}
-      source={sampleRecipe.source}
-      thumbTone="corn"
-    />
+  <div class="lib-one__grid">
+    <div class="lib-one__col">
+      <a class={showTap ? "tile tile--tap" : "tile"} href="#">
+        <div class="tile__photo" aria-hidden="true" style={`background-image: url(${sampleRecipe.photo})`}></div>
+        <h3 class="tile__title">{sampleRecipe.title}</h3>
+        <p class="tile__meta">{sampleRecipe.minutes} min · Serves {sampleRecipe.serves}</p>
+      </a>
+    </div>
+    <div class="lib-one__col" aria-hidden="true"></div>
   </div>
 
   <p class="lib-one__folio">— page one —</p>
@@ -48,7 +52,7 @@ const { showTap = false } = Astro.props;
     align-items: baseline;
     gap: 6px;
     padding: 0 22px;
-    margin: 4px 0 14px;
+    margin: 4px 0 18px;
   }
   .lib-one__n {
     font-family: var(--f-display);
@@ -66,14 +70,68 @@ const { showTap = false } = Astro.props;
     color: var(--c-oat);
   }
 
-  .lib-one__list {
+  .lib-one__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 0 16px;
     align-self: flex-start;
+    width: 100%;
+  }
+
+  .lib-one__col {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 22px;
+    align-content: start;
+  }
+
+  .tile {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    color: inherit;
+    text-decoration: none;
     position: relative;
   }
-  .lib-one__list--tap::after {
+
+  .tile__photo {
+    aspect-ratio: 4 / 5;
+    width: 100%;
+    border-radius: 2px;
+    overflow: hidden;
+    box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.12);
+    position: relative;
+    background-color: var(--c-oat);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  .tile__title {
+    font-family: var(--f-display);
+    font-weight: 400;
+    font-size: 13.5px;
+    line-height: 1.25;
+    letter-spacing: -0.003em;
+    color: var(--c-ink);
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  .tile__meta {
+    font-family: var(--f-body);
+    font-size: 10.5px;
+    line-height: 1.3;
+    color: var(--c-ash);
+    letter-spacing: 0.02em;
+    margin: 0;
+  }
+
+  .tile--tap::after {
     content: "";
     position: absolute;
-    inset: 0 12px;
+    inset: -6px;
     border: 3px solid var(--annotation);
     border-radius: 4px;
     box-shadow: var(--annotation-glow);

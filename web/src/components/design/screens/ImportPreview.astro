@@ -33,7 +33,7 @@ const { showTap = false } = Astro.props;
       <span class="from-card__url">{sampleRecipe.source}</span>
     </div>
 
-    <div class="hero" aria-hidden="true">
+    <div class="hero" aria-hidden="true" style={`background-image: url(${sampleRecipe.photo})`}>
       <span class="hero__credit">photograph · Mia Aquilina</span>
     </div>
 
@@ -158,20 +158,11 @@ const { showTap = false } = Astro.props;
     width: 100%;
     aspect-ratio: 4 / 3;
     border-radius: 2px;
-    background: radial-gradient(ellipse at 30% 30%, #f5d990 0%, #d6a34e 45%, #8a5c1f 100%);
+    background-color: var(--c-oat);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     overflow: hidden;
-  }
-  .hero::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: repeating-linear-gradient(
-      45deg,
-      rgba(0, 0, 0, 0.03) 0,
-      rgba(0, 0, 0, 0.03) 1px,
-      transparent 1px,
-      transparent 4px
-    );
   }
   .hero::after {
     content: "";

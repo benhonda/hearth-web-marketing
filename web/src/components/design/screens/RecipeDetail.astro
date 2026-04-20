@@ -19,7 +19,7 @@ const { showTap = false } = Astro.props;
 <div class="detail">
   <AppHeader variant="title" title="" rightAction="edit" tapAction={showTap} />
 
-  <div class="detail__hero" aria-hidden="true">
+  <div class="detail__hero" aria-hidden="true" style={`background-image: url(${sampleRecipe.photo})`}>
     <span class="detail__hero-credit">photograph · Mia Aquilina</span>
   </div>
 
@@ -55,28 +55,17 @@ const { showTap = false } = Astro.props;
     padding-bottom: 44px;
   }
 
-  /* Hero — gradient placeholder for photography ───────────── */
+  /* Hero — real photograph, title scrim for credit legibility ─── */
 
   .detail__hero {
     position: relative;
     width: 100%;
     aspect-ratio: 5 / 4;
     overflow: hidden;
-    background: radial-gradient(
-      ellipse at 32% 34%, #f7dd95 0%, #d6a34e 42%, #7f5219 100%
-    );
-  }
-  .detail__hero::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: repeating-linear-gradient(
-      45deg,
-      rgba(0, 0, 0, 0.03) 0,
-      rgba(0, 0, 0, 0.03) 1px,
-      transparent 1px,
-      transparent 4px
-    );
+    background-color: var(--c-oat);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
   }
   .detail__hero::after {
     content: "";

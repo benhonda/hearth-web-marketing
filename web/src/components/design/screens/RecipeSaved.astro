@@ -25,7 +25,7 @@ void Astro.props;
 <div class="saved">
   <AppHeader variant="title" title="" rightAction="edit" />
 
-  <div class="saved__hero" aria-hidden="true">
+  <div class="saved__hero" aria-hidden="true" style={`background-image: url(${sampleRecipe.photo})`}>
     <span class="saved__hero-credit">photograph · Mia Aquilina</span>
   </div>
 
@@ -71,21 +71,10 @@ void Astro.props;
     width: 100%;
     aspect-ratio: 5 / 4;
     overflow: hidden;
-    background: radial-gradient(
-      ellipse at 32% 34%, #f7dd95 0%, #d6a34e 42%, #7f5219 100%
-    );
-  }
-  .saved__hero::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: repeating-linear-gradient(
-      45deg,
-      rgba(0, 0, 0, 0.03) 0,
-      rgba(0, 0, 0, 0.03) 1px,
-      transparent 1px,
-      transparent 4px
-    );
+    background-color: var(--c-oat);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
   }
   .saved__hero::after {
     content: "";

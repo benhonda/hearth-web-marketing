@@ -54,7 +54,7 @@
 .design-topbar__brand {
   display: inline-flex;
   align-items: baseline;
-  gap: 0.55rem;
+  gap: 0.3rem;
   color: inherit;
   text-decoration: none;
 }
@@ -70,40 +70,73 @@
 .design-topbar__tag {
   font-family: var(--f-display);
   font-style: italic;
-  font-size: 0.875rem;
+  font-size: 1.125rem;
   color: var(--c-ash);
   line-height: 1;
 }
 
-.design-topbar__eyebrow {
-  margin-left: var(--space-md);
-  color: var(--c-ochre);
-}
+/* Section nav ───────────────────────────────────────────── */
 
-.design-topbar__up {
-  margin-left: auto;
+.design-topbar__nav {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-family: var(--f-display);
-  font-style: italic;
-  font-size: 13.5px;
+  gap: var(--space-lg);
+  /* Match the parent flex gap (space-lg) so the divider sits centered
+   * between the wordmark and the first nav link. */
+  padding-left: var(--space-lg);
+  border-left: 1px solid rgba(31, 27, 23, 0.1);
+}
+
+.design-topbar__link {
+  position: relative;
+  font-family: var(--f-body);
+  font-size: 13px;
   color: var(--c-ash);
   text-decoration: none;
+  letter-spacing: 0.01em;
+  padding-block: 2px;
   transition: color var(--motion-state) var(--ease-state);
 }
-.design-topbar__up:hover { color: var(--c-ochre); }
-.design-topbar__up-chev {
-  font-style: normal;
-  display: inline-block;
-  transition: transform var(--motion-state) var(--ease-state);
+/* Hairline that anchors the active link like a finger under a line of type.
+ * Sits outside the text box via ::after so it animates in cleanly on route
+ * change and doesn't shift baseline the way text-decoration can. */
+.design-topbar__link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  height: 1px;
+  background: var(--c-ochre);
+  transform: scaleX(0);
+  transform-origin: left center;
+  opacity: 0;
+  transition:
+    transform var(--motion-state) var(--ease-state),
+    opacity var(--motion-state) var(--ease-state);
 }
-.design-topbar__up:hover .design-topbar__up-chev { transform: translateX(-3px); }
+.design-topbar__link:hover { color: var(--c-ink); }
+.design-topbar__link:hover::after {
+  transform: scaleX(1);
+  opacity: 0.35;
+}
+.design-topbar__link.is-active { color: var(--c-ochre); }
+.design-topbar__link.is-active::after {
+  transform: scaleX(1);
+  opacity: 1;
+}
+
+@media (max-width: 560px) {
+  .design-topbar__nav {
+    gap: var(--space-md);
+    padding-left: var(--space-md);
+  }
+}
 
 /* Tap-marker toggle ─────────────────────────────────────── */
 
 .design-topbar__toggle {
-  margin-left: var(--space-md);
+  margin-left: auto;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -232,6 +265,13 @@ html.no-tap-halos .screen-caption__tap { display: none; }
    * top-left element is the standard trick. */
   margin-right: calc(var(--phone-w) * (var(--phone-scale-canvas) - 1));
   margin-bottom: calc(var(--phone-h) * (var(--phone-scale-canvas) - 1));
+}
+
+/* In the storyboard canvas, let horizontal gestures fall through to the
+ * flow track while keeping vertical scroll inside the phone intact. */
+.phone--canvas .phone__scroll {
+  touch-action: pan-y;
+  overscroll-behavior-x: auto;
 }
 
 /* Design section typography — sets the "production binder" voice */

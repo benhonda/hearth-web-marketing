@@ -41,7 +41,7 @@ function toRoman(n: number): string {
     <button class={showTap ? "edit-bar__save edit-bar__save--tap" : "edit-bar__save"} type="button">Save</button>
   </header>
 
-  <div class="edit__hero" aria-hidden="true" />
+  <div class="edit__hero" aria-hidden="true" style={`background-image: url(${sampleRecipe.photo})`} />
 
   <div class="edit__body">
     <span class="edit__source">From {sampleRecipe.source}</span>
@@ -147,9 +147,10 @@ function toRoman(n: number): string {
   .edit__hero {
     width: 100%;
     aspect-ratio: 16 / 7;
-    background: radial-gradient(
-      ellipse at 32% 34%, #f7dd95 0%, #d6a34e 42%, #7f5219 100%
-    );
+    background-color: var(--c-oat);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     opacity: 0.92;
   }
 

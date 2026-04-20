@@ -1,124 +1,629 @@
-/* Design tokens — Hearth Press
- * Canonical source: /workspace/DESIGN.md
- * Do not introduce values that do not trace back to that document.
- */
+/* =========================================================================
+ * HEARTH PRESS · BRAND BOOK
+ * Design system — single source of truth.
+ * =========================================================================
+ *
+ * WHAT THIS FILE IS
+ *   The canonical definition of Hearth Press's visual system: every color,
+ *   type, spacing, radius, border, shadow, rule, motion, and focus-ring
+ *   token the product uses. Comments explain NOT just what each value is,
+ *   but WHY — what role it plays, when to reach for it, and when not to.
+ *
+ *   If any other file (agent memory, skill, doc) contradicts this file,
+ *   THIS FILE WINS. It ships. Other files are navigation aids.
+ *
+ * WHAT HEARTH IS
+ *   A recipe app that is also a publishing house. Home cooks save recipes
+ *   from TikTok, Instagram and the web, and turn them into premium
+ *   hardcover cookbooks when the occasion calls for one. App and book
+ *   share one design system — the book is the app made physical.
+ *
+ *   Audience archetype: a home cook, not a chef or food creator. Saving
+ *   recipes from her phone on the couch. Unhurried. Not tracking macros,
+ *   not meal-planning. Wants one beautiful artifact to keep.
+ *
+ *   Three-word voice: LITERARY · HAND-MADE · CONFIDENT.
+ *
+ *   Reference image: a boutique publishing house — a Chez Panisse
+ *   monograph, a Phaidon cookbook, a foil-stamped hardcover in a bookshop
+ *   window, a cloth-bound reference under candlelight.
+ *
+ *   Anti-references: modern SaaS dashboards, food-blog farmhouse
+ *   aesthetic, rustic-chic, Notion/Linear tech-UI, anything neon, glossy,
+ *   bouncy, or emoji-forward. Paprika. Do not become Paprika.
+ *
+ * THE SIX LOAD-BEARING PRINCIPLES
+ *   1. Typography continuity. App and book share one font system.
+ *   2. No tutorials, tooltips, walkthroughs. A beautiful object doesn't
+ *      need instructions.
+ *   3. Empty state is a designed object, not a to-do. Never "nothing here
+ *      yet." Always a typographic chapter-opener.
+ *   4. Craft moments over features. Premium feeling comes from small
+ *      unexpected typographic touches (italic Roman step markers, em-dash
+ *      folios, 0.28em small-caps eyebrows), not from feature additions.
+ *   5. First import is the hero flow. Screenshot-worthy.
+ *   6. Book-spine test. Every decision must look right on a hardcover
+ *      spine. If it would embarrass the object in a bookshop, it fails.
+ *
+ * HOW TO USE THIS FILE
+ *   · Use the CSS variables below. Never hardcode a hex, a font, a pixel,
+ *     or a millisecond that has a token.
+ *   · Read the comments around each group before inventing a new pattern.
+ *     Nine times in ten the move you need is already named.
+ *   · When a new token is needed (rare), add it HERE first, comment it
+ *     like everything else, then use it. Tokens never live only in a
+ *     component.
+ *   · The bans at the bottom of this file are absolute. They exist because
+ *     each one is either an AI-slop tell or breaks the book-spine test.
+ *     Bypassing a ban requires explicit founder approval.
+ *
+ * ACCESSIBILITY
+ *   WCAG AA across the board; AAA where the palette allows. AA-large is
+ *   permitted ONLY as an explicit exception for tertiary text on cream
+ *   (Oat #7c7465 at 4.04:1) — never for primary or secondary content,
+ *   never on interactive elements. Measured contrast ratios are listed
+ *   beside each text-color token.
+ *
+ * ========================================================================= */
 
 :root {
-  /* ───────────────────────── Palette — Brand anchors ─── */
-  --c-conifer: #2f4a3c;          /* Deep Conifer — sage hardcover surface */
-  --c-foil: #b8934a;             /* Antique Foil — display foil on sage */
-  --c-foil-light: #d4b062;       /* Foil Light — small-caps on sage + CTA bg */
-  --c-foil-hover: #debd74;       /* CTA hover (280ms lift to brighter foil) */
-  --c-cream: #f4efe6;            /* White Dove — cream page interior */
-  --c-chrome: #f6f2ea;            /* Chrome Background — page canvas */
-  --c-ochre: #7a5a26;            /* Deep Ochre — cookbook ink on cream */
 
-  /* Text on cream */
-  --c-ink: #1f1b17;              /* Warm Charcoal — primary body ink */
-  --c-ash: #6c6457;              /* secondary */
-  --c-oat: #7c7465;              /* tertiary (AA-large only) */
+  /* =======================================================================
+   * 1 · PALETTE
+   * =======================================================================
+   *
+   * Hearth's temperature is warm and unhurried. The chromatic range is
+   * strictly: sage ↔ cream ↔ gold/ochre ↔ charcoal. Every color looks
+   * like it could have been mixed from ink, paper, and gold leaf.
+   *
+   * PALETTE GUARDRAIL: Hearth has ZERO saturated accent colors. No blues,
+   * no reds, no purples. Alert Rust is the only warm exception and is
+   * reserved for destructive indicators only. If you feel like reaching
+   * for a blue "just for links" or purple "just for status chips" — stop
+   * and use a Hearth-native color with a size/weight/position shift
+   * instead.
+   *
+   * Dual theme: the palette lives as TWO SIDES of the same physical
+   * object. Sage = the hardcover (covers, heroes, onboarding, final
+   * CTAs). Cream = the interior page (library, recipe detail, edit, book
+   * preview). The decision is never "dark vs light mode" — it's
+   * "is this a cover or a page?"
+   * ======================================================================= */
 
-  /* Text on sage */
-  --c-ink-inverse: #f4efe6;      /* White Dove — primary on sage */
-  --c-linen: #dad5cd;            /* secondary on sage */
-  --c-stone: #b9b4ac;            /* tertiary on sage */
+  /* --- Brand anchors --------------------------------------------------- */
 
-  /* Utility */
-  --c-rust: #a55c2b;             /* Alert Rust — destructive indicators only */
-  --c-input: #faf7f1;            /* Input Fill — off-cream for form fields */
+  /* Deep Conifer — the sage hardcover.
+   * Dark surface for covers, hero sections, onboarding, and final CTA
+   * bands. A muted forest-dusk green-teal. Every emotional Hearth moment
+   * traces back to this color. Pairs with Antique Foil for wordmark,
+   * White Dove for body, Linen/Stone for secondary/tertiary text. */
+  --c-conifer: #2f4a3c;
+
+  /* Antique Foil — the gold-foil stamp.
+   * DISPLAY SIZES ONLY on sage: wordmark, hero title accents, cover-stamp
+   * treatments. A burnished, slightly brass-toned gold. Never bright,
+   * never yellow. Fails AA at small sizes on sage — use Foil Light
+   * instead for small-caps eyebrows and micro-labels. */
+  --c-foil: #b8934a;
+
+  /* Foil Light — the legible foil.
+   * The small-size companion to Antique Foil. Use on sage for small-caps
+   * eyebrows, micro-labels, and secondary marks where Antique Foil would
+   * fail. Also the Primary CTA background (on both sage and cream) —
+   * it's the "tappable gold." Measured 4.7:1 on Deep Conifer. */
+  --c-foil-light: #d4b062;
+
+  /* Foil Hover — the brightened CTA gold.
+   * The 280ms hover state for Primary CTAs. Brighter by one step; never
+   * for static use. */
+  --c-foil-hover: #debd74;
+
+  /* White Dove — the cream page.
+   * Light-mode surface, cookbook interiors, cards, phone body background.
+   * A neutral warm cream. NOT yellow, NOT bone, NOT paper-white. */
+  --c-cream: #f4efe6;
+
+  /* Chrome Background — the workspace canvas.
+   * The page surface BEHIND floating cream artifacts (cards, phone
+   * frames, book mockups). Slightly cooler/darker than White Dove so
+   * cream still registers as cream, not as white. Use as the default
+   * body background for marketing/web surfaces. */
+  --c-chrome: #f6f2ea;
+
+  /* Deep Ochre — the cookbook ink.
+   * The on-cream gold. Chapter marks, decorative rules, small-caps
+   * section labels (INGREDIENTS, METHOD), italic lowercase Roman step
+   * markers, folios. Darker than the foils so it survives at small sizes
+   * on cream. Pairs with Warm Charcoal body text. */
+  --c-ochre: #7a5a26;
+
+  /* --- Text on cream --------------------------------------------------- */
+
+  /* Warm Charcoal — primary body ink on cream.
+   * Near-black but warm-biased. Body paragraphs, recipe titles,
+   * ingredient lists. 14.94:1 on White Dove → AAA. */
+  --c-ink: #1f1b17;
+
+  /* Ash — secondary on cream.
+   * Captions, metadata ("Serves 4 · 50 minutes"), italic ledes. 5.10:1
+   * AA. Use for any text that supports the primary without competing. */
+  --c-ash: #6c6457;
+
+  /* Oat — tertiary on cream.
+   * Hints, folios, low-emphasis footnotes. 4.04:1 → AA-LARGE ONLY.
+   * Never use for primary or secondary text, never on any interactive
+   * element. This is the one AA-large exception in the palette. */
+  --c-oat: #7c7465;
+
+  /* --- Text on sage ---------------------------------------------------- */
+
+  /* White Dove as ink — primary on sage.
+   * Hero titles, display copy on dark surfaces. 8.47:1 → AAA. Also the
+   * library-page cream surface color (dual-purpose). */
+  --c-ink-inverse: #f4efe6;
+
+  /* Linen — secondary on sage.
+   * Dimmed support text, italic meta on sage. 6.64:1 AA. */
+  --c-linen: #dad5cd;
+
+  /* Stone — tertiary on sage.
+   * Tertiary meta, low-emphasis tags on sage. 4.70:1 AA. */
+  --c-stone: #b9b4ac;
+
+  /* --- Utility --------------------------------------------------------- */
+
+  /* Alert Rust — destructive only.
+   * Reserved for destructive/anti-pattern indicators (delete-recipe
+   * confirm, error toasts, version-roll-back warnings). NEVER use as a
+   * general brand accent. Never in positive contexts. This is the only
+   * warm exception to the zero-saturation rule. */
+  --c-rust: #a55c2b;
+
+  /* Input Fill — off-cream for form fields.
+   * Slightly lighter than White Dove so a field reads as distinct from
+   * the page. On focus, the field background lifts to pure white
+   * (--c-input-focus-bg). */
+  --c-input: #faf7f1;
   --c-input-focus-bg: #ffffff;
 
-  /* Semantic surface roles (mapped — do not hardcode surface colors elsewhere) */
+  /* --- Semantic surface roles ------------------------------------------
+   * Map tokens to the surface they belong to. Components should reach
+   * for --surface-page / --surface-cream / --surface-sage rather than
+   * the palette colors directly, so the brand can re-key surfaces
+   * centrally if needed. */
   --surface-page: var(--c-chrome);
   --surface-cream: var(--c-cream);
   --surface-sage: var(--c-conifer);
 
-  /* ───────────────────────── Typography — 3 faces, 5 tiers ─── */
+
+  /* =======================================================================
+   * 2 · TYPOGRAPHY
+   * =======================================================================
+   *
+   * Three typefaces, five tiers. The interplay between serif (literary)
+   * and sans (informational) is what makes the system feel like a
+   * publishing house, not a food blog.
+   *
+   * FONT SELECTION — PRINCIPLED EXCEPTION TO IMPECCABLE'S REFLEX LIST
+   *   Lora and DM Sans appear on impeccable's reflex_fonts_to_reject
+   *   list. Their use here is an explicit, founder-confirmed exception,
+   *   not the AI-reflex default. Rationale, per face:
+   *
+   *   · Marcellus is reserved EXCLUSIVELY for the "HEARTH" wordmark
+   *     (spines, covers, app icon, nav). It has no italic and no
+   *     alternate weights, and nothing else in the system is ever set
+   *     in it. Justified by publishing-house wordmark tradition.
+   *
+   *   · Lora was chosen as a transitional book serif — warm, editorial,
+   *     slightly bookish without feeling antique. It carries ALL italic
+   *     jobs (Marcellus has no italic) — recipe titles, chapter openers,
+   *     ledes, italic metadata, italic Roman-numeral step markers.
+   *     Hierarchy comes from SIZE and COLOR; NEVER from bold weight.
+   *
+   *   · DM Sans is the quiet neutral. Small-caps eyebrows (0.22-0.30em
+   *     tracking), body, and UI chrome. Lets the serifs do the emotional
+   *     work. Regular 400 for body, medium 500 for UI labels and
+   *     eyebrows.
+   *
+   *   Do not switch or add to this trio without founder approval. Agents
+   *   suggesting Inter, Fraunces, Playfair, Cormorant, Plus Jakarta,
+   *   Space Grotesk, or any other "default designy" face should be
+   *   refused.
+   *
+   * TYPOGRAPHIC CHARACTER RULES
+   *   · Hierarchy is scale + color + face-switching. NEVER bold weight.
+   *   · Step-numbered lists render the numeral in ITALIC LOWERCASE ROMAN
+   *     (i. ii. iii. iv.) set in Lora italic, colored Deep Ochre on
+   *     cream or Foil Light on sage.
+   *   · Folios are centered, Lora italic ~12-13px, with em-dash
+   *     ornamentation — e.g. "— 47 —" or "— page 1 · version ii —".
+   *   · Body letter-spacing sits at default or slightly open
+   *     (0.01-0.02em); display letter-spacing is tight-negative
+   *     (-0.012em to -0.015em).
+   *   · Small-caps eyebrows MUST track 0.22-0.30em. Anything tighter
+   *     reads as "generic caps label." The wide tracking is what signals
+   *     "cookbook chapter mark."
+   *   · Long body passages never go uppercase. Reserve all-caps for
+   *     short labels and headings.
+   *   · Section note copy and metadata use italics as texture, not as
+   *     emphasis.
+   * ======================================================================= */
+
+  /* --- Faces ----------------------------------------------------------- */
+
+  /* Marcellus — wordmark only.
+   * Serif, 400 weight, all-caps. Reserved for "HEARTH" mark anywhere it
+   * appears (navigation wordmark, app icon, cover stamp, book spine).
+   * No other copy is ever set in Marcellus. */
   --f-wordmark: "Marcellus", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+
+  /* Lora — display + italic.
+   * Transitional book serif, 400 + 400 italic. Carries display headings,
+   * recipe titles, chapter openers, ledes, italic metadata, italic
+   * Roman-numeral step markers, folios. NEVER use bold. Hierarchy comes
+   * from size/color, not weight. */
   --f-display: "Lora", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+
+  /* DM Sans — body + UI.
+   * Humanist sans, 400 regular + 500 medium. Small-caps eyebrows, body
+   * paragraphs, UI chrome, metadata, button labels, form labels. The
+   * quiet neutral that lets the serifs do the emotional work. */
   --f-body: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
 
-  /* Display / Wordmark — Marcellus, all-caps, wide track */
+  /* System monospace — TECHNICAL SURFACES ONLY.
+   * NOT a fourth face in the trio. The trio stays locked at Marcellus /
+   * Lora / DM Sans for anything a user ever sees. This token exists only
+   * for internal technical annotation: design-binder token readouts
+   * (/design/brand), developer docs, debug overlays. If it ends up in a
+   * shipping product surface, that surface is wrong — rewrite with DM
+   * Sans instead. Uses the `ui-monospace` generic keyword so the OS
+   * chooses its own system mono (SFMono on macOS, etc.); no typeface
+   * stack, because we want one target, not a hedge. */
+  --f-mono: ui-monospace;
+
+  /* --- Tier 1 · Display / Wordmark ------------------------------------- *
+   * Marcellus 400, ~48-72px, letter-spacing 0.08-0.10em, line-height 1.
+   * Always gold foil on sage (--c-foil) or Deep Ochre on cream
+   * (--c-ochre). Fluid-scaled via clamp for marketing/hero surfaces; use
+   * fixed sizes for in-app nav (22-24px). */
   --fs-wordmark: clamp(3rem, 5vw + 1.5rem, 4.5rem);
   --lh-wordmark: 1;
   --ls-wordmark: 0.1em;
 
-  /* H1 / Recipe & Chapter Titles — Lora, fluid */
+  /* --- Tier 2 · H1 / Recipe & Chapter Titles --------------------------- *
+   * Lora 400, 28-42px fluid, line-height 1.08-1.15, letter-spacing
+   * slightly-negative. Warm Charcoal on cream; White Dove on sage. */
   --fs-h1: clamp(1.75rem, 2.5vw + 1rem, 2.625rem);
   --lh-h1: 1.1;
   --ls-h1: -0.012em;
 
-  /* Italic / H2–H4 / Lede — Lora italic */
+  /* --- Tier 3 · Italic / H2-H4 / Lede ---------------------------------- *
+   * Lora italic 400, 16-24px, line-height 1.4-1.6. Carries all italic
+   * jobs: meta, numerals, folios, ledes. Since Marcellus has no italic,
+   * this is the italic voice of Hearth. */
   --fs-lede: clamp(1rem, 0.8vw + 0.75rem, 1.5rem);
   --lh-lede: 1.5;
 
-  /* Eyebrow / Overline / Small-cap Label — DM Sans 500 */
-  --fs-eyebrow: 0.6875rem;       /* 11px — mid of 9–13px range */
+  /* --- Tier 4 · Eyebrow / Overline / Small-cap Label ------------------- *
+   * DM Sans 500, 9-13px, UPPERCASE with letter-spacing 0.22em-0.30em.
+   * Deep Ochre on cream; Foil Light on sage. Wide tracking is
+   * NON-NEGOTIABLE — it is what signals "cookbook chapter mark"
+   * instead of "generic caps label." */
+  --fs-eyebrow: 0.6875rem;
   --lh-eyebrow: 1.3;
-  --ls-eyebrow: 0.28em;          /* wide-tracking is non-negotiable */
+  --ls-eyebrow: 0.28em;
 
-  /* Body / UI — DM Sans 400 */
-  --fs-body: 0.9375rem;          /* 15px */
+  /* --- Tier 5 · Body / UI ---------------------------------------------- *
+   * DM Sans 400, 13-15px, line-height 1.55-1.75. On sage, ADD 0.07 to
+   * line-height because light text on dark reads as lighter weight and
+   * needs more leading. */
+  --fs-body: 0.9375rem;
   --lh-body: 1.65;
-  --lh-body-sage: 1.72;          /* +0.07 for light-on-dark legibility */
+  --lh-body-sage: 1.72;
 
-  /* Secondary body sizes (UI chrome, meta) */
-  --fs-meta: 0.8125rem;          /* 13px */
-  --fs-caption: 0.75rem;         /* 12px */
+  /* Secondary body sizes — UI chrome, meta lines, captions.
+   * Meta = 13px, used for "Serves 4 · 50 minutes" lines.
+   * Caption = 12px, used for folios and footnotes. */
+  --fs-meta: 0.8125rem;
+  --fs-caption: 0.75rem;
 
-  /* Measure */
-  --measure-body: 56ch;          /* mid of 52–58ch brief-spec */
+  /* --- Measure / line length ------------------------------------------- *
+   * Body copy max-width ~52-58ch for comfortable reading. Lede slightly
+   * tighter at 52ch. Long-form content wider than this fatigues the eye. */
+  --measure-body: 56ch;
   --measure-lede: 52ch;
 
-  /* ───────────────────────── Spacing — 4pt scale, semantic ─── */
-  --space-2xs: 0.25rem;          /* 4  */
-  --space-xs:  0.5rem;           /* 8  */
-  --space-sm:  0.75rem;          /* 12 */
-  --space-md:  1rem;             /* 16 */
-  --space-lg:  1.5rem;           /* 24 */
-  --space-xl:  2rem;             /* 32 */
-  --space-2xl: 3rem;             /* 48 */
-  --space-3xl: 4rem;             /* 64 */
-  --space-4xl: 6rem;             /* 96 — major section rhythm */
 
-  /* Page padding — fluid, breathes on larger screens */
+  /* =======================================================================
+   * 3 · SPACING
+   * =======================================================================
+   *
+   * 4pt scale with semantic names. We use semantic tokens (--space-sm,
+   * --space-md) rather than pixel-named (--spacing-8) because the point
+   * of a scale is the RHYTHM between values; the pixel counts are
+   * implementation detail.
+   *
+   * Prefer `gap` over margins for sibling spacing — eliminates margin
+   * collapse and the cleanup hacks that come with it.
+   *
+   * Vary spacing for hierarchy. A heading with extra space above it
+   * reads as more important. Do NOT apply the same padding everywhere.
+   * ======================================================================= */
+
+  --space-2xs: 0.25rem;  /*  4px — hairline details */
+  --space-xs:  0.5rem;   /*  8px — tight grouping */
+  --space-sm:  0.75rem;  /* 12px — list items, inline chips */
+  --space-md:  1rem;     /* 16px — default gap between related elements */
+  --space-lg:  1.5rem;   /* 24px — between a heading and its body */
+  --space-xl:  2rem;     /* 32px — between subsections */
+  --space-2xl: 3rem;     /* 48px — larger section rhythm */
+  --space-3xl: 4rem;     /* 64px — */
+  --space-4xl: 6rem;     /* 96px — between major page sections */
+
+  /* Page padding — fluid, breathes on larger screens.
+   * Do not use fixed page padding. These clamp values pair with the type
+   * scale so the gutter feels consistent across viewports. */
   --pad-side: clamp(1.5rem, 4vw, 4.5rem);
   --pad-section: clamp(3.5rem, 8vw, 6rem);
 
-  /* ───────────────────────── Corner radius — disciplined 2px ─── */
-  --r-page: 2px;                  /* book-page corner — the default */
-  --r-pill: 999px;                /* tappable button — the only exception */
 
-  /* ───────────────────────── Borders ─── */
-  --b-divider: 1px solid rgba(31, 27, 23, 0.08);    /* list-item whisper */
+  /* =======================================================================
+   * 4 · CORNER RADIUS
+   * =======================================================================
+   *
+   * Disciplined 2px. The radius of a well-cut book page — not sharp, not
+   * rounded. Pills are the ONE intentional exception, used only to
+   * signal "this is tappable." Inputs and pill buttons sit next to each
+   * other in forms and SHOULD feel different: 2px vs 999px.
+   *
+   * Banned: nested cards-in-cards, pill radii on containers, large
+   * rounded corners on anything that isn't a button, iOS-ish 12-14px
+   * rounded-rect app-card treatments.
+   * ======================================================================= */
+
+  --r-page: 2px;        /* book-page corner — the default for ALL containers */
+  --r-pill: 999px;      /* tappable-button exception — NEVER for containers */
+
+
+  /* =======================================================================
+   * 5 · BORDERS
+   * =======================================================================
+   *
+   * Borders are a whisper, not a stroke. 1px @ rgba(31,27,23,0.08) is the
+   * list-item divider voice. We almost never put a visible border around
+   * a card — the paper-warmth shadow and surface color contrast do that
+   * work.
+   * ======================================================================= */
+
+  /* List-item divider on cream — barely-there, book-layout voice. */
+  --b-divider: 1px solid rgba(31, 27, 23, 0.08);
+
+  /* List-item divider on sage — same whisper treatment, inverted. */
   --b-divider-sage: 1px solid rgba(244, 239, 230, 0.1);
+
+  /* Card border — even quieter than the list divider. */
   --b-card: 1px solid rgba(0, 0, 0, 0.06);
+
+  /* Input border — default vs. focus. */
   --b-input: 1px solid rgba(31, 27, 23, 0.18);
   --b-input-focus: 1px solid var(--c-ink);
 
-  /* ───────────────────────── Shadows — warm, brown-biased ─── */
+
+  /* =======================================================================
+   * 6 · SHADOWS
+   * =======================================================================
+   *
+   * Warm, brown-biased. NEVER blue-biased. The rgba values here
+   * deliberately carry a brown tint (rgba(30,20,10,…) or rgba(122,90,38,…))
+   * because a blue-biased shadow reads as "SaaS card" and breaks the
+   * physical-object metaphor.
+   * ======================================================================= */
+
+  /* Paper lift — lifted-paper feel, default card treatment. */
   --shadow-paper: 0 1px 2px rgba(0, 0, 0, 0.06);
+
+  /* Deep lift — for modals, hero artifacts, book-cover mockups. */
   --shadow-lift: 0 20px 40px -20px rgba(30, 20, 10, 0.2);
+
+  /* Button — subtle warm press under CTAs. */
   --shadow-button: 0 1px 2px rgba(122, 90, 38, 0.22);
 
-  /* ───────────────────────── Decorative rules ─── */
-  --rule-short: 36px;             /* hero eyebrow rule */
-  --rule-chapter: 44px;            /* chapter-mark rule */
+
+  /* =======================================================================
+   * 7 · DECORATIVE RULES
+   * =======================================================================
+   *
+   * Two weights used throughout the system:
+   *   · 36px × 1px       — eyebrow rule above a section label
+   *   · 44px × 1.5px     — chapter-mark rule above a chapter opener
+   * Both colored Deep Ochre on cream or Antique Foil on sage. Never use
+   * rules to box content — they mark chapter rhythm, not containers.
+   * ======================================================================= */
+
+  --rule-short: 36px;
+  --rule-chapter: 44px;
   --rule-weight: 1px;
   --rule-weight-chapter: 1.5px;
 
-  /* ───────────────────────── Motion ─── */
-  --motion-state: 280ms;           /* DESIGN.md canonical state-change duration */
-  --ease-state: ease;              /* DESIGN.md specifies plain ease */
-  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1); /* hero stagger only */
 
-  /* Page-load stagger timing (hero orchestration — the single allowed delight) */
+  /* =======================================================================
+   * 8 · MOTION
+   * =======================================================================
+   *
+   * Restrained. Every state change is a ~280ms ease fade on background,
+   * color, and box-shadow. No springs. No bounces. No overshoot. No
+   * bespoke "craft moments" with scroll-driven reveals or staggered
+   * card dances. Users should NOT consciously notice motion — that's
+   * the point.
+   *
+   * THE ONLY ALLOWED DELIGHT is the chevron-translate 3px on hover for
+   * T2 tertiary links ("continue reading →"). Everything else is fade
+   * in place.
+   *
+   * Reduced-motion: prefers-reduced-motion: reduce must disable the
+   * ~280ms transitions everywhere. Since motion is already minimal,
+   * reduced-motion should feel like the same interface with instant
+   * state changes.
+   * ======================================================================= */
+
+  --motion-state: 280ms;
+  --ease-state: ease;
+
+  /* Used only for the one-time hero-stagger on page load (marketing). */
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
   --stagger-offset: 60ms;
   --stagger-duration: 400ms;
   --stagger-translate: 8px;
 
-  /* Focus ring (keyboard only) — tokens per surface */
+
+  /* =======================================================================
+   * 9 · FOCUS RINGS
+   * =======================================================================
+   *
+   * Keyboard-only. Surface-aware: ochre on cream, foil-light on sage.
+   * 2px ring, 2px offset. Never use the browser default blue focus ring.
+   * ======================================================================= */
+
   --focus-ring-cream: 2px solid var(--c-ochre);
   --focus-ring-sage: 2px solid var(--c-foil-light);
   --focus-ring-offset: 2px;
+
 }
+
+
+/* =========================================================================
+ * COMPONENT TREATMENTS
+ * =========================================================================
+ *
+ * The recurring compositions these tokens combine into. These are not
+ * tokens themselves — they're reference recipes for how Hearth things
+ * look. Implementation lives in individual components.
+ *
+ * BUTTONS — six-token system, all pill except tertiary/inline
+ *   · Primary          Foil Light bg, Warm Charcoal text, pill,
+ *                      --shadow-button, 280ms hover to Foil Hover.
+ *                      ONE per screen maximum.
+ *   · Secondary S1     Outlined — transparent fill, 1px border Deep
+ *                      Conifer on cream / White Dove on sage, pill. Hover
+ *                      inverts to filled. Book-jacket feel.
+ *   · Secondary S3     Soft filled — low-contrast fill (#E8E1D1 on cream;
+ *                      14% White Dove on sage), no border, pill. Quiet
+ *                      supporting actions: filters, pagination, chips.
+ *   · Tertiary T1      Plain text — no container, underline-on-hover,
+ *                      280ms. Low-stakes and destructive ("Delete").
+ *   · Tertiary T2      Chevron / rule — text + italic chevron that
+ *                      nudges 3px right on hover, or text with a Deep
+ *                      Ochre / Foil Light bottom rule. Navigational
+ *                      "continue reading" moments. THE ONLY DELIGHT.
+ *   · Inline link      Inherits paragraph color, underline with 3px
+ *                      offset, transition to currentColor on hover. Gold
+ *                      variant uses Deep Ochre on cream / Foil Light on
+ *                      sage.
+ *
+ * CARDS / CONTAINERS
+ *   · Subtly squared (--r-page = 2px). Never pill radii. Never large
+ *     rounded corners.
+ *   · Background: White Dove on cream pages, Deep Conifer on sage.
+ *   · --shadow-paper for lifted-paper; --shadow-lift for deeper lift.
+ *   · Border is --b-card (barely-there) — book-layout, not card-UI.
+ *   · Cloth-weave and paper-warmth textures (applied via layered
+ *     repeating gradients and radial vignettes) are present but
+ *     restrained — they read on second glance, not first.
+ *
+ * INPUTS / FORMS
+ *   · Square (--r-page). Inputs and pill buttons sitting next to each
+ *     other SHOULD feel different.
+ *   · Background --c-input, --b-input border. Focus deepens border to
+ *     Warm Charcoal and lifts background to pure white.
+ *   · Label: DM Sans 500, 10.5-11px, color Ash.
+ *   · Placeholder: Oat (--c-oat).
+ *   · Search fields in nav use the same --r-page — explicitly NOT pill
+ *     (pill is reserved for buttons).
+ *
+ * NAVIGATION
+ *   Horizontal bar on cream: Marcellus wordmark (18-22px, Deep Conifer,
+ *   0.12-0.16em tracking) on the left, DM Sans 13px links center
+ *   (Ink-Secondary default, Ink-Primary + medium when active), 2px
+ *   search field, and a pill Primary CTA (Foil Light) at the far right.
+ *
+ * PHOTOGRAPHY
+ *   Photography lives in EXACTLY TWO PLACES and nowhere else:
+ *     (1) Full-bleed recipe-detail hero, with a gradient scrim from
+ *         transparent → rgba(0,0,0,0.55) for title legibility.
+ *     (2) Small square library thumbnails, 2px radius, 32-40px.
+ *   Covers, chapter openers, and cookbook interiors stay TYPOGRAPHIC
+ *   ONLY.
+ *
+ *   Voice: user-uploaded photos, honest, true-to-phone. NO AI
+ *   enhancement, NO filters that fake moodiness. The rule is
+ *   "imperfect, true-to-phone."
+ *
+ * LAYOUT RHYTHM
+ *   Canonical long-form page sequence:
+ *     chapter-mark → rule → title → lede → labeled-sections → folio
+ *   Small-cap chapter label → 44×1.5px Deep-Ochre rule → Lora 40-42px
+ *   title → italic Lora lede → DM Sans small-cap labels opening each
+ *   content block.
+ *
+ *   Section rhythm at the page level: ~96px between major sections,
+ *   40-56px between subsections, 24-28px between a heading and its body.
+ *
+ *   Grids default to editorial columns — single-column body at ~640px
+ *   for reading surfaces; 2-column 1fr/1fr for compare-and-contrast
+ *   ("cookbook spread"); 3-column only for swatch/specimen galleries.
+ *
+ *   Alignment is left-aligned by default for editorial copy; centered
+ *   only for folios, hero callouts, and the wordmark itself.
+ *
+ *   Icons are line-drawn at 1.4 stroke-width, inherit currentColor, and
+ *   sit at 12-16px inside chrome. No filled icon styles.
+ *
+ * VISUAL COPY / UX WRITING
+ *   · Warmth comes from PHRASING, never from emoji or exclamation marks.
+ *   · Factual when factual serves — "50 min · Serves 4" stays that way,
+ *     with the em-middot separator.
+ *   · Conversational only where it helps: empty states, toasts after
+ *     non-trivial actions, conversion moments.
+ *   · Em-middot ( · ) is the default separator for meta lines, compound
+ *     labels, and anywhere commas would feel bureaucratic.
+ *   · No exclamation marks. No emoji. No "Great job!" toasts. Confirm
+ *     with a noun: "Saved — it's in your library."
+ *
+ * ========================================================================= */
+
+
+/* =========================================================================
+ * HARD BANS
+ * =========================================================================
+ *
+ * Inside any product UI — app, web, book — NEVER:
+ *
+ *   · Blue, red, purple, or any saturated accent color. Alert Rust
+ *     (--c-rust) is the only warm exception, destructive only.
+ *   · border-left or border-right ≥ 2px as a decorative accent stripe.
+ *     This is the #1 AI-slop tell in admin/dashboard/medical UIs.
+ *     Rewrite the element, don't swap to box-shadow inset.
+ *   · Gradient text (background-clip: text). Decorative rather than
+ *     meaningful; one of the top AI design tells.
+ *   · Pure black (#000) or pure white (#fff). Always tinted.
+ *   · Bold weight for hierarchy. Use size + color + face.
+ *   · Any font besides Marcellus (wordmark only), Lora, DM Sans. No
+ *     Inter, Roboto, Fraunces, Playfair, Cormorant, Plus Jakarta,
+ *     Space Grotesk, Outfit — the trio is locked.
+ *   · Pill radii on containers. Pills = buttons only. Containers = 2px.
+ *   · Nested cards inside cards. Flatten the hierarchy.
+ *   · Rounded-icon-above-heading templated layouts.
+ *   · Glassmorphism, neon glows, cyan-on-dark, purple-to-blue gradients.
+ *   · Bouncy / elastic / spring motion. Real objects decelerate smoothly.
+ *   · Emoji. Anywhere.
+ *   · Tutorials, tooltips, walkthroughs, onboarding coach-marks.
+ *   · "Nothing here yet" empty states. Always a typographic chapter-opener.
+ *   · Hero metric templates (big number + small label + supporting stats).
+ *   · Sparklines as decoration.
+ *   · Identical card grids with icon+heading+text repeated.
+ *   · Modals when there is any better alternative. Modals are lazy.
+ *
+ * Bypassing a ban above requires explicit founder approval. An agent
+ * suggesting a bypass should surface the conflict and wait.
+ *
+ * ========================================================================= */

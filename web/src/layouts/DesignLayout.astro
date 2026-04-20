@@ -2,24 +2,18 @@
 /**
  * Layout for /design/* routes — internal mockup surface.
  * Wraps every design route in the warm workspace canvas (Chrome Background),
- * hides itself from search engines, and strips the marketing nav/CTA.
+ * hides itself from search engines, strips the marketing nav/CTA, and renders
+ * the shared DesignTopbar so navigation stays identical across pages.
  */
 import "~/styles/global.css";
 import "~/styles/design.css";
+import DesignTopbar from "~/components/design/DesignTopbar.astro";
 
 interface Props {
   title?: string;
-  eyebrow?: string;
-  /** Where the ← crumb should point. Omit on the binder index. */
-  up?: { href: string; label: string };
 }
 
-const { title = "Design", eyebrow, up } = Astro.props;
-
-const path = Astro.url.pathname;
-const isIndex = path === "/design" || path === "/design/";
-const resolvedUp =
-  up ?? (isIndex ? null : { href: "/design", label: "Binder" });
+const { title = "Design" } = Astro.props;
 ---
 
 <!doctype html>
@@ -41,54 +35,9 @@ const resolvedUp =
     </script>
   </head>
   <body class="design-body">
-    <header class="design-topbar">
-      <a class="design-topbar__brand" href="/design">
-        <span class="design-topbar__mark">HEARTH</span>
-        <span class="design-topbar__tag">Design</span>
-      </a>
-      {resolvedUp && (
-        <a class="design-topbar__up" href={resolvedUp.href}>
-          <span class="design-topbar__up-chev" aria-hidden="true">←</span>
-          <span>{resolvedUp.label}</span>
-        </a>
-      )}
-      {eyebrow && (
-        <span class="eyebrow design-topbar__eyebrow">{eyebrow}</span>
-      )}
-      <button
-        class="design-topbar__toggle"
-        type="button"
-        id="tap-toggle"
-        aria-pressed="true"
-        aria-label="Toggle tap markers"
-      >
-        <span class="design-topbar__toggle-dot" aria-hidden="true"></span>
-        <span>Tap markers</span>
-      </button>
-    </header>
+    <DesignTopbar />
     <main class="design-main">
       <slot />
     </main>
-    <script is:inline>
-      (function () {
-        var KEY = "hearth-design-tap";
-        var btn = document.getElementById("tap-toggle");
-        var root = document.documentElement;
-        function apply(on) {
-          root.classList.toggle("no-tap-halos", !on);
-          if (btn) btn.setAttribute("aria-pressed", String(on));
-        }
-        var stored = null;
-        try { stored = localStorage.getItem(KEY); } catch (_) {}
-        apply(stored !== "off");
-        if (btn) {
-          btn.addEventListener("click", function () {
-            var next = btn.getAttribute("aria-pressed") !== "true";
-            try { localStorage.setItem(KEY, next ? "on" : "off"); } catch (_) {}
-            apply(next);
-          });
-        }
-      })();
-    </script>
   </body>
 </html>
