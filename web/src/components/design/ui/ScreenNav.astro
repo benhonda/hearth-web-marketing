@@ -1,0 +1,110 @@
+---
+/**
+ * ScreenNav — the single top nav row used by screens that have a
+ * back chevron plus a chapter-mark label. Lays the eyebrow + short
+ * rule inline with the back button so the nav reads as one
+ * compressed line: a chapter mark with a way out.
+ *
+ *     ‹          EYEBROW
+ *                  ──
+ *
+ * Renders at the ~62px status-bar offset so in-phone content begins
+ * just below. Used by Preview (VI), The cover (VII), The page (VIII).
+ */
+
+interface Props {
+  eyebrow?: string;
+  backLabel?: string;
+}
+
+const { eyebrow, backLabel = "Back" } = Astro.props;
+---
+
+<nav class="screen-nav" aria-label={backLabel}>
+  <button class="screen-nav__back" type="button" aria-label={backLabel}>
+    <span aria-hidden="true">‹</span>
+  </button>
+
+  {eyebrow ? (
+    <div class="screen-nav__mark">
+      <span class="screen-nav__eyebrow">{eyebrow}</span>
+      <hr class="screen-nav__rule" aria-hidden="true" />
+    </div>
+  ) : (
+    <span class="screen-nav__mark-placeholder" aria-hidden="true"></span>
+  )}
+
+  <span class="screen-nav__spacer" aria-hidden="true"></span>
+</nav>
+
+<style>
+  .screen-nav {
+    display: grid;
+    grid-template-columns: 32px 1fr 32px;
+    align-items: center;
+    padding: 62px 12px 0;
+    gap: 10px;
+  }
+
+  .screen-nav__back {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0 0 2px;
+    font-family: var(--f-display);
+    font-size: 26px;
+    line-height: 1;
+    color: var(--c-ink);
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+  }
+
+  /* Chapter-mark unit. Eyebrow stacked over a short foil/ochre rule,
+     the same rhythm as the canonical chapter opener in tokens.css —
+     just compressed to nav height. */
+  .screen-nav__mark {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .screen-nav__eyebrow {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 10px;
+    line-height: 1;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--c-ochre);
+  }
+
+  .screen-nav__rule {
+    display: block;
+    border: 0;
+    width: 32px;
+    height: 1px;
+    background: var(--c-ochre);
+    margin: 0;
+    opacity: 0.7;
+  }
+
+  /* Empty center when no eyebrow is supplied — keeps the grid
+     shape stable so the back chevron sits at the same position
+     regardless of whether this screen has a chapter mark. */
+  .screen-nav__mark-placeholder {
+    display: block;
+    height: 1px;
+  }
+
+  /* Symmetry spacer so the chapter mark sits visually centered
+     against the back chevron on the left. */
+  .screen-nav__spacer {
+    display: block;
+    width: 32px;
+    height: 1px;
+  }
+</style>

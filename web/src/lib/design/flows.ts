@@ -26,7 +26,7 @@ export type ScreenRender =
   | "book-settings"
   | "book-title-cover"
   | "book-preview"
-  | "book-spread-edit";
+  | "book-page-edit";
 
 export type FlowStep = {
   numeral: string;            // Roman numeral label — "I", "II", "III"
@@ -235,12 +235,12 @@ export const flows: Flow[] = [
       },
       {
         numeral: "VIII",
-        name: "Editing a spread",
-        detailTitle: "Editing this spread.",
+        name: "The page",
+        detailTitle: "Editing a page.",
         note:
-          "The per-spread editor reached from Preview when the user taps a spread. Same spread rendered one step bigger (0.52 vs 0.48 on VI), with an interactive layout picker above: two BookPage thumbnails, click one to swap the left page's layout. For 1-photo recipes, two options. Outlined 'Done' returns to Preview.",
-        render: "book-spread-edit",
-        screenSlug: "book-spread-edit",
+          "Reached from Preview when the user taps one of the two pages on a spread. Edits ONE page at a time (not the whole spread). Same vertical pattern as VII: display → LAYOUT row (interactive 2 thumbs) → PHOTO row (scrollable) → Done. Both layout variants pre-rendered; clicking a thumb swaps which is visible.",
+        render: "book-page-edit",
+        screenSlug: "book-page-edit",
         tap: "Done",
       },
       {

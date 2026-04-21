@@ -53,9 +53,9 @@ const { showTap = false } = Astro.props;
     position: relative;
     width: 100%;
     min-height: 100%;
-    display: grid;
-    grid-template-rows: auto 1fr auto;
-    padding: 74px 36px 46px;
+    display: flex;
+    flex-direction: column;
+    padding: 74px 36px 0;
     color: var(--c-ink-inverse);
   }
 
@@ -92,8 +92,11 @@ const { showTap = false } = Astro.props;
   }
 
   /* Title plate — the "engraved plate" at the center of the cover.
-     Vertically centered via grid-row 1fr above. */
+     flex: 1 makes it grow to fill the space between the top eyebrow
+     and the sticky foot; justify-content: center lands the title
+     vertically centered in that zone. */
   .inv__plate {
+    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -141,11 +144,20 @@ const { showTap = false } = Astro.props;
   }
   .inv__lede > span { display: block; }
 
-  /* Foot: one Primary CTA, one quiet T1 tertiary. */
+  /* Foot: pinned to the bottom always. Sage background covers the
+     home-indicator zone too (padding-bottom: 34px), so the only
+     thing the user ever sees below the buttons is the home indicator
+     pill itself (z:20, on top). */
   .inv__foot {
+    margin-top: auto;
+    position: sticky;
+    bottom: 0;
     display: grid;
     gap: 14px;
-    padding-bottom: 8px;
+    padding: 14px 36px 34px;
+    margin-inline: -36px;
+    background: var(--c-conifer);
+    z-index: 5;
   }
 
   /* Primary CTA: foil-light pill, warm-charcoal text, pill radius.

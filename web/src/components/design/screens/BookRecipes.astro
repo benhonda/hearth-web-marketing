@@ -12,7 +12,7 @@
  * tiers from MVP.md), indicative price. No final price yet — that
  * comes with the first proof, per the concierge model.
  */
-import StepHeader from "../ui/StepHeader.astro";
+import ScreenNav from "../ui/ScreenNav.astro";
 import LibraryGrid from "../ui/LibraryGrid.astro";
 import { sampleLibraryTiles } from "~/lib/design/sample-library";
 
@@ -29,13 +29,12 @@ const selectedCount = tiles.length - dimmedIndices.size;
 ---
 
 <div class="rec">
-  <nav class="rec__topbar" aria-label="Back">
-    <button class="rec__back" type="button" aria-label="Back">
-      <span aria-hidden="true">‹</span>
-    </button>
-  </nav>
+  <ScreenNav />
 
-  <StepHeader step="II" title="The recipes" lede="What goes in the book." />
+  <header class="rec__head">
+    <h1 class="rec__head-title">The recipes.</h1>
+    <p class="rec__head-lede">What goes in the book.</p>
+  </header>
 
   <LibraryGrid tiles={tiles} />
 
@@ -56,27 +55,39 @@ const selectedCount = tiles.length - dimmedIndices.size;
 
 <style>
   .rec {
-    display: grid;
-    grid-template-rows: auto auto auto auto auto;
+    display: flex;
+    flex-direction: column;
     min-height: 100%;
-    padding-bottom: 44px;
   }
 
-  .rec__topbar { padding: 62px 12px 0; }
-  .rec__back {
-    display: inline-flex;
+  /* Header — title + italic lede. */
+  .rec__head {
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    padding-bottom: 2px;
+    gap: 6px;
+    padding: 14px 22px 10px;
+  }
+  .rec__head-title {
     font-family: var(--f-display);
-    font-size: 26px;
-    line-height: 1;
+    font-weight: 400;
+    font-size: 28px;
+    line-height: 1.15;
+    letter-spacing: -0.012em;
+    text-align: center;
     color: var(--c-ink);
-    background: transparent;
-    border: 0;
-    cursor: pointer;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .rec__head-lede {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 1.4;
+    text-align: center;
+    color: var(--c-ash);
+    margin: 2px 0 0;
   }
 
   /* Meta line — the running colophon. Center-aligned, em-middot
@@ -103,7 +114,12 @@ const selectedCount = tiles.length - dimmedIndices.size;
   }
 
   .rec__foot {
-    padding: 20px 24px 0;
+    margin-top: auto;
+    position: sticky;
+    bottom: 0;
+    padding: 14px 24px 34px;
+    background: var(--c-cream);
+    z-index: 5;
   }
 
   .rec__continue {

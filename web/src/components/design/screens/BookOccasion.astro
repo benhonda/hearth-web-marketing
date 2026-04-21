@@ -12,7 +12,7 @@
  * procedural advance, not a commitment moment. Primary/foil pills are
  * reserved for Begin (screen II) and Send to Hearth Press (screen VI).
  */
-import StepHeader from "../ui/StepHeader.astro";
+import ScreenNav from "../ui/ScreenNav.astro";
 
 interface Props { showTap?: boolean; }
 const { showTap = false } = Astro.props;
@@ -30,13 +30,12 @@ const occasions = [
 ---
 
 <div class="occ">
-  <nav class="occ__topbar" aria-label="Back">
-    <button class="occ__back" type="button" aria-label="Back">
-      <span aria-hidden="true">‹</span>
-    </button>
-  </nav>
+  <ScreenNav />
 
-  <StepHeader step="I" title="The occasion" lede="What are we making this for?" />
+  <header class="occ__head">
+    <h1 class="occ__head-title">The occasion.</h1>
+    <p class="occ__head-lede">What are we making this for?</p>
+  </header>
 
   <div class="occ__chips" role="radiogroup" aria-label="Occasion">
     {occasions.map(({ label, selected }) => (
@@ -70,31 +69,39 @@ const occasions = [
 
 <style>
   .occ {
-    display: grid;
-    grid-template-rows: auto auto auto auto 1fr auto;
+    display: flex;
+    flex-direction: column;
     min-height: 100%;
-    padding-bottom: 44px;
   }
 
-  /* Minimal topbar — just the back chevron. No title duplication
-     with the StepHeader below. */
-  .occ__topbar {
-    padding: 62px 12px 0;
-  }
-  .occ__back {
-    display: inline-flex;
+  /* Header — title + italic lede, centered. */
+  .occ__head {
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    padding-bottom: 2px;
+    gap: 6px;
+    padding: 14px 22px 10px;
+  }
+  .occ__head-title {
     font-family: var(--f-display);
-    font-size: 26px;
-    line-height: 1;
+    font-weight: 400;
+    font-size: 28px;
+    line-height: 1.15;
+    letter-spacing: -0.012em;
+    text-align: center;
     color: var(--c-ink);
-    background: transparent;
-    border: 0;
-    cursor: pointer;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .occ__head-lede {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 1.4;
+    text-align: center;
+    color: var(--c-ash);
+    margin: 2px 0 0;
   }
 
   /* Chip cluster — flowy wrap, not a strict grid. Chips vary in
@@ -161,12 +168,18 @@ const occasions = [
     font-style: italic;
   }
 
-  /* Continue — Secondary S1 outlined. Reserved the foil Primary for
-     the flow's terminal CTAs (Begin, Send to Hearth Press). */
+  /* Continue — Secondary S1 outlined. Pinned to the bottom so the
+     CTA is always visible; cream background extends down through the
+     home-indicator zone (padding-bottom: 34px) so nothing behind
+     can bleed through. */
   .occ__foot {
-    align-self: end;
+    margin-top: auto;
+    position: sticky;
+    bottom: 0;
     display: grid;
-    padding: 36px 24px 0;
+    padding: 14px 24px 34px;
+    background: var(--c-cream);
+    z-index: 5;
   }
 
   .occ__continue {

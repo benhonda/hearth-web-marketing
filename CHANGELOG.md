@@ -2,6 +2,14 @@
 
 ## 2026-04-21
 
+- refactor: Replaced Flow II step VIII "Editing a spread" with "The page" / "Editing a page" — the editor now operates on ONE page at a time, not a two-page spread. Preview (VI) renders two independent tap targets per spread (left-page and right-page halos separated by a spine gutter), and the new `BookPageEdit.astro` follows the same Display → Layout row → Photo row → Done pattern as the cover editor. `BookSpreadEdit.astro` / `book-spread-edit` route / `book-spread-edit` ScreenRender were removed.
+
+- refactor: Rebuilt Screen VII (`BookTitleCover` / "The cover") to match the page-edit pattern — interactive layout picker with two pre-rendered `BookCover` variants (plate / bleed), a scrollable cover-photo row, and a `Done` CTA. Replaces the prior bespoke "tap-any-line-on-the-cover" editor with the same grammar used on VIII, giving the cover and page surfaces one shared mental model.
+
+- feat: Added `ScreenNav.astro` primitive — the standard nav row (back chevron + centered chapter-mark eyebrow + rule) shared by Occasion, Recipes, Settings, Preview, Cover, and Page Edit. Replaces the per-screen duplicated topbar markup and removes the old `StepHeader.astro` primitive (each screen now renders its own title/lede inline under the nav).
+
+- refactor: All Flow II screens (Invitation, Occasion, Recipes, Settings, Preview, Cover, Page Edit) now use a flex column with sticky bottom CTAs pinned via `margin-top: auto` + `position: sticky; bottom: 0` and a cream/sage background that covers the home-indicator zone — replaces the previous fixed `padding-bottom: 44px` grid pattern so short-content screens no longer float the CTA in the middle and long-content screens no longer push it below the fold.
+
 - feat: Added Flow II (`/design/flows/02-make-a-book`) — the complete ten-step boutique book flow from library through occasion, recipe selection, global layout picker, spread preview, cover editing, per-spread editing, review & finalize, and concierge hand-off; replaces the abstract "make a book" placeholder with a drawn flow the concierge validation will run against.
 
 - feat: Added the `library-populated` screen — a 27-recipe photo waterfall at depth, with a typographic "When you're ready to make these into a book —" invitation at the foot as the single entry point into Flow II (no button, no saturated CTA; the book moment opens from the library itself).
