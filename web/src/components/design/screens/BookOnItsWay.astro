@@ -35,10 +35,7 @@ interface Props { showTap?: boolean; }
 
   <div class="oiw__foot">
     <p class="oiw__folio">— thank you —</p>
-    <button class="oiw__return" type="button">
-      <span class="oiw__return-label">Return to your library</span>
-      <span class="oiw__return-chev" aria-hidden="true">→</span>
-    </button>
+    <button class="oiw__return" type="button">Return to your library</button>
   </div>
 </div>
 
@@ -135,13 +132,12 @@ interface Props { showTap?: boolean; }
   .oiw__stanza > span { display: block; }
 
   /* Foot — the closing mark + the exit. Folio reads as ceremonial
-     sign-off; the return link gives the user a way home. Stacked
-     tight so they read as one unit. */
+     sign-off; the return pill gives the user a way home. */
   .oiw__foot {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 14px;
+    align-items: stretch;
+    gap: 16px;
     margin-bottom: 4px;
   }
 
@@ -161,35 +157,33 @@ interface Props { showTap?: boolean; }
     opacity: 0.85;
   }
 
-  /* Return — T2 tertiary on sage. Italic Lora in Linen, chevron
-     nudges 3px on hover (the one permitted delight per tokens.css
-     §MOTION). No container — tertiary voice closes the book without
-     competing with the foil plate above. */
+  /* Return — Secondary S1 outlined CTA on sage per tokens.css
+     §BUTTONS: transparent fill, 1px White-Dove border, pill. Hover
+     inverts to filled (White-Dove bg, Warm-Charcoal text). Same
+     grammar as the "Continue with Google" pill on Welcome — the
+     book-jacket outline voice, tuned to this surface. */
   .oiw__return {
-    display: inline-flex;
-    align-items: baseline;
-    gap: 6px;
-    padding: 6px 10px;
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 50px;
+    border-radius: 999px;
     background: transparent;
-    border: 0;
-    cursor: pointer;
-    font-family: var(--f-display);
-    font-style: italic;
-    font-weight: 400;
-    font-size: 14px;
+    color: var(--c-ink-inverse);
+    border: 1px solid rgba(244, 239, 230, 0.55);
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 15px;
     line-height: 1;
     letter-spacing: 0.01em;
-    color: var(--c-linen);
-    text-decoration: underline;
-    text-decoration-color: transparent;
-    text-underline-offset: 3px;
-    transition: text-decoration-color var(--motion-state) var(--ease-state);
+    cursor: pointer;
+    transition: background-color var(--motion-state) var(--ease-state),
+                color var(--motion-state) var(--ease-state),
+                border-color var(--motion-state) var(--ease-state);
   }
-  .oiw__return:hover { text-decoration-color: var(--c-linen); }
-  .oiw__return-chev {
-    font-style: italic;
-    color: var(--c-foil-light);
-    transition: transform var(--motion-state) var(--ease-state);
+  .oiw__return:hover {
+    background: var(--c-ink-inverse);
+    color: var(--c-ink);
+    border-color: var(--c-ink-inverse);
   }
-  .oiw__return:hover .oiw__return-chev { transform: translateX(3px); }
 </style>
