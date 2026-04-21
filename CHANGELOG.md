@@ -2,6 +2,24 @@
 
 ## 2026-04-21
 
+- refactor: Restructured Flow II — "Global settings" moved off the main line into a new Settings sub-flow reached from a right-nav `settings` mark on Preview. Main line drops from ten to nine numbered steps (Preview V, Cover VI, Page VII, Review VIII, On its way IX). Contextual edit surfaces (Cover, Page) still descend from Preview; structural edits (Title, Subtitle, Layout, Recipes) live in the sub-flow, so the linear walk lands in Preview sooner and the user is never asked to shape the book before seeing it.
+
+- feat: Added `FlowBranch` type + branch-rendering in `FlowStoryboard`. A flow step can now carry a `branch` — a secondary row of screens (numeral: ""). The storyboard renders branches as a descending row aligned to the branch point's column via a two-axis CSS grid track; `ScreenCaption` and `ScreenDetail` both handle the no-numeral case so sub-flow screens resolve the same way as main-line ones.
+
+- feat: Drew the five Settings sub-flow screens — `book-settings` (TOC landing: four tappable rows — Title / Subtitle / Layout / Recipes), `book-title` and `book-subtitle` (single-field editors that render the value in the cover's own Lora face so the user judges it in voice, not as a form field), `book-layout` (the cover + per-photo-count-bucket structural picker that used to live at main-line step V), and `book-recipes-edit` (in-book roster with drag handles, an "Add from library →" row, and a revealed long-press Remove action).
+
+- feat: Drew the remaining main-line screens — `book-review` (VIII: cover shadow-lift at the top, four-row labeled colophon — In the book / Format / Delivery / Indicative price — and the ONE Primary foil "Send to Hearth Press" CTA that Flow II is allowed per tokens.css) and `book-on-its-way` (IX: sage-cloth close, sibling of Welcome and Invitation, with foil chapter rule, italic stanza, and a tertiary "Return to your library →" so the user has a way out without disturbing the ceremonial close). Flow II is now drawn end-to-end.
+
+- refactor: Replaced the Library waterfall on Screen IV (The recipes) with a new `BookRecipeList` primitive — a stacked list with thumbnail + title/meta + ochre toggle per row (filled = in the book, outlined = out). The waterfall voice is reserved for in-app browsing per tokens.css §PHOTOGRAPHY; book composition should read closer to a manuscript TOC than to a photo grid. The same primitive powers the Settings → Recipes editor in `edit` mode (drag handles + revealed Remove) — one list component, two contexts.
+
+- feat: `ScreenNav` gained a `showSettings` right slot — a literary italic-Lora `settings` mark (not a gear icon) with underline-on-hover, used on Preview as the entry to the Settings sub-flow. Grid template changed from `32px 1fr 32px` to `1fr auto 1fr` so the centered eyebrow stays true-centered regardless of what occupies the right slot.
+
+- refactor: `.canvas__track` is now a two-axis CSS grid (was inline-flex) so branch phones pin to the same columns as their parent main step. Trailing scroll-end space is held by an implicit `::after` grid column — padding/inline-end collapses on overflow-x grid containers in Chrome, so a real grid item is the only reliable way to extend the scrollable area.
+
+- refactor: `BookPreview` display + pager now travel as a vertically-centered pair inside a `prev__stage-band`. Pager chevrons grew from 22px to 34px and the italic Lora label from 14px to 19px, reading closer to the margin-flip notation of a book than to an app pager.
+
+- refactor: `BookPageEdit` dropped its title/lede header (the ScreenNav eyebrow carries the context), added a centered em-dashed folio `— page 4 —` beneath the stage, and reshaped each row's header as a chapter-mark eyebrow + 36px ochre rule — consistent with the grammar now shared across the sub-flow editors.
+
 - refactor: Replaced Flow II step VIII "Editing a spread" with "The page" / "Editing a page" — the editor now operates on ONE page at a time, not a two-page spread. Preview (VI) renders two independent tap targets per spread (left-page and right-page halos separated by a spine gutter), and the new `BookPageEdit.astro` follows the same Display → Layout row → Photo row → Done pattern as the cover editor. `BookSpreadEdit.astro` / `book-spread-edit` route / `book-spread-edit` ScreenRender were removed.
 
 - refactor: Rebuilt Screen VII (`BookTitleCover` / "The cover") to match the page-edit pattern — interactive layout picker with two pre-rendered `BookCover` variants (plate / bleed), a scrollable cover-photo row, and a `Done` CTA. Replaces the prior bespoke "tap-any-line-on-the-cover" editor with the same grammar used on VIII, giving the cover and page surfaces one shared mental model.

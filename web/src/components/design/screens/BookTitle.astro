@@ -1,0 +1,180 @@
+---
+/**
+ * Flow II · Settings · Title.
+ *
+ * Single-field editor for the book title. The field is rendered in
+ * the same Lora face it lives in on the cover, so the user judges
+ * it in voice rather than as a form field. No iOS keyboard chrome
+ * — the cookbook voice rejects that shout; the caret + field focus
+ * state carry "you're editing" on their own.
+ */
+import ScreenNav from "../ui/ScreenNav.astro";
+
+interface Props { showTap?: boolean; }
+const { showTap = false } = Astro.props;
+
+const value = "For Us.";
+const max = 28;
+---
+
+<div class="tl">
+  <ScreenNav />
+
+  <header class="tl__head">
+    <h1 class="tl__head-title">Title.</h1>
+    <p class="tl__head-lede">A phrase that survives the shelf.</p>
+  </header>
+
+  <div class="tl__field">
+    <span class="tl__label">The title</span>
+    <div class="tl__input-wrap">
+      <span class="tl__value">{value}</span>
+      <span class="tl__caret" aria-hidden="true"></span>
+    </div>
+    <p class="tl__count">{value.length} / {max} characters</p>
+  </div>
+
+  <div class="tl__foot">
+    <button class:list={["tl__done", showTap && "tl__done--tap"]} type="button">
+      Done
+    </button>
+  </div>
+</div>
+
+<style>
+  .tl {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+  }
+
+  .tl__head {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 14px 24px 22px;
+  }
+  .tl__head-title {
+    font-family: var(--f-display);
+    font-weight: 400;
+    font-size: 28px;
+    line-height: 1.15;
+    letter-spacing: -0.012em;
+    text-align: left;
+    color: var(--c-ink);
+    margin: 0;
+  }
+  .tl__head-lede {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 1.4;
+    text-align: left;
+    color: var(--c-ash);
+    margin: 2px 0 0;
+  }
+
+  /* Field — small-caps label, the value set big in Lora (the voice
+     it lives in on the cover), then a hairline ochre rule as the
+     input underline, then the count. */
+  .tl__field {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 28px 24px 0;
+  }
+  .tl__label {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 10px;
+    line-height: 1;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--c-ochre);
+  }
+
+  .tl__input-wrap {
+    position: relative;
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--c-ink);
+  }
+  .tl__value {
+    font-family: var(--f-display);
+    font-weight: 400;
+    font-size: 30px;
+    line-height: 1.1;
+    letter-spacing: -0.014em;
+    color: var(--c-ink);
+  }
+  /* The ochre caret. Blinks once per second — the only permitted
+     motion on this screen. */
+  .tl__caret {
+    display: inline-block;
+    width: 1.5px;
+    height: 28px;
+    background: var(--c-ochre);
+    align-self: center;
+    margin-left: 2px;
+    animation: tl-caret 1s steps(2, end) infinite;
+  }
+  @keyframes tl-caret {
+    0%, 50%  { opacity: 1; }
+    50.01%, 100% { opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .tl__caret { animation: none; opacity: 1; }
+  }
+
+  .tl__count {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 12.5px;
+    color: var(--c-oat);
+    margin: 0;
+  }
+
+  .tl__foot {
+    margin-top: auto;
+    position: sticky;
+    bottom: 0;
+    padding: 14px 24px 34px;
+    background: var(--c-cream);
+    z-index: 5;
+  }
+
+  .tl__done {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 48px;
+    border-radius: 999px;
+    border: 1px solid var(--c-conifer);
+    background: transparent;
+    color: var(--c-conifer);
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 14.5px;
+    line-height: 1;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    transition: background-color var(--motion-state) var(--ease-state),
+                color var(--motion-state) var(--ease-state);
+  }
+  .tl__done--tap::after {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    border-radius: 999px;
+    border: 3px solid var(--annotation);
+    box-shadow: var(--annotation-glow);
+    pointer-events: none;
+    opacity: var(--halo-opacity);
+    transition: opacity 180ms ease;
+    z-index: 50;
+  }
+</style>

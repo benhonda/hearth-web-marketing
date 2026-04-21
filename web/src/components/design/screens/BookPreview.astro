@@ -35,43 +35,49 @@ const recipeB: SampleRecipe = {
 ---
 
 <div class="prev" data-preview-root>
-  <ScreenNav eyebrow="Preview & Edit" />
+  <ScreenNav eyebrow="Preview & Edit" showSettings={true} />
 
-  <div class="prev__stage">
-    {/* Slide 0 — the cover, centered, single page. */}
-    <div class="prev__slide" data-slide="cover">
-      <div class={showTap ? "prev__cover-wrap prev__cover-wrap--tap" : "prev__cover-wrap"}>
-        <div class="prev__cover-scale">
-          <BookCover
-            layout="plate"
-            title="For Us."
-            subtitle="A year at the table."
-            photo={sampleRecipe.photo}
-          />
+  {/* Stage band — flex:1 column that vertically centers the display +
+      pager pair in the space between nav and hint/foot. Because the
+      display is the taller of the two, its center lands very close to
+      the band's center; the pager trails a comfortable gap below. */}
+  <div class="prev__stage-band">
+    <div class="prev__stage">
+      {/* Slide 0 — the cover, centered, single page. */}
+      <div class="prev__slide" data-slide="cover">
+        <div class={showTap ? "prev__cover-wrap prev__cover-wrap--tap" : "prev__cover-wrap"}>
+          <div class="prev__cover-scale">
+            <BookCover
+              layout="plate"
+              title="For Us."
+              subtitle="A year at the table."
+              photo={sampleRecipe.photo}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Slide 1 — a recipe spread, two facing pages, each
+          independently tappable. */}
+      <div class="prev__slide" data-slide="spread" hidden>
+        <div class={showTap ? "prev__spread-wrap prev__spread-wrap--tap" : "prev__spread-wrap"}>
+          <div class="prev__spread-scale">
+            <BookSpread
+              left={{ recipe: recipeA, layout: "1-photo-a" }}
+              right={{ recipe: recipeB, layout: "2-photos-b" }}
+            />
+          </div>
+          <div class="prev__page-halo prev__page-halo--left" aria-hidden="true"></div>
+          <div class="prev__page-halo prev__page-halo--right" aria-hidden="true"></div>
         </div>
       </div>
     </div>
 
-    {/* Slide 1 — a recipe spread, two facing pages, each
-        independently tappable. */}
-    <div class="prev__slide" data-slide="spread" hidden>
-      <div class={showTap ? "prev__spread-wrap prev__spread-wrap--tap" : "prev__spread-wrap"}>
-        <div class="prev__spread-scale">
-          <BookSpread
-            left={{ recipe: recipeA, layout: "1-photo-a" }}
-            right={{ recipe: recipeB, layout: "2-photos-b" }}
-          />
-        </div>
-        <div class="prev__page-halo prev__page-halo--left" aria-hidden="true"></div>
-        <div class="prev__page-halo prev__page-halo--right" aria-hidden="true"></div>
-      </div>
+    <div class="prev__pager">
+      <button class="prev__pager-btn" type="button" aria-label="Previous" data-pager="prev">‹</button>
+      <span class="prev__pager-label" data-pager-label>cover</span>
+      <button class="prev__pager-btn" type="button" aria-label="Next" data-pager="next">›</button>
     </div>
-  </div>
-
-  <div class="prev__pager">
-    <button class="prev__pager-btn" type="button" aria-label="Previous" data-pager="prev">‹</button>
-    <span class="prev__pager-label" data-pager-label>cover</span>
-    <button class="prev__pager-btn" type="button" aria-label="Next" data-pager="next">›</button>
   </div>
 
   <p class="prev__hint" data-tap-hint>Tap the cover to edit.</p>
@@ -131,15 +137,27 @@ const recipeB: SampleRecipe = {
     min-height: 100%;
   }
 
-  /* Stage — the 1fr row that holds whichever slide is visible.
-     Flexbox so centering works the same way regardless of how the
-     slide's children are sized. */
-  .prev__stage {
+  /* Stage band — the display + pager travel as a pair, vertically
+     centered in the space between nav and hint/foot. Because the
+     display is much taller than the pager, this puts the display's
+     center very close to the band's center (which is what the eye
+     reads as "centered"); the pager trails below with a comfortable
+     gap. */
+  .prev__stage-band {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 32px;
+    padding: 14px 22px;
+    min-height: 0;
+  }
+
+  .prev__stage {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 0 22px;
     min-width: 0;
   }
 
@@ -226,32 +244,34 @@ const recipeB: SampleRecipe = {
   .prev__page-halo--left  { left: -10px; right: calc(50% + 2px); }
   .prev__page-halo--right { right: -10px; left: calc(50% + 2px); }
 
+  /* Pager — the page flipper. Larger chevrons + italic Lora label;
+     reads like the margin-flip notation of a book rather than an
+     app pager. */
   .prev__pager {
     display: flex;
     align-items: baseline;
     justify-content: center;
-    gap: 18px;
-    padding: 14px 22px 0;
+    gap: 28px;
   }
   .prev__pager-btn {
     font-family: var(--f-display);
-    font-size: 22px;
+    font-size: 34px;
     line-height: 1;
     color: var(--c-ochre);
     background: transparent;
     border: 0;
     cursor: pointer;
-    padding: 4px 6px;
+    padding: 6px 10px;
     transition: opacity var(--motion-state) var(--ease-state);
   }
   .prev__pager-btn:disabled { cursor: default; }
   .prev__pager-label {
     font-family: var(--f-display);
     font-style: italic;
-    font-size: 14px;
+    font-size: 19px;
     color: var(--c-ash);
     letter-spacing: 0.02em;
-    min-width: 8ch;
+    min-width: 9ch;
     text-align: center;
   }
 

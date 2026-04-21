@@ -1,0 +1,258 @@
+---
+/**
+ * Flow II · Settings · Layout.
+ *
+ * Reached from Settings (the sub-flow off Preview). Lets the user
+ * reshape the book at any time — one row for cover layout, three rows
+ * of page layouts organised by photo count. The ochre hairline ring
+ * on a thumb marks the current choice.
+ *
+ * Thumbnails are REAL layouts rendered at reduced scale, not abstract
+ * skeletons. Same BookCover / BookPage components that will render at
+ * full size on VI (The cover) and VII (The page). One source of truth,
+ * no drift between picker and object.
+ */
+import ScreenNav from "../ui/ScreenNav.astro";
+import BookCover, { type CoverLayout } from "../ui/BookCover.astro";
+import BookPage, { type PageLayout } from "../ui/BookPage.astro";
+import { sampleRecipe } from "~/lib/design/sample-recipe";
+
+interface Props { showTap?: boolean; }
+const { showTap = false } = Astro.props;
+
+const coverOptions: { id: CoverLayout; active: boolean }[] = [
+  { id: "plate", active: true },
+  { id: "bleed", active: false },
+];
+
+const pageRows: {
+  label: string;
+  options: { id: PageLayout; active: boolean }[];
+}[] = [
+  {
+    label: "Pages · one photo",
+    options: [
+      { id: "1-photo-a", active: true },
+      { id: "1-photo-b", active: false },
+    ],
+  },
+  {
+    label: "Pages · two photos",
+    options: [
+      { id: "2-photos-a", active: false },
+      { id: "2-photos-b", active: true },
+    ],
+  },
+  {
+    label: "Pages · three or more",
+    options: [
+      { id: "3-plus-a", active: true },
+      { id: "3-plus-b", active: false },
+    ],
+  },
+];
+---
+
+<div class="set">
+  <ScreenNav />
+
+  <header class="set__head">
+    <h1 class="set__head-title">Layout.</h1>
+    <p class="set__head-lede">The shape of the book.</p>
+  </header>
+
+  <section class="set__row">
+    <span class="set__label">Cover</span>
+    <div class="set__options">
+      {coverOptions.map(({ id, active }) => (
+        <button
+          class:list={["set__thumb", active && "set__thumb--on"]}
+          type="button"
+          aria-pressed={active}
+          aria-label={`Cover layout: ${id}`}
+        >
+          <div class="set__frame">
+            <div class="set__scale">
+              <BookCover
+                layout={id}
+                title="For Us."
+                subtitle="A year at the table."
+                photo={sampleRecipe.photo}
+              />
+            </div>
+          </div>
+        </button>
+      ))}
+    </div>
+  </section>
+
+  {pageRows.map((row) => (
+    <section class="set__row">
+      <span class="set__label">{row.label}</span>
+      <div class="set__options">
+        {row.options.map(({ id, active }) => (
+          <button
+            class:list={["set__thumb", active && "set__thumb--on"]}
+            type="button"
+            aria-pressed={active}
+            aria-label={`${row.label}: ${id}`}
+          >
+            <div class="set__frame">
+              <div class="set__scale">
+                <BookPage layout={id} recipe={sampleRecipe} />
+              </div>
+            </div>
+          </button>
+        ))}
+      </div>
+    </section>
+  ))}
+
+  <div class="set__foot">
+    <button class={showTap ? "set__continue set__continue--tap" : "set__continue"} type="button">
+      Done
+    </button>
+  </div>
+</div>
+
+<style>
+  .set {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+  }
+
+  /* Header — left-aligned chapter-opener rhythm. */
+  .set__head {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 14px 24px 10px;
+  }
+  .set__head-title {
+    font-family: var(--f-display);
+    font-weight: 400;
+    font-size: 28px;
+    line-height: 1.15;
+    letter-spacing: -0.012em;
+    text-align: left;
+    color: var(--c-ink);
+    margin: 0;
+    text-wrap: balance;
+  }
+  .set__head-lede {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 1.4;
+    text-align: left;
+    color: var(--c-ash);
+    margin: 2px 0 0;
+  }
+
+  .set__row {
+    display: grid;
+    gap: 10px;
+    padding: 18px 24px 0;
+  }
+
+  .set__label {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 10.5px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--c-ash);
+  }
+
+  .set__options {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    gap: 12px;
+  }
+
+  /* Thumb button — holds the scaling frame. Ochre hairline ring on
+     active, cream offset. Same picker treatment as the cover-photo
+     picker on VII so the selection pattern stays consistent. */
+  .set__thumb {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: var(--r-page);
+    cursor: pointer;
+    transition: box-shadow var(--motion-state) var(--ease-state);
+  }
+  .set__thumb--on {
+    box-shadow:
+      0 0 0 1.5px var(--c-ochre),
+      0 0 0 3px var(--c-cream);
+  }
+
+  /* The scale frame. Inner box is natural component size (320×400);
+     we scale it down. scale(0.35) × 320 = 112, which fits the ~155px
+     thumb with a bit of breathing room. Exact scale is computed via
+     CSS var so if the thumb size changes, only --thumb-scale moves. */
+  .set__frame {
+    --thumb-scale: 0.42;
+    position: absolute;
+    inset: 0;
+    border-radius: var(--r-page);
+    overflow: hidden;
+    box-shadow: var(--shadow-paper);
+  }
+  .set__scale {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: scale(var(--thumb-scale));
+    transform-origin: top left;
+    /* Natural component size. Scaling makes the rendered size
+       320 × 0.42 = 134.4, which sits inside the thumb frame. The
+       thumb's aspect-ratio 4:5 matches, so no clipping. */
+    width: 320px;
+    height: 400px;
+    pointer-events: none;
+  }
+
+  .set__foot {
+    margin-top: auto;
+    position: sticky;
+    bottom: 0;
+    padding: 14px 24px 34px;
+    background: var(--c-cream);
+    z-index: 5;
+  }
+
+  .set__continue {
+    position: relative;
+    width: 100%;
+    height: 48px;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--c-conifer);
+    border: 1px solid var(--c-conifer);
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 14.5px;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    transition: background-color var(--motion-state) var(--ease-state);
+  }
+  .set__continue--tap::after {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    border-radius: 999px;
+    border: 3px solid var(--annotation);
+    box-shadow: var(--annotation-glow);
+    pointer-events: none;
+    opacity: var(--halo-opacity);
+    transition: opacity 180ms ease;
+    z-index: 50;
+  }
+</style>

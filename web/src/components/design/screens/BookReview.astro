@@ -1,0 +1,202 @@
+---
+/**
+ * Flow II · VIII · Review & finalize.
+ *
+ * The traditional review surface — the user sees the cover they've
+ * made, the specs, the price, and signs off. Cover sits at the top
+ * like a product shot; labeled rows below in an editorial
+ * "colophon list" rhythm (small-caps label on the left, italic Lora
+ * value on the right, --b-divider between).
+ *
+ * This is the ONE Primary foil CTA in Flow II ("Send to Hearth
+ * Press"). Tokens.css restricts Foil-Light to one per screen; here
+ * it's the terminal action before the sage close on IX.
+ */
+import ScreenNav from "../ui/ScreenNav.astro";
+import BookCover from "../ui/BookCover.astro";
+import { sampleRecipe } from "~/lib/design/sample-recipe";
+
+interface Props { showTap?: boolean; }
+const { showTap = false } = Astro.props;
+
+const specs: { label: string; value: string }[] = [
+  { label: "In the book",      value: "Twenty-four recipes" },
+  { label: "Format",           value: "Hardcover · 8×10 · premium paper" },
+  { label: "Delivery",         value: "About three weeks" },
+  { label: "Indicative price", value: "$139" },
+];
+---
+
+<div class="rev">
+  <ScreenNav eyebrow="Review" />
+
+  <div class="rev__cover-wrap">
+    <div class="rev__cover">
+      <div class="rev__cover-scale">
+        <BookCover
+          layout="plate"
+          title="For Us."
+          subtitle="A year at the table."
+          photo={sampleRecipe.photo}
+        />
+      </div>
+    </div>
+  </div>
+
+  <hr class="rev__rule" aria-hidden="true" />
+
+  <ul class="rev__specs" role="list">
+    {specs.map((spec) => (
+      <li class="rev__spec">
+        <span class="rev__spec-label">{spec.label}</span>
+        <span class="rev__spec-value">{spec.value}</span>
+      </li>
+    ))}
+  </ul>
+
+  <p class="rev__aside">
+    We'll send a proof before printing — you can revise before we go to press.
+  </p>
+
+  <div class="rev__foot">
+    <button class:list={["rev__send", showTap && "rev__send--tap"]} type="button">
+      Send to Hearth Press
+    </button>
+  </div>
+</div>
+
+<style>
+  .rev {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+  }
+
+  /* Cover — the product shot. Scale 0.65 × 320 = 208, × 400 = 260.
+     Centered horizontally with a shadow-lift for a little physical
+     weight, like a cover laid on the table. */
+  .rev__cover-wrap {
+    display: flex;
+    justify-content: center;
+    padding: 12px 24px 0;
+  }
+  .rev__cover {
+    position: relative;
+    width: 208px;
+    height: 260px;
+    filter: drop-shadow(0 10px 24px rgba(30, 20, 10, 0.12));
+  }
+  .rev__cover-scale {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 320px;
+    height: 400px;
+    transform: scale(0.65);
+    transform-origin: top left;
+    pointer-events: none;
+  }
+
+  .rev__rule {
+    display: block;
+    border: 0;
+    width: calc(100% - 48px);
+    margin: 28px auto 0;
+    height: 1px;
+    background: var(--c-ochre);
+    opacity: 0.35;
+  }
+
+  /* Specs — labeled rows. Small-caps Ochre label on the left, italic
+     Lora value on the right, --b-divider between. Traditional colophon
+     rhythm adapted to a review context. */
+  .rev__specs {
+    list-style: none;
+    margin: 0;
+    padding: 0 24px;
+    display: flex;
+    flex-direction: column;
+  }
+  /* Each spec row stacks label over value — matches the Settings
+     landing pattern, gives the italic value full line width, and
+     reads more like a TOC entry than a form row. */
+  .rev__spec {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 14px 0;
+    border-bottom: var(--b-divider);
+  }
+  .rev__spec:last-child { border-bottom: 0; }
+  .rev__spec-label {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 10px;
+    line-height: 1;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--c-ochre);
+  }
+  .rev__spec-value {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 1.35;
+    color: var(--c-ink);
+  }
+
+  /* Aside — Lora italic, Ash, left-aligned below the specs. */
+  .rev__aside {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--c-ash);
+    margin: 0;
+    padding: 18px 24px 0;
+    max-width: 38ch;
+  }
+
+  /* Foot — the one Primary foil CTA in Flow II. Foil-Light bg,
+     Warm-Charcoal text, pill, shadow-button. */
+  .rev__foot {
+    margin-top: auto;
+    position: sticky;
+    bottom: 0;
+    padding: 20px 24px 34px;
+    background: var(--c-cream);
+    z-index: 5;
+  }
+  .rev__send {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 52px;
+    border-radius: 999px;
+    background: var(--c-foil-light);
+    color: var(--c-ink);
+    border: 0;
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 15px;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    box-shadow: var(--shadow-button);
+    transition: background-color var(--motion-state) var(--ease-state);
+  }
+  .rev__send:hover { background: var(--c-foil-hover); }
+  .rev__send--tap::after {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    border-radius: 999px;
+    border: 3px solid var(--annotation);
+    box-shadow: var(--annotation-glow);
+    pointer-events: none;
+    opacity: var(--halo-opacity);
+    transition: opacity 180ms ease;
+    z-index: 50;
+  }
+</style>

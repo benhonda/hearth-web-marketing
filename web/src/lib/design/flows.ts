@@ -4,6 +4,11 @@
  * Each flow is a sequence of screens. Screens with a `render` key map to
  * a concrete screen component registered in `FlowStoryboard.astro`. Steps
  * without one render as "not yet drawn" placeholders.
+ *
+ * A step can carry a `branch` — a secondary strip of screens that live
+ * OFF the main line. Branch steps use `numeral: ""` (no numeral) because
+ * they're not part of the numbered sequence; the storyboard draws them
+ * as a descending row beneath the branch point.
  */
 
 export type Surface = "cream" | "sage" | "neutral";
@@ -23,13 +28,19 @@ export type ScreenRender =
   | "book-invitation"
   | "book-occasion"
   | "book-recipes"
-  | "book-settings"
+  | "book-layout"
   | "book-title-cover"
   | "book-preview"
-  | "book-page-edit";
+  | "book-page-edit"
+  | "book-settings"
+  | "book-title"
+  | "book-subtitle"
+  | "book-recipes-edit"
+  | "book-review"
+  | "book-on-its-way";
 
 export type FlowStep = {
-  numeral: string;            // Roman numeral label — "I", "II", "III"
+  numeral: string;            // Roman numeral label — "I", "II", "III"; "" for branch steps
   name: string;               // e.g. "Recipe · detail" — eyebrow on both surfaces
   note: string;               // director's note — rendered verbatim on flow + detail page
   detailTitle?: string;       // poetic h1 shown only on /design/screens/[slug]
@@ -39,6 +50,12 @@ export type FlowStep = {
   screenSlug?: string;        // /design/screens/[slug] — absent = not yet linkable
   tap?: string;               // human-readable handoff to the next screen (flow-only)
   tapExternal?: boolean;      // true = action leaves the app; no in-screen halo
+  branch?: FlowBranch;        // a sub-flow descending from this step
+};
+
+export type FlowBranch = {
+  label: string;              // small-caps eyebrow over the sub-row, e.g. "Settings · sub-flow"
+  steps: FlowStep[];          // same shape; typically numeral: "" so captions drop the numeral
 };
 
 export type Flow = {
@@ -197,65 +214,117 @@ export const flows: Flow[] = [
       {
         numeral: "IV",
         name: "The recipes",
+        detailTitle: "What goes in the book.",
         note:
-          "Step ii. The photo waterfall returns with selection state — three tiles dimmed to read as 'not in the book.' No checkmarks, no saturated accents; opacity alone carries the binary. Below: '24 in the book · about 80 pages · around $139.'",
+          "Step ii. A stacked list — not the waterfall — of every library recipe with an ochre toggle on the right; filled = in the book, outlined = out. The waterfall stays reserved for in-app browsing. Below, the running colophon: '24 in the book · about 80 pages · around $139.'",
         render: "book-recipes",
         screenSlug: "book-recipes",
         tap: "Continue",
       },
       {
         numeral: "V",
-        name: "Global settings",
-        detailTitle: "The shape of the book.",
-        note:
-          "Step iii. Structural decisions before content. One row for cover layout (2 options — Plate inset or Full-bleed), then three rows of page-layout choices organised by photo count (1 / 2 / 3+). Six tiny typographic thumbnails total, each a miniature spread; chosen one gets the ochre hairline ring.",
-        render: "book-settings",
-        screenSlug: "book-settings",
-        tap: "Continue",
-      },
-      {
-        numeral: "VI",
         name: "Preview & edit",
         detailTitle: "Preview & edit.",
         note:
-          "Reached directly from Global settings. Defaults to the cover as the first 'page' — tap it to edit title / subtitle / cover photo (lands on VII). Prev/next chevrons page through; tap a spread to edit it (lands on VIII). 'Review & finalize' proceeds to IX. The pager is interactive in the 1× stage page.",
+          "Reached directly from The recipes — Layout has been moved into the Settings sub-flow. Defaults to the cover as the first 'page' — tap it to edit title / subtitle / cover photo (lands on VI). Prev/next chevrons page through; tap a spread to edit a page (lands on VII). 'Review & finalize' proceeds to VIII. A right-nav 'Settings' mark opens the sub-flow: Title / Subtitle / Layout / Recipes.",
         render: "book-preview",
         screenSlug: "book-preview",
         tap: "Tap the cover to edit",
+        branch: {
+          label: "Settings · sub-flow",
+          steps: [
+            {
+              numeral: "",
+              name: "Settings",
+              detailTitle: "Reshape the book.",
+              note:
+                "The sub-flow landing. Cream TOC — four tappable rows (Title / Subtitle / Layout / Recipes), each showing the current value in Lora italic over a small-caps label. No foot CTA — back chevron returns to Preview; edits commit as they happen.",
+              render: "book-settings",
+              screenSlug: "book-settings",
+              tap: "Tap Title",
+            },
+            {
+              numeral: "",
+              name: "Title",
+              detailTitle: "Naming the book.",
+              note:
+                "Single-field editor. The value is rendered in the same Lora face it'll wear on the cover so the user judges it in voice, not as a form field. Character count in Oat italic; no iOS keyboard chrome — the cookbook voice doesn't shout.",
+              render: "book-title",
+              screenSlug: "book-title",
+              tap: "Done",
+            },
+            {
+              numeral: "",
+              name: "Subtitle",
+              detailTitle: "The quieter line beneath.",
+              note:
+                "Sibling of Title. Lora italic at 20px matches how the subtitle reads on the cover. Same Done mechanic.",
+              render: "book-subtitle",
+              screenSlug: "book-subtitle",
+              tap: "Done",
+            },
+            {
+              numeral: "",
+              name: "Layout",
+              detailTitle: "The shape of the book.",
+              note:
+                "The structural picker — cover layout (Plate / Full-bleed), then three rows of page layouts organised by photo count (1 / 2 / 3+). Same screen that used to live at step V on the main line; moved into Settings so the main line lands in Preview sooner. Copy lead: 'Layout. The shape of the book.' The selected thumb carries the ochre hairline ring.",
+              render: "book-layout",
+              screenSlug: "book-layout",
+              tap: "Done",
+            },
+            {
+              numeral: "",
+              name: "Recipes",
+              detailTitle: "Curating the manuscript.",
+              note:
+                "The in-book recipe list — only the 24 currently in the book, not the whole library. A T2-style 'Add from library →' row at the top. Each row carries a drag handle on the right; one row reveals the Alert-Rust 'Remove' action to teach the long-press mechanic. Shares the list primitive with IV.",
+              render: "book-recipes-edit",
+              screenSlug: "book-recipes-edit",
+              tap: "Back",
+            },
+          ],
+        },
       },
       {
-        numeral: "VII",
+        numeral: "VI",
         name: "The cover",
         detailTitle: "Editing the cover.",
         note:
-          "The edit landing reached when the user taps the cover in preview. Cover PREVIEW is the interface — tap title / subtitle / photo on the rendered cover to edit each. Below the cover, a horizontal scroller of alternate cover photos. This isn't a numbered step; it's a contextual edit surface.",
+          "Reached from Preview when the user taps the cover. Cover PREVIEW is the interface — tap title / subtitle / photo on the rendered cover to edit each. Below the cover, a horizontal scroller of alternate cover photos. Contextual edit surface, not a numbered step on the main line.",
         render: "book-title-cover",
         screenSlug: "book-title-cover",
-        tap: "Continue",
+        tap: "Done",
       },
       {
-        numeral: "VIII",
+        numeral: "VII",
         name: "The page",
         detailTitle: "Editing a page.",
         note:
-          "Reached from Preview when the user taps one of the two pages on a spread. Edits ONE page at a time (not the whole spread). Same vertical pattern as VII: display → LAYOUT row (interactive 2 thumbs) → PHOTO row (scrollable) → Done. Both layout variants pre-rendered; clicking a thumb swaps which is visible.",
+          "Reached from Preview when the user taps one of the two pages on a spread. Edits ONE page at a time (not the whole spread). Display → LAYOUT row (interactive 2 thumbs) → PHOTO row (scrollable) → Done. Both layout variants pre-rendered; clicking a thumb swaps which is visible.",
         render: "book-page-edit",
         screenSlug: "book-page-edit",
         tap: "Done",
       },
       {
-        numeral: "IX",
+        numeral: "VIII",
         name: "Review & finalize",
+        detailTitle: "The review.",
         note:
-          "The colophon. Typographic summary of the book: title, subtitle, recipe count, page count, indicative price, delivery window. Primary foil CTA: 'Send to Hearth Press.' This is the concierge hand-off — Blurb + Stripe defer to manual fulfillment.",
+          "The traditional review surface. Cover shown prominently at the top with a shadow-lift, like a product laid on the table. Title + italic subtitle beneath. Thin ochre rule, then four labeled rows — IN THE BOOK, FORMAT, DELIVERY, INDICATIVE PRICE — each stacking a small-caps Ochre label over an italic Lora value with --b-divider between. A quiet italic aside sets expectations (proof before printing). Foot carries the ONE Primary foil CTA in Flow II: 'Send to Hearth Press.'",
+        render: "book-review",
+        screenSlug: "book-review",
         tap: "Send to Hearth Press",
       },
       {
-        numeral: "X",
+        numeral: "IX",
         name: "On its way",
+        detailTitle: "The back cover.",
         note:
-          "Closes the way Welcome opened — sage cloth, foil. 'We'll be in touch.' No celebration, no false promises. The cookbook voice holds.",
+          "Closes the way Welcome and the book Invitation opened — sage cloth, foil. Hearth Press eyebrow, foil-stamped Lora italic 'On its way.', 44×1.5px foil chapter rule, a two-line italic-Linen stanza explaining the proof + press step. At the foot, a '— thank you —' folio in foil-light and a T2 tertiary 'Return to your library →' in italic Linen so the user has a way out without disturbing the ceremonial close.",
         surface: "sage",
+        render: "book-on-its-way",
+        screenSlug: "book-on-its-way",
       },
     ],
   },
@@ -267,19 +336,28 @@ export const getFlow = (slug: string): Flow | undefined =>
 /**
  * Resolve a screen detail page (`/design/screens/[slug]`) back to its flow +
  * step. Detail pages use this so eyebrow/title/note come from a single source.
+ *
+ * Walks branches so sub-flow screens resolve too.
  */
 export const getScreen = (
   screenSlug: string,
 ): { flow: Flow; step: FlowStep } | undefined => {
   for (const flow of flows) {
-    const step = flow.steps.find((s) => s.screenSlug === screenSlug);
-    if (step) return { flow, step };
+    for (const step of flow.steps) {
+      if (step.screenSlug === screenSlug) return { flow, step };
+      if (step.branch) {
+        const sub = step.branch.steps.find((s) => s.screenSlug === screenSlug);
+        if (sub) return { flow, step: sub };
+      }
+    }
   }
   return undefined;
 };
 
 export const totals = () => {
-  const screens = flows.flatMap((f) => f.steps);
-  const drawn = screens.filter((s) => s.render).length;
-  return { drawn, total: screens.length, flowCount: flows.length };
+  const mainSteps = flows.flatMap((f) => f.steps);
+  const branchSteps = mainSteps.flatMap((s) => s.branch?.steps ?? []);
+  const allSteps = [...mainSteps, ...branchSteps];
+  const drawn = allSteps.filter((s) => s.render).length;
+  return { drawn, total: allSteps.length, flowCount: flows.length };
 };

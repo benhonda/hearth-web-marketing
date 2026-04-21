@@ -5,19 +5,22 @@
  * rule inline with the back button so the nav reads as one
  * compressed line: a chapter mark with a way out.
  *
- *     ‹          EYEBROW
- *                  ──
+ *     ‹          EYEBROW               SETTINGS
+ *                  ──                     ──
  *
  * Renders at the ~62px status-bar offset so in-phone content begins
- * just below. Used by Preview (VI), The cover (VII), The page (VIII).
+ * just below. The right slot is reserved for the Settings entry
+ * point on Preview (V) — a mirrored chapter mark rather than a gear
+ * icon, keeps the typographic voice.
  */
 
 interface Props {
   eyebrow?: string;
   backLabel?: string;
+  showSettings?: boolean;
 }
 
-const { eyebrow, backLabel = "Back" } = Astro.props;
+const { eyebrow, backLabel = "Back", showSettings = false } = Astro.props;
 ---
 
 <nav class="screen-nav" aria-label={backLabel}>
@@ -34,19 +37,31 @@ const { eyebrow, backLabel = "Back" } = Astro.props;
     <span class="screen-nav__mark-placeholder" aria-hidden="true"></span>
   )}
 
-  <span class="screen-nav__spacer" aria-hidden="true"></span>
+  {showSettings ? (
+    <button class="screen-nav__settings" type="button" aria-label="Settings">
+      <span class="screen-nav__settings-label">settings</span>
+    </button>
+  ) : (
+    <span class="screen-nav__spacer" aria-hidden="true"></span>
+  )}
 </nav>
 
 <style>
+  /* Symmetric 1fr auto 1fr so the center eyebrow is true-centered
+     regardless of what's in the right slot. Back chevron pins to
+     the left edge of col 1; right slot pins to the right edge of
+     col 3; center column sizes to its content and sits in the
+     middle by virtue of equal flex spacers on either side. */
   .screen-nav {
     display: grid;
-    grid-template-columns: 32px 1fr 32px;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
     padding: 62px 12px 0;
     gap: 10px;
   }
 
   .screen-nav__back {
+    justify-self: start;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -100,11 +115,43 @@ const { eyebrow, backLabel = "Back" } = Astro.props;
     height: 1px;
   }
 
-  /* Symmetry spacer so the chapter mark sits visually centered
-     against the back chevron on the left. */
+  /* Right-slot Settings — lowercase italic Lora, T1-style. A literary
+     aside, not a chapter mark; no ochre rule underneath (rules are
+     reserved for chapter rhythm per tokens.css §DECORATIVE RULES).
+     Underline on hover, 3px offset — same voice as inline links. */
+  .screen-nav__settings {
+    justify-self: end;
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 10px;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+  }
+  .screen-nav__settings-label {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 1;
+    color: var(--c-ochre);
+    letter-spacing: 0em;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 3px;
+    transition: text-decoration-color var(--motion-state) var(--ease-state);
+  }
+  .screen-nav__settings:hover .screen-nav__settings-label {
+    text-decoration-color: currentColor;
+  }
+
+  /* Empty right slot when no Settings action — the 1fr grid column
+     still balances against col 1 so the center eyebrow stays
+     centered; the spacer just holds the column open. */
   .screen-nav__spacer {
+    justify-self: end;
     display: block;
-    width: 32px;
+    width: 1px;
     height: 1px;
   }
 </style>

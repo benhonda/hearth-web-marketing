@@ -1,0 +1,105 @@
+---
+/**
+ * Flow II · Settings · Recipes.
+ *
+ * The in-book recipe editor. Only the recipes currently in the book
+ * are shown — not the whole library — so this reads as curating a
+ * manuscript, not shopping. At the top, a quiet T2-style invitation
+ * to add more from the library. Each row carries a drag handle on
+ * the right; one row reveals the Remove action as the teachable
+ * affordance for long-press.
+ *
+ * Shares the row primitive (BookRecipeList) with IV · The recipes
+ * so the cookbook voice holds across the two surfaces.
+ */
+import ScreenNav from "../ui/ScreenNav.astro";
+import BookRecipeList, { type RecipeRow } from "../ui/BookRecipeList.astro";
+import { sampleLibraryTiles } from "~/lib/design/sample-library";
+
+interface Props { showTap?: boolean; }
+const { showTap = false } = Astro.props;
+
+// Book composition = everything except the three we marked out on
+// IV. Stay consistent across the surfaces so the same 24 recipes
+// show up here.
+const outIndices = new Set([2, 5, 14]);
+const inBookRows: RecipeRow[] = sampleLibraryTiles
+  .map((t) => ({ title: t.title, meta: t.meta, photo: t.photo, tone: t.tone }))
+  .filter((_, i) => !outIndices.has(i));
+
+// Reveal Remove on the fourth in-book row so the mechanic is legible
+// without requiring the user to long-press the mockup.
+const revealRemoveIndex = 3;
+---
+
+<div class="rec-edit">
+  <ScreenNav />
+
+  <header class="rec-edit__head">
+    <h1 class="rec-edit__head-title">Recipes.</h1>
+    <p class="rec-edit__head-lede">Re-order, remove, or add more.</p>
+  </header>
+
+  <p class="rec-edit__count">
+    <span>{inBookRows.length} in the book</span>
+  </p>
+
+  <BookRecipeList
+    rows={inBookRows}
+    mode="edit"
+    showAddRow={true}
+    revealRemoveIndex={revealRemoveIndex}
+    showTap={showTap}
+  />
+</div>
+
+<style>
+  .rec-edit {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    padding-bottom: 28px;
+  }
+
+  /* Header — left-aligned chapter opener. */
+  .rec-edit__head {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 14px 24px 6px;
+  }
+  .rec-edit__head-title {
+    font-family: var(--f-display);
+    font-weight: 400;
+    font-size: 28px;
+    line-height: 1.15;
+    letter-spacing: -0.012em;
+    text-align: left;
+    color: var(--c-ink);
+    margin: 0;
+  }
+  .rec-edit__head-lede {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 1.4;
+    text-align: left;
+    color: var(--c-ash);
+    margin: 2px 0 0;
+  }
+
+  /* A little italic count line above the list — orients the user
+     without repeating the full colophon from IV. */
+  .rec-edit__count {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--c-oat);
+    text-align: left;
+    margin: 0 0 10px;
+    padding: 0 24px;
+  }
+</style>

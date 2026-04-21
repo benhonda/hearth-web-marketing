@@ -13,10 +13,16 @@ import LibraryPopulated from "./LibraryPopulated.astro";
 import BookInvitation from "./BookInvitation.astro";
 import BookOccasion from "./BookOccasion.astro";
 import BookRecipes from "./BookRecipes.astro";
-import BookSettings from "./BookSettings.astro";
+import BookLayout from "./BookLayout.astro";
 import BookTitleCover from "./BookTitleCover.astro";
 import BookPreview from "./BookPreview.astro";
 import BookPageEdit from "./BookPageEdit.astro";
+import BookSettings from "./BookSettings.astro";
+import BookTitle from "./BookTitle.astro";
+import BookSubtitle from "./BookSubtitle.astro";
+import BookRecipesEdit from "./BookRecipesEdit.astro";
+import BookReview from "./BookReview.astro";
+import BookOnItsWay from "./BookOnItsWay.astro";
 
 /**
  * Maps a FlowStep's `render` key to its Astro component. Shared by
@@ -38,8 +44,14 @@ export const screenComponents: Record<ScreenRender, any> = {
   "book-invitation": BookInvitation,
   "book-occasion": BookOccasion,
   "book-recipes": BookRecipes,
-  "book-settings": BookSettings,
+  "book-layout": BookLayout,
   "book-title-cover": BookTitleCover,
   "book-preview": BookPreview,
   "book-page-edit": BookPageEdit,
+  "book-settings": BookSettings,
+  "book-title": BookTitle,
+  "book-subtitle": BookSubtitle,
+  "book-recipes-edit": BookRecipesEdit,
+  "book-review": BookReview,
+  "book-on-its-way": BookOnItsWay,
 };

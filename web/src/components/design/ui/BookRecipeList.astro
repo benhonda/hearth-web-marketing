@@ -1,0 +1,272 @@
+---
+/**
+ * BookRecipeList — the list-style recipe roster used in Flow II.
+ *
+ * Two contexts, one primitive:
+ *   · IV · The recipes — initial selection. Each row carries an
+ *     ochre toggle; tapping toggles in/out of the book.
+ *   · Settings · Recipes — post-selection editing. Rows carry a
+ *     drag handle and reveal a Remove action on long-press. Top
+ *     row is an "Add from library →" affordance.
+ *
+ * The waterfall is reserved for in-app Library browsing — never for
+ * book composition. The list voice reads closer to a manuscript
+ * TOC than to a photo grid, which is what this surface should feel
+ * like.
+ */
+
+export type RecipeRow = {
+  title: string;
+  meta: string;
+  photo?: string;
+  tone?: "corn" | "sage" | "ochre";
+  inBook?: boolean;            // selection mode — whether this row is "in the book"
+};
+
+type Mode = "select" | "edit";
+
+interface Props {
+  rows: RecipeRow[];
+  mode: Mode;
+  /** select mode: tap a row's toggle to mark it in/out */
+  tapRowIndex?: number;
+  /** edit mode: reveal Remove on this row to teach the mechanic */
+  revealRemoveIndex?: number;
+  /** edit mode: show the italic "Add from library" row at the top */
+  showAddRow?: boolean;
+  showTap?: boolean;
+}
+
+const {
+  rows,
+  mode,
+  tapRowIndex = -1,
+  revealRemoveIndex = -1,
+  showAddRow = false,
+  showTap = false,
+} = Astro.props;
+---
+
+<ul class="brl" role="list">
+  {mode === "edit" && showAddRow && (
+    <li class="brl__add-wrap">
+      <button class="brl__add" type="button" aria-label="Add from library">
+        <span class="brl__add-label">Add from library</span>
+        <span class="brl__add-chev" aria-hidden="true">→</span>
+      </button>
+    </li>
+  )}
+
+  {rows.map((row, i) => {
+    const photoStyle = row.photo ? `background-image: url(${row.photo})` : "";
+    const tone = row.tone ?? "corn";
+    const inBook = row.inBook ?? true;
+    const rowTap = showTap && i === tapRowIndex;
+    const revealRemove = mode === "edit" && i === revealRemoveIndex;
+
+    return (
+      <li class="brl__row-wrap">
+        <div class="brl__row">
+          <div
+            class:list={[
+              "brl__thumb",
+              !row.photo && `brl__thumb--${tone}`,
+            ]}
+            style={photoStyle}
+            aria-hidden="true"
+          ></div>
+
+          <div class="brl__text">
+            <h3 class="brl__title">{row.title}</h3>
+            <p class="brl__meta">{row.meta}</p>
+          </div>
+
+          {mode === "select" ? (
+            <button
+              class:list={[
+                "brl__toggle",
+                inBook && "brl__toggle--on",
+                rowTap && "brl__toggle--tap",
+              ]}
+              type="button"
+              role="switch"
+              aria-checked={inBook}
+              aria-label={`${row.title}: ${inBook ? "in the book" : "not in the book"}`}
+            ></button>
+          ) : revealRemove ? (
+            <button class="brl__remove" type="button" aria-label={`Remove ${row.title}`}>
+              Remove
+            </button>
+          ) : (
+            <span class="brl__drag" aria-hidden="true">≡</span>
+          )}
+        </div>
+      </li>
+    );
+  })}
+</ul>
+
+<style>
+  .brl {
+    list-style: none;
+    margin: 0;
+    padding: 0 22px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Add-from-library row — T2 chevron-nudge voice, the one permitted
+     delight per tokens.css §MOTION. Sits above the list, divider on
+     both sides so it reads as its own chapter mark. */
+  .brl__add-wrap {
+    border-top: var(--b-divider);
+    border-bottom: var(--b-divider);
+  }
+  .brl__add {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 14px 0;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 14.5px;
+    color: var(--c-ochre);
+    text-align: left;
+  }
+  .brl__add-chev {
+    font-style: italic;
+    transition: transform var(--motion-state) var(--ease-state);
+  }
+  .brl__add:hover .brl__add-chev { transform: translateX(3px); }
+
+  /* Row — thumbnail | text | action.  */
+  .brl__row-wrap {
+    border-top: var(--b-divider);
+  }
+  .brl__row-wrap:last-child {
+    border-bottom: var(--b-divider);
+  }
+  .brl__row {
+    display: grid;
+    grid-template-columns: 44px 1fr auto;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 0;
+  }
+
+  /* Thumbnail — 44×55 (4:5), 2px radius — the printing-plate feel
+     per tokens.css §PHOTOGRAPHY. Subtle inset hairline so it doesn't
+     bleed into cream when images are soft at the edges. */
+  .brl__thumb {
+    width: 44px;
+    aspect-ratio: 4 / 5;
+    border-radius: var(--r-page);
+    background-color: var(--c-oat);
+    background-size: cover;
+    background-position: center;
+    box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.15), var(--shadow-paper);
+  }
+  .brl__thumb--corn {
+    background: radial-gradient(ellipse at 30% 30%, #f5d990 0%, #d6a34e 45%, #8a5c1f 100%);
+  }
+  .brl__thumb--sage {
+    background: radial-gradient(ellipse at 30% 30%, #6a8878 0%, #3f5a4a 55%, #223528 100%);
+  }
+  .brl__thumb--ochre {
+    background: radial-gradient(ellipse at 30% 30%, #d4b062 0%, #7a5a26 55%, #3b2910 100%);
+  }
+
+  .brl__text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .brl__title {
+    font-family: var(--f-display);
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 1.25;
+    letter-spacing: -0.003em;
+    color: var(--c-ink);
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .brl__meta {
+    font-family: var(--f-body);
+    font-size: 11px;
+    line-height: 1.3;
+    letter-spacing: 0.02em;
+    color: var(--c-ash);
+    margin: 0;
+  }
+
+  /* Toggle — 18px circle, ochre outline when out, ochre-filled when
+     in. No checkmark, no text. Opacity / fill alone carry the state,
+     matching the palette guardrail. */
+  .brl__toggle {
+    position: relative;
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    border-radius: var(--r-pill);
+    background: transparent;
+    border: 1.5px solid var(--c-ochre);
+    cursor: pointer;
+    transition: background-color var(--motion-state) var(--ease-state);
+  }
+  .brl__toggle--on {
+    background: var(--c-ochre);
+    box-shadow: inset 0 0 0 2px var(--c-cream);
+  }
+  .brl__toggle--tap::after {
+    content: "";
+    position: absolute;
+    inset: -8px;
+    border-radius: 999px;
+    border: 3px solid var(--annotation);
+    box-shadow: var(--annotation-glow);
+    pointer-events: none;
+    opacity: var(--halo-opacity);
+    transition: opacity 180ms ease;
+    z-index: 50;
+  }
+
+  /* Drag handle — quiet triple-bar glyph in Ochre. DM Sans so it
+     reads as UI, not as a chapter mark. */
+  .brl__drag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    font-family: var(--f-body);
+    font-size: 18px;
+    line-height: 1;
+    color: var(--c-ochre);
+    opacity: 0.7;
+    cursor: grab;
+  }
+
+  /* Remove — T1 tertiary, Alert Rust. Quiet destructive voice per
+     tokens.css §BUTTONS. */
+  .brl__remove {
+    background: transparent;
+    border: 0;
+    padding: 0 4px;
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 12.5px;
+    letter-spacing: 0.01em;
+    color: var(--c-rust);
+    cursor: pointer;
+  }
+  .brl__remove:hover { text-decoration: underline; }
+</style>

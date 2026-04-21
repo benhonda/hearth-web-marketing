@@ -251,11 +251,32 @@ html.no-tap-halos .screen-caption__tap { display: none; }
   overflow-y: visible;
 }
 
+/* Storyboard track — a two-axis grid. Columns are phone-sized; rows
+ * stack a main line + an optional sub-flow row beneath. See
+ * FlowStoryboard for the per-cell placement logic.
+ *
+ * Trailing scroll-end space is handled by a ::after grid item placed
+ * into an IMPLICIT column after the last phone column. Using a real
+ * grid item (not padding-inline-end, not padding-right on .canvas)
+ * because Chrome collapses trailing padding on overflow-x containers
+ * and on their grid children — the spacer reliably extends the
+ * scrollable area by var(--pad-side) across all browsers. */
 .canvas__track {
-  display: inline-flex;
-  align-items: flex-start;
-  gap: clamp(3rem, 6vw, 6rem);
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 1), calc(var(--phone-w) * var(--phone-scale-canvas)));
+  grid-auto-columns: var(--pad-side);
+  grid-auto-rows: auto;
+  column-gap: clamp(3rem, 6vw, 6rem);
+  row-gap: var(--space-3xl);
+  align-items: start;
   min-width: 100%;
+}
+.canvas__track::after {
+  content: "";
+  grid-row: 1;
+  grid-column: calc(var(--cols, 1) + 1);
+  inline-size: var(--pad-side);
+  block-size: 1px;
 }
 
 .phone--canvas {

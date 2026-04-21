@@ -7,14 +7,51 @@
  * Screens that have a concrete `render` key map through the
  * `screenComponents` registry below. New screens: add a component import
  * and register it. Placeholders render as dimmed "Next pass" phones.
+ *
+ * BRANCH RENDERING
+ *   A step with a `branch` spawns a second row of phones beneath the
+ *   main line, starting at the branch point's column and extending
+ *   rightward. The track is a CSS grid — main cells on row 1, a
+ *   chapter-mark label for the branch on row 2 (spanning the branch
+ *   width), and branch cells on row 3. This keeps the sub-flow inside
+ *   the same horizontal scroller while letting it descend visually
+ *   from the branch step.
  */
-import type { Flow } from "~/lib/design/flows";
+import type { Flow, FlowStep } from "~/lib/design/flows";
 import PhoneFrame from "./PhoneFrame.astro";
 import ScreenCaption from "./ScreenCaption.astro";
 import { screenComponents } from "./screens/registry";
 
 type Props = { flow: Flow; showHeader?: boolean };
 const { flow, showHeader = true } = Astro.props;
+
+// Grid placements. Main cells walk columns 1..N. A branch on step k
+// places its label at (row 2, col k, span = branch length) and each
+// branch child at (row 3, col k + j). Columns match the main line so
+// branch child j sits directly under main step k+j.
+type Placement =
+  | { kind: "main"; step: FlowStep; row: 1; col: number }
+  | { kind: "branch-label"; label: string; row: 2; col: number; span: number }
+  | { kind: "branch"; step: FlowStep; row: 3; col: number };
+
+const placements: Placement[] = [];
+let col = 1;
+let maxCol = 1;
+for (const step of flow.steps) {
+  placements.push({ kind: "main", step, row: 1, col });
+  if (step.branch && step.branch.steps.length > 0) {
+    const span = step.branch.steps.length;
+    placements.push({ kind: "branch-label", label: step.branch.label, row: 2, col, span });
+    step.branch.steps.forEach((sub, j) => {
+      placements.push({ kind: "branch", step: sub, row: 3, col: col + j });
+      maxCol = Math.max(maxCol, col + j);
+    });
+  }
+  maxCol = Math.max(maxCol, col);
+  col += 1;
+}
+const hasBranch = placements.some((p) => p.kind === "branch");
+const totalCols = maxCol;
 ---
 
 <section class="flow-storyboard" aria-labelledby={`flow-${flow.slug}`}>
@@ -30,21 +67,44 @@ const { flow, showHeader = true } = Astro.props;
   )}
 
   <div class="canvas" aria-label={`${flow.title} storyboard`}>
-    <div class="canvas__track">
-      {flow.steps.map((step) => {
+    <div
+      class:list={["canvas__track", hasBranch && "canvas__track--has-branch"]}
+      style={`--cols: ${totalCols};`}
+    >
+      {placements.map((p) => {
+        if (p.kind === "branch-label") {
+          return (
+            <div
+              class="branch-label"
+              style={`grid-row: 2; grid-column: ${p.col} / span ${p.span};`}
+            >
+              <span class="branch-label__eyebrow">{p.label}</span>
+              <hr class="branch-label__rule" aria-hidden="true" />
+            </div>
+          );
+        }
+
+        const step = p.step;
         const Component = step.render ? screenComponents[step.render] : null;
+        const isBranch = p.kind === "branch";
+        const label = step.numeral
+          ? `${step.numeral} · ${step.name}`
+          : step.name;
 
         return (
-          <div class="cell">
+          <div
+            class:list={["cell", isBranch && "cell--branch"]}
+            style={`grid-row: ${p.row}; grid-column: ${p.col};`}
+          >
             {Component ? (
-              <PhoneFrame surface={step.surface ?? "cream"} tone={step.tone} variant="canvas" label={`${step.numeral} · ${step.name}`}>
+              <PhoneFrame surface={step.surface ?? "cream"} tone={step.tone} variant="canvas" label={label}>
                 <Component showTap={true} />
               </PhoneFrame>
             ) : (
               <div class="cell__phone--todo">
-                <PhoneFrame surface="cream" variant="canvas" label={`${step.numeral} · ${step.name} · not yet drawn`}>
+                <PhoneFrame surface="cream" variant="canvas" label={`${label} · not yet drawn`}>
                   <div class="todo-screen">
-                    <span class="todo-screen__numeral">{step.numeral}</span>
+                    {step.numeral && <span class="todo-screen__numeral">{step.numeral}</span>}
                     <p class="todo-screen__name">{step.name}</p>
                     <p class="todo-screen__state">Next pass</p>
                   </div>
@@ -93,12 +153,45 @@ const { flow, showHeader = true } = Astro.props;
     text-wrap: pretty;
   }
 
-  /* Cell — one phone + its caption ────────────────────────── */
+  /* Track layout (grid columns, gaps, overflow) lives in design.css —
+     the global .canvas__track rule — so FlowStoryboard is the only
+     consumer and doesn't double-declare. */
 
+  /* Cell — one phone + its caption. Width pinned to the grid column so
+     the caption wraps within the phone's visual width. */
   .cell {
     display: flex;
     flex-direction: column;
     width: calc(var(--phone-w) * var(--phone-scale-canvas));
+  }
+
+  /* Branch-label — a chapter mark above the sub-row that spans its
+     full width. Eyebrow in Ochre small-caps, 36px ochre rule beneath
+     per tokens.css §DECORATIVE RULES. */
+  .branch-label {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    padding: var(--space-md) 0 0;
+  }
+  .branch-label__eyebrow {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 10.5px;
+    line-height: 1;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--c-ochre);
+  }
+  .branch-label__rule {
+    display: block;
+    border: 0;
+    width: 36px;
+    height: 1px;
+    background: var(--c-ochre);
+    margin: 0;
+    opacity: 0.8;
   }
 
   .cell__phone--todo { opacity: 0.6; filter: saturate(0.55); }

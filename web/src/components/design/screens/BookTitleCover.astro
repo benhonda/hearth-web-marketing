@@ -42,11 +42,6 @@ const coverPhoto = sampleRecipe.photo;
 <div class="tc" data-tc-root>
   <ScreenNav eyebrow="Editing" />
 
-  <header class="tc__head">
-    <h1 class="tc__head-title">The cover.</h1>
-    <p class="tc__head-lede">Tap any line to edit.</p>
-  </header>
-
   <div class="tc__stage">
     {coverLayouts.map(({ key }) => (
       <div class="tc__cover-display" data-cover={key} hidden={key !== "plate"}>
@@ -57,30 +52,39 @@ const coverPhoto = sampleRecipe.photo;
     ))}
   </div>
 
+  <p class="tc__folio">— the cover —</p>
+
   <section class="tc__row" aria-label="Cover layout">
-    <span class="tc__row-label">Layout</span>
+    <div class="tc__row-mark">
+      <span class="tc__row-eyebrow">Layout</span>
+      <hr class="tc__row-rule" aria-hidden="true" />
+    </div>
     <div class="tc__layout-options" role="radiogroup">
       {coverLayouts.map(({ key }) => (
         <button
-          class:list={["tc__layout-thumb", key === "plate" && "tc__layout-thumb--on"]}
+          class:list={["tc__layout-option", key === "plate" && "tc__layout-option--on"]}
           type="button"
           role="radio"
           aria-checked={key === "plate"}
           aria-label={`Cover layout: ${key}`}
           data-layout={key}
         >
-          <div class="tc__layout-thumb-frame">
+          <div class="tc__layout-thumb">
             <div class="tc__layout-thumb-scale">
               <BookCover layout={key} title={coverTitle} subtitle={coverSubtitle} photo={coverPhoto} />
             </div>
           </div>
+          <span class="tc__layout-mark" aria-hidden="true"></span>
         </button>
       ))}
     </div>
   </section>
 
   <section class="tc__row" aria-label="Cover photo">
-    <span class="tc__row-label">Photo</span>
+    <div class="tc__row-mark">
+      <span class="tc__row-eyebrow">Photo</span>
+      <hr class="tc__row-rule" aria-hidden="true" />
+    </div>
     <div class="tc__photo-scroll">
       {photoCandidates.map((tile, i) => {
         const isActive = i === 0;
@@ -116,7 +120,7 @@ const coverPhoto = sampleRecipe.photo;
     const activate = (key: string) => {
       thumbs.forEach((t) => {
         const on = t.dataset.layout === key;
-        t.classList.toggle("tc__layout-thumb--on", on);
+        t.classList.toggle("tc__layout-option--on", on);
         t.setAttribute("aria-checked", String(on));
       });
       displays.forEach((d) => {
@@ -140,43 +144,13 @@ const coverPhoto = sampleRecipe.photo;
     min-height: 100%;
   }
 
-  /* Header — just the title + italic lede. Eyebrow + rule live in
-     the nav row above (see ScreenNav). */
-  .tc__head {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    padding: 14px 22px 10px;
-  }
-  .tc__head-title {
-    font-family: var(--f-display);
-    font-weight: 400;
-    font-size: 24px;
-    line-height: 1.15;
-    letter-spacing: -0.012em;
-    text-align: center;
-    color: var(--c-ink);
-    margin: 0;
-  }
-  .tc__head-lede {
-    font-family: var(--f-display);
-    font-style: italic;
-    font-weight: 400;
-    font-size: 13.5px;
-    line-height: 1.4;
-    text-align: center;
-    color: var(--c-ash);
-    margin: 2px 0 0;
-  }
-
   /* Cover display — natural 320×400, scaled 0.72 → 230×288. Two
      variants pre-rendered, one visible. */
   .tc__stage {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 4px 22px 0;
+    padding: 18px 22px 0;
   }
   .tc__cover-display {
     position: relative;
@@ -196,46 +170,77 @@ const coverPhoto = sampleRecipe.photo;
     pointer-events: none;
   }
 
-  /* Setting rows — LAYOUT and PHOTO share the same rhythm so the
-     two edit surfaces (cover and page) read as the same pattern. */
-  .tc__row {
-    display: grid;
-    gap: 8px;
-    padding: 16px 22px 0;
-  }
-  .tc__row-label {
-    font-family: var(--f-body);
-    font-weight: 500;
-    font-size: 10px;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--c-ash);
+  /* Folio — centered Lora italic in Oat, em-dash bracketed per
+     tokens.css §TYPOGRAPHIC CHARACTER RULES. Anchors the display to
+     the book (not floating chrome). */
+  .tc__folio {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 12.5px;
+    line-height: 1.4;
+    color: var(--c-oat);
+    text-align: center;
+    margin: 12px 0 0;
+    letter-spacing: 0.01em;
   }
 
-  /* Layout picker — two small BookCover thumbnails. */
+  /* Section rows — editorial chapter marks, not picker chrome. A
+     small-caps eyebrow + 36px ochre rule sits above each row so
+     LAYOUT and PHOTO read as sections of the cookbook's colophon. */
+  .tc__row {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 24px 24px 0;
+  }
+  .tc__row-mark {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .tc__row-eyebrow {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 10.5px;
+    line-height: 1;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--c-ochre);
+  }
+  .tc__row-rule {
+    display: block;
+    border: 0;
+    width: 36px;
+    height: 1px;
+    background: var(--c-ochre);
+    margin: 0;
+    opacity: 0.85;
+  }
+
+  /* Layout picker — two thumbs side-by-side. Active state is a
+     small Ochre hairline that appears beneath the active thumb, like
+     a reader's margin-rule marking the chosen entry. No ring, no
+     caption — the thumbnails speak for themselves. */
   .tc__layout-options {
     display: flex;
-    gap: 12px;
+    gap: 18px;
   }
-  .tc__layout-thumb {
-    position: relative;
-    width: 72px;
-    aspect-ratio: 4 / 5;
+  .tc__layout-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
     padding: 0;
     background: transparent;
     border: 0;
-    border-radius: var(--r-page);
     cursor: pointer;
-    transition: box-shadow var(--motion-state) var(--ease-state);
   }
-  .tc__layout-thumb--on {
-    box-shadow:
-      0 0 0 1.5px var(--c-ochre),
-      0 0 0 3px var(--c-cream);
-  }
-  .tc__layout-thumb-frame {
-    position: absolute;
-    inset: 0;
+  .tc__layout-thumb {
+    position: relative;
+    width: 68px;
+    aspect-ratio: 4 / 5;
     border-radius: var(--r-page);
     overflow: hidden;
     box-shadow: var(--shadow-paper);
@@ -246,9 +251,22 @@ const coverPhoto = sampleRecipe.photo;
     left: 0;
     width: 320px;
     height: 400px;
-    transform: scale(0.225);
+    transform: scale(0.2125);
     transform-origin: top left;
     pointer-events: none;
+  }
+  /* The margin-rule mark. Always reserves space so the layout
+     doesn't jump when selection changes; becomes visible via
+     background on --on. */
+  .tc__layout-mark {
+    display: block;
+    width: 20px;
+    height: 1.5px;
+    background: transparent;
+    transition: background-color var(--motion-state) var(--ease-state);
+  }
+  .tc__layout-option--on .tc__layout-mark {
+    background: var(--c-ochre);
   }
 
   /* Photo picker — horizontal scrolling row of candidates. */

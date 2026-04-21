@@ -19,7 +19,7 @@ const screenHref = showInspectLink && step.screenSlug
 ---
 
 <div class="screen-caption">
-  <span class="screen-caption__eyebrow">{step.numeral} · {step.name}</span>
+  <span class="screen-caption__eyebrow">{step.numeral ? `${step.numeral} · ${step.name}` : step.name}</span>
   <p class="screen-caption__note">{step.note}</p>
   {step.tap && (
     <p class={step.tapExternal ? "screen-caption__tap screen-caption__tap--external" : "screen-caption__tap"}>

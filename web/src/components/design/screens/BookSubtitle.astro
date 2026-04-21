@@ -1,0 +1,177 @@
+---
+/**
+ * Flow II · Settings · Subtitle.
+ *
+ * Sibling of BookTitle — same pattern, different field. The subtitle
+ * is rendered in Lora italic (how it'll appear on the cover), a notch
+ * smaller than the title so the two screens feel like a pair rather
+ * than clones.
+ */
+import ScreenNav from "../ui/ScreenNav.astro";
+
+interface Props { showTap?: boolean; }
+const { showTap = false } = Astro.props;
+
+const value = "A year at the table.";
+const max = 48;
+---
+
+<div class="stl">
+  <ScreenNav />
+
+  <header class="stl__head">
+    <h1 class="stl__head-title">Subtitle.</h1>
+    <p class="stl__head-lede">The quieter line beneath.</p>
+  </header>
+
+  <div class="stl__field">
+    <span class="stl__label">The subtitle</span>
+    <div class="stl__input-wrap">
+      <span class="stl__value">{value}</span>
+      <span class="stl__caret" aria-hidden="true"></span>
+    </div>
+    <p class="stl__count">{value.length} / {max} characters</p>
+  </div>
+
+  <div class="stl__foot">
+    <button class:list={["stl__done", showTap && "stl__done--tap"]} type="button">
+      Done
+    </button>
+  </div>
+</div>
+
+<style>
+  .stl {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+  }
+
+  .stl__head {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 14px 24px 22px;
+  }
+  .stl__head-title {
+    font-family: var(--f-display);
+    font-weight: 400;
+    font-size: 28px;
+    line-height: 1.15;
+    letter-spacing: -0.012em;
+    text-align: left;
+    color: var(--c-ink);
+    margin: 0;
+  }
+  .stl__head-lede {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 1.4;
+    text-align: left;
+    color: var(--c-ash);
+    margin: 2px 0 0;
+  }
+
+  .stl__field {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 28px 24px 0;
+  }
+  .stl__label {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 10px;
+    line-height: 1;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--c-ochre);
+  }
+
+  .stl__input-wrap {
+    position: relative;
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--c-ink);
+  }
+  /* Subtitle in Lora italic — how it'll read on the cover. Smaller
+     than the title so the two edit screens read as a pair. */
+  .stl__value {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 1.25;
+    letter-spacing: 0em;
+    color: var(--c-ash);
+  }
+  .stl__caret {
+    display: inline-block;
+    width: 1.5px;
+    height: 22px;
+    background: var(--c-ochre);
+    align-self: center;
+    margin-left: 2px;
+    animation: stl-caret 1s steps(2, end) infinite;
+  }
+  @keyframes stl-caret {
+    0%, 50%  { opacity: 1; }
+    50.01%, 100% { opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .stl__caret { animation: none; opacity: 1; }
+  }
+
+  .stl__count {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 12.5px;
+    color: var(--c-oat);
+    margin: 0;
+  }
+
+  .stl__foot {
+    margin-top: auto;
+    position: sticky;
+    bottom: 0;
+    padding: 14px 24px 34px;
+    background: var(--c-cream);
+    z-index: 5;
+  }
+
+  .stl__done {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 48px;
+    border-radius: 999px;
+    border: 1px solid var(--c-conifer);
+    background: transparent;
+    color: var(--c-conifer);
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 14.5px;
+    line-height: 1;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    transition: background-color var(--motion-state) var(--ease-state),
+                color var(--motion-state) var(--ease-state);
+  }
+  .stl__done--tap::after {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    border-radius: 999px;
+    border: 3px solid var(--annotation);
+    box-shadow: var(--annotation-glow);
+    pointer-events: none;
+    opacity: var(--halo-opacity);
+    transition: opacity 180ms ease;
+    z-index: 50;
+  }
+</style>

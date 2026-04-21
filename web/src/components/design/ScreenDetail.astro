@@ -29,8 +29,10 @@ if (!step.render) {
 }
 
 const Component = screenComponents[step.render];
-const eyebrow = `${step.numeral} · ${step.name}`;
-const pageTitle = `${step.name} · Flow ${flow.numeral} · Screen ${step.numeral}`;
+const eyebrow = step.numeral ? `${step.numeral} · ${step.name}` : step.name;
+const pageTitle = step.numeral
+  ? `${step.name} · Flow ${flow.numeral} · Screen ${step.numeral}`
+  : `${step.name} · Flow ${flow.numeral}`;
 ---
 
 <DesignLayout title={pageTitle}>
