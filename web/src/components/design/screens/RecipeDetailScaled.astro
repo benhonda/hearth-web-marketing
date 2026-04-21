@@ -1,0 +1,20 @@
+---
+/**
+ * IX · Recipe · detail, scaled.
+ * The page at serves = 8. Ingredient quantities and each method step's
+ * mise re-render doubled; step TEXT stays as written — timing and pan
+ * cues are cook judgment. Storyboard halo returns to step iv: the
+ * long-press handoff into the edit arc.
+ */
+import RecipeDetail from "./RecipeDetail.astro";
+
+interface Props { showTap?: boolean; }
+const { showTap } = Astro.props;
+---
+
+<RecipeDetail
+  showTap={showTap}
+  portionAffordance
+  doubled
+  tapTarget="step-iv"
+/>

@@ -1,15 +1,25 @@
 ---
 /**
- * Screen VII · Recipe · detail.
+ * Recipe · detail. The cookbook-page moment — full-bleed hero with scrim,
+ * Lora title, ingredients + method on cream. The screen that proves
+ * "the app IS the book": typographically indistinguishable in tone from
+ * a printed cookbook spread.
  *
- * The cookbook-page moment. Full-bleed hero with scrim, title in Lora,
- * ingredients + method on cream below. This is the screen that proves
- * "the app IS the book": typographically, the page you see here should
- * be indistinguishable in tone from a printed cookbook spread.
+ * Editing is per-item via long-press → context menu; there is no Edit
+ * button in the chrome. In the binder this screen drives three
+ * consecutive main-line moments in Flow I, selected via props:
  *
- * No Edit button — editing is per-item via long-press → context menu.
- * On the storyboard, the ochre halo wraps step iv to mark the
- * long-press target for the next screen (VIII · context menu).
+ *   · default (no props)         — canonical recipe, halo on step iv
+ *                                  for the long-press handoff.
+ *   · portionAffordance          — eyebrow reads "INGREDIENTS · serves N"
+ *                                  as an inline-link cross-reference.
+ *   · portionOverlay             — dreamy cream-wash overlay open atop
+ *                                  the page, scale strip centered.
+ *   · doubled                    — render at serves 8 with doubled
+ *                                  ingredient quantities + per-step mise.
+ *   · tapTarget                  — which halo to draw when showTap is on:
+ *                                  "step-iv" (default) | "serves" |
+ *                                  "overlay-8".
  */
 import AppHeader from "../ui/AppHeader.astro";
 import IngredientsList from "../ui/IngredientsList.astro";
@@ -19,24 +29,55 @@ import { sampleRecipe } from "~/lib/design/sample-recipe";
 interface Props {
   showTap?: boolean;
   /** When set, render this step (0-based) as a live textarea and
-   *  use the post-edit wording. Drives the inline edit on screen IX. */
+   *  use the post-edit wording. Drives the inline edit on screen XI. */
   editingIndex?: number;
   /** When true, skip the AppHeader. Used when an outer screen
-   *  (the edit bar on IX) replaces the top chrome. */
+   *  (the edit bar on XI) replaces the top chrome. */
   hideHeader?: boolean;
   /** When true and `editingIndex` is set, halo the inline Save
    *  button under the textarea as the next tap target. */
   editSaveTap?: boolean;
+  /** Render "· serves N" tappable affordance on the Ingredients eyebrow. */
+  portionAffordance?: boolean;
+  /** Render the dreamy portion-scale overlay open atop the page. */
+  portionOverlay?: boolean;
+  /** Use the doubled (serves = 8) ingredient + mise data. */
+  doubled?: boolean;
+  /** Which tap halo the storyboard should draw. Defaults to step-iv,
+   *  which preserves the canonical long-press handoff. */
+  tapTarget?: "step-iv" | "serves" | "overlay-8";
 }
 const {
   showTap = false,
   editingIndex,
   hideHeader = false,
   editSaveTap = false,
+  portionAffordance = false,
+  portionOverlay = false,
+  doubled = false,
+  tapTarget = "step-iv",
 } = Astro.props;
 
-const methodItems =
-  editingIndex !== undefined ? sampleRecipe.editedMethod : sampleRecipe.method;
+const methodItems = doubled
+  ? sampleRecipe.methodDoubled
+  : editingIndex !== undefined
+    ? sampleRecipe.editedMethod
+    : sampleRecipe.method;
+const ingredientItems = doubled
+  ? sampleRecipe.ingredientsDoubled
+  : sampleRecipe.ingredients;
+const servesValue = doubled ? sampleRecipe.servesDoubled : sampleRecipe.serves;
+
+/* Scale-strip presets bracket the native yield and stretch up toward a
+ * dinner-party size. Honest to how people actually cook — 2 / 4 / 6 /
+ * 8 / 12, no 5. */
+const stripPresets = [2, 4, 6, 8, 12];
+
+/* Halo dispatch. Only one halo renders at a time, gated by showTap. */
+const haloStepIv =
+  showTap && editingIndex === undefined && tapTarget === "step-iv";
+const haloServes = showTap && tapTarget === "serves";
+const haloOverlay8 = showTap && portionOverlay && tapTarget === "overlay-8";
 ---
 
 <div class="detail">
@@ -51,7 +92,7 @@ const methodItems =
     <h1 class="detail__title">{sampleRecipe.title}</h1>
     <p class="detail__lede">{sampleRecipe.lede}</p>
     <p class="detail__meta">
-      <em>Serves {sampleRecipe.serves}</em>
+      <em>Serves {servesValue}</em>
       <span aria-hidden="true"> · </span>
       <em>{sampleRecipe.minutes} minutes</em>
       <span aria-hidden="true"> · </span>
@@ -60,17 +101,47 @@ const methodItems =
 
     <hr class="detail__rule" />
 
-    <IngredientsList items={sampleRecipe.ingredients} />
+    <IngredientsList
+      items={ingredientItems}
+      servesTap={portionAffordance ? servesValue : undefined}
+      haloServesTap={haloServes}
+    />
 
     <hr class="detail__rule" />
 
     <MethodList
       items={methodItems}
-      tapIndex={showTap && editingIndex === undefined ? 3 : undefined}
+      tapIndex={haloStepIv ? 3 : undefined}
       editIndex={editingIndex}
       saveTap={editSaveTap}
     />
   </div>
+
+  {portionOverlay && (
+    <div class="scale-overlay" role="dialog" aria-label="Portion scale">
+      <div class="scale-overlay__stage">
+        <span class="scale-overlay__label">Serves</span>
+        <div class="scale-overlay__row">
+          <span class="scale-overlay__dash" aria-hidden="true">—</span>
+          {stripPresets.map((n, i) => (
+            <>
+              {i > 0 && <span class="scale-overlay__sep" aria-hidden="true">·</span>}
+              <button
+                type="button"
+                class:list={[
+                  "scale-overlay__num",
+                  n === servesValue && "is-on",
+                  haloOverlay8 && n === 8 && "scale-overlay__num--halo",
+                ]}
+                aria-pressed={n === servesValue}
+              >{n}</button>
+            </>
+          ))}
+          <span class="scale-overlay__dash" aria-hidden="true">—</span>
+        </div>
+      </div>
+    </div>
+  )}
 </div>
 
 <style>
@@ -164,5 +235,137 @@ const methodItems =
     height: 1px;
     background: rgba(31, 27, 23, 0.1);
     margin: 12px 0;
+  }
+
+  /* Portion-scale overlay ──────────────────────────────────
+     Triggered by tapping "serves N" on the Ingredients eyebrow. The
+     page lightens and blurs (cream wash at ~74% + backdrop blur) so
+     attention lands on the centered strip. No card, no border, no
+     pill — the blur IS the container. Typography-only, book-native.
+
+     ANCHORING: position: fixed relative to the transformed phone
+     ancestor (.stage__phone / .phone--canvas both carry a transform,
+     which becomes the containing block for fixed descendants). The
+     bezel inset + matching inner radius land the overlay exactly on
+     the screen rectangle; each phone on a storyboard page anchors to
+     its own transform, so multiple overlays coexist cleanly.
+
+     NOTE ON THE MODAL BAN: tokens.css bans modals "when there is any
+     better alternative." This overlay is founder-approved for this
+     interaction specifically; it's intended to read as a theatrical
+     dim-down moment, not a dialog with dismiss chrome. */
+
+  .scale-overlay {
+    /* Pin to the phone SCREEN, not the scroll viewport. The .phone and
+       its wrappers (.stage__phone, .phone--canvas) carry a CSS transform
+       which means position: fixed is contained inside the phone's
+       bounding box (per spec: a transformed ancestor becomes the
+       containing block for fixed descendants). Insetting by the bezel
+       lands the overlay exactly on the screen rectangle, and matching
+       the inner screen radius keeps the clip honest. Each phone on a
+       storyboard page anchors to its own transform, so multiple
+       overlays coexist cleanly. */
+    position: fixed;
+    top: var(--phone-bezel);
+    left: var(--phone-bezel);
+    right: var(--phone-bezel);
+    bottom: var(--phone-bezel);
+    border-radius: var(--phone-radius-inner);
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    /* Cream wash — lightens the page without going dark. Tinted warmer
+       than a neutral scrim so the overlay feels like sunlight through
+       linen, not a modal shade. */
+    background: color-mix(in oklab, var(--c-cream) 74%, transparent);
+    backdrop-filter: blur(10px) saturate(1.04);
+    -webkit-backdrop-filter: blur(10px) saturate(1.04);
+  }
+
+  .scale-overlay__stage {
+    display: grid;
+    justify-items: center;
+    gap: 18px;
+    padding: 40px 28px;
+  }
+
+  .scale-overlay__label {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 10.5px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--c-ochre);
+  }
+
+  .scale-overlay__row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    font-family: var(--f-display);
+    font-style: italic;
+    color: var(--c-ochre);
+  }
+
+  .scale-overlay__dash {
+    font-size: 22px;
+    color: var(--c-ochre);
+    opacity: 0.55;
+    line-height: 1;
+  }
+  .scale-overlay__sep {
+    font-size: 18px;
+    color: var(--c-ochre);
+    opacity: 0.45;
+    line-height: 1;
+  }
+  .scale-overlay__num {
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    border: 0;
+    padding: 4px 6px 6px;
+    margin: 0;
+    font: inherit;
+    font-size: 22px;
+    color: var(--c-ash);
+    cursor: pointer;
+    position: relative;
+    line-height: 1;
+    transition:
+      color var(--motion-state) var(--ease-state),
+      font-size var(--motion-state) var(--ease-state);
+  }
+  .scale-overlay__num:hover { color: var(--c-ink); }
+  /* Selected yield — meaningfully larger, Ink colored, with the 44×1.5px
+     chapter-rule hairline narrowed to the numeral's width. Size jump is
+     the hierarchy move; no bold. */
+  .scale-overlay__num.is-on {
+    color: var(--c-ink);
+    font-size: 32px;
+  }
+  .scale-overlay__num.is-on::after {
+    content: "";
+    position: absolute;
+    left: 6px;
+    right: 6px;
+    bottom: 0;
+    height: 1.5px;
+    background: var(--c-ochre);
+  }
+  /* Storyboard halo on the preset the user is about to tap. */
+  .scale-overlay__num--halo::before {
+    content: "";
+    position: absolute;
+    inset: -6px -4px;
+    border: 3px solid var(--annotation);
+    border-radius: 8px;
+    box-shadow: var(--annotation-glow);
+    pointer-events: none;
+    opacity: var(--halo-opacity);
+    transition: opacity 180ms ease;
+    z-index: 50;
   }
 </style>

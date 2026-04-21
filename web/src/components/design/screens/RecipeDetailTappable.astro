@@ -1,0 +1,18 @@
+---
+/**
+ * VII · Recipe · detail (tappable).
+ * The canonical cookbook page with the "· serves N" cross-reference
+ * visible on the Ingredients eyebrow. Storyboard halo lands on that
+ * affordance — the next tap opens the portion overlay.
+ */
+import RecipeDetail from "./RecipeDetail.astro";
+
+interface Props { showTap?: boolean; }
+const { showTap } = Astro.props;
+---
+
+<RecipeDetail
+  showTap={showTap}
+  portionAffordance
+  tapTarget="serves"
+/>

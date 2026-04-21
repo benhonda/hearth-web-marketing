@@ -1,8 +1,12 @@
 ---
 /**
  * Shared topbar for /design/*. Owns the brand mark, the section nav
- * (Binder · Brand · Flow I), and the tap-marker toggle. DesignLayout.astro
+ * (Binder · Brand · Flows ▾), and the tap-marker toggle. DesignLayout.astro
  * renders exactly one of these at the top of every route.
+ *
+ * Flows collapse into a single dropdown so the nav doesn't grow linearly as
+ * we add more. When a flow page is active the trigger carries the flow's
+ * numeral (e.g. "Flows · II") so the section indicator survives the collapse.
  */
 import { flows } from "~/lib/design/flows";
 
@@ -10,7 +14,7 @@ const path = Astro.url.pathname.replace(/\/$/, "") || "/design";
 
 type NavItem = { href: string; label: string; match: (p: string) => boolean };
 
-const navItems: NavItem[] = [
+const topLinks: NavItem[] = [
   {
     href: "/design",
     label: "Binder",
@@ -21,12 +25,15 @@ const navItems: NavItem[] = [
     label: "Brand",
     match: (p) => p.startsWith("/design/brand"),
   },
-  ...flows.map((f) => ({
-    href: `/design/flows/${f.slug}`,
-    label: `Flow ${f.numeral}`,
-    match: (p: string) => p === `/design/flows/${f.slug}`,
-  })),
+  {
+    href: "/design/book",
+    label: "Book",
+    match: (p) => p.startsWith("/design/book"),
+  },
 ];
+
+const activeFlow = flows.find((f) => path === `/design/flows/${f.slug}`);
+const flowsActive = Boolean(activeFlow);
 ---
 
 <header class="design-topbar">
@@ -36,7 +43,7 @@ const navItems: NavItem[] = [
   </a>
 
   <nav class="design-topbar__nav" aria-label="Design sections">
-    {navItems.map((item) => {
+    {topLinks.map((item) => {
       const active = item.match(path);
       return (
         <a
@@ -49,6 +56,58 @@ const navItems: NavItem[] = [
         </a>
       );
     })}
+
+    <div class="design-topbar__flows" data-flows-menu>
+      <button
+        type="button"
+        class="design-topbar__link design-topbar__flows-trigger"
+        class:list={[{ "is-active": flowsActive }]}
+        aria-haspopup="menu"
+        aria-expanded="false"
+        aria-controls="design-flows-panel"
+        data-flows-trigger
+      >
+        <span>Flows</span>
+        {activeFlow && (
+          <span class="design-topbar__flows-active" aria-hidden="true">
+            <span class="design-topbar__flows-sep">·</span>
+            <span class="design-topbar__flows-numeral">{activeFlow.numeral}</span>
+          </span>
+        )}
+        <span class="design-topbar__flows-caret" aria-hidden="true"></span>
+      </button>
+      <div
+        id="design-flows-panel"
+        class="design-topbar__flows-panel"
+        role="menu"
+        data-open="false"
+        data-flows-panel
+      >
+        <div class="design-topbar__flows-eyebrow">The flows</div>
+        <ul class="design-topbar__flows-list">
+          {flows.map((f) => {
+            const active = activeFlow?.slug === f.slug;
+            return (
+              <li>
+                <a
+                  href={`/design/flows/${f.slug}`}
+                  role="menuitem"
+                  class="design-topbar__flows-item"
+                  class:list={[{ "is-active": active }]}
+                  aria-current={active ? "page" : undefined}
+                >
+                  <span class="design-topbar__flows-item-head">
+                    <span class="design-topbar__flows-item-numeral">{f.numeral}</span>
+                    <span class="design-topbar__flows-item-title">{f.title}</span>
+                  </span>
+                  <span class="design-topbar__flows-item-lede">{f.lede}</span>
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </div>
   </nav>
 
   <button
@@ -82,5 +141,55 @@ const navItems: NavItem[] = [
         apply(next);
       });
     }
+  })();
+
+  (function () {
+    var menu = document.querySelector("[data-flows-menu]");
+    if (!menu) return;
+    var trigger = menu.querySelector("[data-flows-trigger]");
+    var panel = menu.querySelector("[data-flows-panel]");
+    if (!trigger || !panel) return;
+    var closeTimer = null;
+
+    function setOpen(open) {
+      trigger.setAttribute("aria-expanded", String(open));
+      panel.setAttribute("data-open", String(open));
+    }
+    function clearCloseTimer() {
+      if (closeTimer) { clearTimeout(closeTimer); closeTimer = null; }
+    }
+    function scheduleClose() {
+      clearCloseTimer();
+      closeTimer = setTimeout(function () { setOpen(false); }, 140);
+    }
+
+    trigger.addEventListener("click", function (e) {
+      e.stopPropagation();
+      clearCloseTimer();
+      var isOpen = trigger.getAttribute("aria-expanded") === "true";
+      setOpen(!isOpen);
+    });
+
+    // Hover-open only on hover-capable pointers so touch devices still use
+    // the tap-to-toggle path (otherwise first tap opens, second tap closes).
+    var canHover = window.matchMedia && window.matchMedia("(hover: hover)").matches;
+    if (canHover) {
+      menu.addEventListener("mouseenter", function () {
+        clearCloseTimer();
+        setOpen(true);
+      });
+      menu.addEventListener("mouseleave", scheduleClose);
+    }
+
+    document.addEventListener("click", function (e) {
+      if (!menu.contains(e.target)) setOpen(false);
+    });
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && trigger.getAttribute("aria-expanded") === "true") {
+        setOpen(false);
+        trigger.focus();
+      }
+    });
   })();
 </script>

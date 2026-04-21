@@ -6,6 +6,9 @@ import ShareSheet from "./ShareSheet.astro";
 import ImportPreview from "./ImportPreview.astro";
 import LibraryOneRecipe from "./LibraryOneRecipe.astro";
 import RecipeDetail from "./RecipeDetail.astro";
+import RecipeDetailTappable from "./RecipeDetailTappable.astro";
+import RecipeDetailOverlay from "./RecipeDetailOverlay.astro";
+import RecipeDetailScaled from "./RecipeDetailScaled.astro";
 import RecipeEditMenu from "./RecipeEditMenu.astro";
 import RecipeEdit from "./RecipeEdit.astro";
 import RecipeSaved from "./RecipeSaved.astro";
@@ -37,6 +40,9 @@ export const screenComponents: Record<ScreenRender, any> = {
   "import-preview": ImportPreview,
   "library-one-recipe": LibraryOneRecipe,
   "recipe-detail": RecipeDetail,
+  "recipe-detail-tappable": RecipeDetailTappable,
+  "recipe-detail-overlay": RecipeDetailOverlay,
+  "recipe-detail-scaled": RecipeDetailScaled,
   "recipe-edit-menu": RecipeEditMenu,
   "recipe-edit": RecipeEdit,
   "recipe-saved": RecipeSaved,

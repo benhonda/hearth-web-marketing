@@ -1,0 +1,303 @@
+---
+/**
+ * /design/book — the iteration surface for the cookbook's rendered
+ * object. Imports the SAME BookCover + BookPage components that the
+ * flow mockups use (Preview, PageEdit, Layout picker); any change to
+ * those internals shows up here at full natural 320×400 and in every
+ * downstream scaled use without drift.
+ *
+ * Two sections: Cover (plate + bleed) and Page (the six V1 layouts).
+ * Each specimen is full-scale so typography and rhythm can be judged
+ * honestly; the flow pages render the same components scaled down.
+ *
+ * See README → "Real page & cover layouts" TODO. This page is where
+ * items 1–6 of that note get worked.
+ */
+import DesignLayout from "~/layouts/DesignLayout.astro";
+import BookCover, { type CoverLayout } from "~/components/design/ui/BookCover.astro";
+import BookPage, { type PageLayout } from "~/components/design/ui/BookPage.astro";
+import { sampleRecipe } from "~/lib/design/sample-recipe";
+
+const covers: { layout: CoverLayout; label: string; note: string }[] = [
+  {
+    layout: "plate",
+    label: "plate",
+    note: "Sage cloth, Antique Foil wordmark, tipped-in photo plate. The classical cloth-bound cookbook.",
+  },
+  {
+    layout: "bleed",
+    label: "bleed",
+    note: "Recipe photo fills the cover; scrim gradient carries the foil title. Photo-forward.",
+  },
+];
+
+const pages: { layout: PageLayout; label: string; bucket: string; note: string }[] = [
+  { layout: "1-photo-a",  label: "1-photo-a",  bucket: "1 photo",   note: "Photo top (45%), text below." },
+  { layout: "1-photo-b",  label: "1-photo-b",  bucket: "1 photo",   note: "Text top, photo bottom (45%)." },
+  { layout: "2-photos-a", label: "2-photos-a", bucket: "2 photos",  note: "Two photos side-by-side on top (35%), text below." },
+  { layout: "2-photos-b", label: "2-photos-b", bucket: "2 photos",  note: "Photo top (28%), text middle, photo bottom (24%) — bookend." },
+  { layout: "3-plus-a",   label: "3-plus-a",   bucket: "3+ photos", note: "Two-by-two photo grid top, text below." },
+  { layout: "3-plus-b",   label: "3-plus-b",   bucket: "3+ photos", note: "Three-photo horizontal strip on top, text below." },
+];
+
+const coverTitle = "For Us.";
+const coverSubtitle = "A year at the table.";
+---
+
+<DesignLayout title="Book">
+  <div class="book-ws">
+    <header class="book-ws__masthead">
+      <p class="eyebrow">Hearth Press · Book layouts v1</p>
+      <hr class="rule" aria-hidden="true" />
+      <h1 class="book-ws__title">The rendered object.</h1>
+      <p class="lede">
+        The two covers and six page layouts that appear throughout Flow II,
+        rendered at natural 320 × 400 so typography and rhythm can be judged
+        honestly. These are the same <code>BookCover</code> and <code>BookPage</code>
+        components the flow mockups consume — improvements here propagate
+        automatically to Preview, Page-edit, and the Layout picker.
+      </p>
+      <div class="book-ws__meta">
+        <span>Last revised 2026-04</span>
+        <span aria-hidden="true">·</span>
+        <a class="link--chevron" href="/design">Back to binder</a>
+      </div>
+    </header>
+
+    {/* ───────── Cover ───────── */}
+    <section class="spec" id="cover">
+      <div class="spec__head">
+        <p class="eyebrow">Cover · 320 × 400 · 4:5</p>
+        <hr class="rule" aria-hidden="true" />
+        <h2 class="spec__title">Two covers — plate and bleed.</h2>
+        <p class="lede">
+          V1 ships two covers. Plate is the classical cloth-bound cookbook
+          with a tipped-in photo; bleed is the photo-forward alternative for
+          users whose hero image is the point. Everything beyond these
+          (typographic-only, cloth jackets, foil/emboss) is V2 — see README
+          item 6.
+        </p>
+      </div>
+
+      <div class="spec__body book-ws__covers">
+        {covers.map((c) => (
+          <figure class="specimen">
+            <div class="specimen__stage">
+              <BookCover
+                layout={c.layout}
+                title={coverTitle}
+                subtitle={coverSubtitle}
+                photo={sampleRecipe.photo}
+              />
+            </div>
+            <figcaption class="specimen__cap">
+              <p class="specimen__label">
+                <code>{c.label}</code>
+              </p>
+              <p class="specimen__note">{c.note}</p>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    </section>
+
+    {/* ───────── Pages ───────── */}
+    <section class="spec" id="page">
+      <div class="spec__head">
+        <p class="eyebrow">Page · 320 × 400 · 4:5</p>
+        <hr class="rule" aria-hidden="true" />
+        <h2 class="spec__title">Six page layouts — one per photo-count bucket, two variants each.</h2>
+        <p class="lede">
+          One recipe, six layouts. Text content is identical across all six —
+          only photo placement varies. The global-settings picker lets the
+          user choose one layout per bucket (1 / 2 / 3+); per-page overrides
+          (screen VIII) swap within a bucket. Slots 1+ in the multi-photo
+          layouts show gradient placeholders today; see README item 4.
+        </p>
+      </div>
+
+      <div class="spec__body book-ws__pages">
+        {pages.map((p) => (
+          <figure class="specimen">
+            <div class="specimen__stage">
+              <BookPage layout={p.layout} recipe={sampleRecipe} />
+            </div>
+            <figcaption class="specimen__cap">
+              <p class="specimen__label">
+                <code>{p.label}</code>
+                <span class="specimen__bucket">{p.bucket}</span>
+              </p>
+              <p class="specimen__note">{p.note}</p>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    </section>
+
+    <footer class="book-ws__foot">
+      <p class="folio">— fin —</p>
+      <p class="book-ws__foot-meta">
+        Cover component at <code>web/src/components/design/ui/BookCover.astro</code> ·
+        page component at <code>web/src/components/design/ui/BookPage.astro</code>.
+        Iterate here; downstream scaled uses follow.
+      </p>
+    </footer>
+  </div>
+</DesignLayout>
+
+<style>
+  /* ───────── Page shell — mirrors /design/brand without the sidebar.
+     Eight specimens doesn't warrant a sticky TOC. ───────── */
+  .book-ws {
+    max-width: 84rem;
+    margin-inline: auto;
+  }
+
+  .book-ws__masthead {
+    display: grid;
+    gap: var(--space-md);
+    max-width: 44rem;
+    margin-bottom: var(--space-4xl);
+  }
+  .book-ws__title {
+    font-family: var(--f-display);
+    font-weight: 400;
+    font-size: clamp(2.25rem, 3vw + 1rem, 3.25rem);
+    line-height: 1.05;
+    letter-spacing: -0.014em;
+    color: var(--c-ink);
+    text-wrap: balance;
+  }
+  .book-ws__meta {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--space-sm);
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: var(--fs-meta);
+    color: var(--c-ash);
+    margin-top: var(--space-md);
+  }
+  .book-ws__masthead code {
+    font-family: var(--f-mono);
+    font-size: 0.92em;
+    color: var(--c-ochre);
+  }
+
+  /* ───────── Section frame ───────── */
+  .spec {
+    display: grid;
+    gap: var(--space-2xl);
+    padding-block: var(--space-3xl);
+    border-bottom: var(--b-divider);
+    scroll-margin-top: 5rem;
+  }
+  .spec:last-of-type { border-bottom: 0; }
+  .spec__head {
+    display: grid;
+    gap: var(--space-md);
+    max-width: 52rem;
+  }
+  .spec__title {
+    font-family: var(--f-display);
+    font-weight: 400;
+    font-size: clamp(1.5rem, 1.5vw + 1rem, 2rem);
+    line-height: 1.1;
+    letter-spacing: -0.012em;
+    color: var(--c-ink);
+    text-wrap: balance;
+  }
+
+  /* ───────── Specimen — the frame around each 320×400 object ───── */
+  .specimen {
+    display: grid;
+    gap: var(--space-lg);
+    margin: 0;
+  }
+  /* No plinth. The system has two surface colors (cream + sage) —
+     the plate cover IS sage, so any dark plinth matches it. This
+     mirrors how /design/brand's HeroBook and the flow storyboards
+     sit on the workspace chrome: shadow + 2px radius carry the
+     edge, not a contrasting container. Generous padding keeps the
+     object breathing; the BookPage / BookCover components already
+     carry their own --shadow-paper / --shadow-lift. */
+  .specimen__stage {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: var(--space-2xl) 0;
+  }
+  .specimen__cap {
+    display: grid;
+    gap: var(--space-xs);
+    max-width: 32ch;
+  }
+  .specimen__label {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--space-sm);
+    font-family: var(--f-body);
+    font-size: var(--fs-meta);
+    color: var(--c-ash);
+  }
+  .specimen__label code {
+    font-family: var(--f-mono);
+    font-size: 12.5px;
+    color: var(--c-ochre);
+  }
+  .specimen__bucket {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: var(--fs-meta);
+    color: var(--c-ash);
+  }
+  .specimen__note {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: var(--fs-meta);
+    color: var(--c-ash);
+    line-height: 1.55;
+  }
+
+  /* ───────── Covers — two up, natural width. ───────── */
+  .book-ws__covers {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(22rem, max-content));
+    gap: var(--space-3xl) var(--space-2xl);
+    justify-content: start;
+  }
+
+  /* ───────── Pages — three up on wide screens, wraps down. Using
+     max-content keeps each cell at the natural 320 + plinth padding
+     instead of stretching. ───────── */
+  .book-ws__pages {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(22rem, max-content));
+    gap: var(--space-3xl) var(--space-2xl);
+    justify-content: start;
+  }
+
+  /* ───────── Footer ───────── */
+  .book-ws__foot {
+    display: grid;
+    gap: var(--space-md);
+    padding: var(--space-3xl) 0 var(--space-2xl);
+    margin-top: var(--space-3xl);
+    border-top: var(--b-divider);
+    text-align: center;
+  }
+  .book-ws__foot-meta {
+    font-family: var(--f-display);
+    font-style: italic;
+    color: var(--c-ash);
+    font-size: var(--fs-meta);
+    max-width: 52ch;
+    margin-inline: auto;
+    text-wrap: balance;
+  }
+  .book-ws__foot-meta code {
+    font-family: var(--f-mono);
+    font-style: normal;
+    color: var(--c-ochre);
+  }
+</style>

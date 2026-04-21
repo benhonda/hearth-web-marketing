@@ -20,6 +20,7 @@ Hearth is a recipe app that is also a publishing house. Home cooks save recipes 
   - `web/src/components/design/ui/BookPage.astro` — one component, six layouts (`1-photo-a/b`, `2-photos-a/b`, `3-plus-a/b`), driven by `grid-template-areas`. Takes `{layout, recipe}`. Natural size 320×400. Pulls title / meta / ingredients (6) / method (4 steps with italic Roman numerals) / folio. Slot 0 uses the recipe's real photo; slots 1+ fall back to a corn-tone gradient placeholder when `recipe.photos[n]` is empty.
   - `sampleRecipe` gained optional `photos: string[]` so 2/3+ photo layouts have real slots to target.
   - `BookLayout.astro` wires these in via `transform: scale(0.42)` inside a fixed 4:5 frame with `overflow: hidden`. (`BookSettings.astro` is now the sub-flow's TOC landing, not the picker.)
+  - **Iteration surface: `/design/book`** — the two covers and six page layouts rendered at natural 320×400 so typography and rhythm can be judged honestly. When circling back on items 1–6 below, iterate there; the flow pages (Preview, Page-edit, Layout picker) consume the same components and pick up the changes automatically.
 
   **What's explicitly deferred — this is the "circle back" work:**
 

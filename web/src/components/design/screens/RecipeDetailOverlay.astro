@@ -1,0 +1,20 @@
+---
+/**
+ * VIII · Portion · overlay.
+ * The dreamy moment. The page lightens under a cream wash and blurs
+ * behind; the scale strip floats centered — "— 2 · 4 · 6 · 8 · 12 —".
+ * The native yield (4) sits currently-selected and larger; storyboard
+ * halo lands on 8 as the next tap.
+ */
+import RecipeDetail from "./RecipeDetail.astro";
+
+interface Props { showTap?: boolean; }
+const { showTap } = Astro.props;
+---
+
+<RecipeDetail
+  showTap={showTap}
+  portionAffordance
+  portionOverlay
+  tapTarget="overlay-8"
+/>

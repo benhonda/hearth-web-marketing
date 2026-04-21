@@ -2,24 +2,62 @@
 /**
  * Ingredients list — small-caps eyebrow + DM Sans body with thin
  * ochre dash markers. Used inside import preview, recipe detail, edit.
+ *
+ * Optional `servesTap` renders a tappable "· SERVES N" appended to the
+ * eyebrow. Shares the eyebrow's DNA exactly — DM Sans 500 small-caps,
+ * 10px, 0.3em tracking, Ochre — so it reads as a sub-chapter of the
+ * eyebrow, not a foreign link. The only thing distinguishing it as
+ * interactive is a 1px ochre underline at 3px offset. Drives the
+ * portion-scale overlay on Flow I.
+ *
+ * Optional `haloServesTap` wraps that affordance in the storyboard tap
+ * halo so the binder marks it as the next tap target.
  */
 
 interface Props {
   items: string[];
   label?: string;
+  servesTap?: number;
+  haloServesTap?: boolean;
 }
 
-const { items, label = "Ingredients" } = Astro.props;
+const { items, label = "Ingredients", servesTap, haloServesTap = false } = Astro.props;
 ---
 
 <section class="ing">
-  <span class="ing__eyebrow">{label}</span>
+  <div class="ing__head">
+    <span class="ing__eyebrow-row">
+      <span class="ing__eyebrow">{label}</span>
+      {servesTap !== undefined && (
+        <>
+          <span class="ing__sep" aria-hidden="true">·</span>
+          <button
+            type="button"
+            class:list={["ing__serves-tap", haloServesTap && "ing__serves-tap--halo"]}
+            aria-label={`Change portion size, currently serves ${servesTap}`}
+          >serves {servesTap}</button>
+        </>
+      )}
+    </span>
+  </div>
   <ul class="ing__list">
     {items.map((item) => <li>{item}</li>)}
   </ul>
 </section>
 
 <style>
+  .ing__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .ing__eyebrow-row {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 8px;
+  }
   .ing__eyebrow {
     font-family: var(--f-body);
     font-weight: 500;
@@ -27,9 +65,62 @@ const { items, label = "Ingredients" } = Astro.props;
     letter-spacing: 0.3em;
     text-transform: uppercase;
     color: var(--c-ochre);
-    display: block;
-    margin-bottom: 10px;
+    display: inline-block;
   }
+  .ing__sep {
+    font-family: var(--f-body);
+    color: var(--c-ochre);
+    opacity: 0.45;
+    font-size: 10px;
+    line-height: 1;
+  }
+
+  /* Inline "SERVES N" — shares the eyebrow's exact typographic DNA
+     (DM Sans 500 small-caps 10px 0.3em tracking Ochre) so it reads as
+     a sub-chapter, not a foreign link. Only the underline distinguishes
+     it as interactive; hover lifts color to Ink. The underline is kept
+     thin (0.75px) and set at a slightly tighter offset so on wide-
+     tracked caps it reads as book-typographic, not URL-y. */
+  .ing__serves-tap {
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-style: normal;
+    font-size: 10px;
+    line-height: 1;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--c-ochre);
+    text-decoration: underline;
+    text-decoration-thickness: 0.75px;
+    text-underline-offset: 2.5px;
+    cursor: pointer;
+    position: relative;
+    transition: color var(--motion-state) var(--ease-state);
+  }
+  .ing__serves-tap:hover { color: var(--c-ink); }
+
+  /* Storyboard tap halo — marks this affordance as the next tap target.
+     Tighter inset than the prior Lora variant since the small-caps
+     voice has less optical volume. */
+  .ing__serves-tap--halo::after {
+    content: "";
+    position: absolute;
+    inset: -4px -6px;
+    border: 3px solid var(--annotation);
+    border-radius: 5px;
+    box-shadow: var(--annotation-glow);
+    pointer-events: none;
+    opacity: var(--halo-opacity);
+    transition: opacity 180ms ease;
+    z-index: 50;
+  }
+
   .ing__list {
     display: grid;
     gap: 6px;

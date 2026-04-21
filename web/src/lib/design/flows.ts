@@ -21,6 +21,9 @@ export type ScreenRender =
   | "import-preview"
   | "library-one-recipe"
   | "recipe-detail"
+  | "recipe-detail-tappable"
+  | "recipe-detail-overlay"
+  | "recipe-detail-scaled"
   | "recipe-edit-menu"
   | "recipe-edit"
   | "recipe-saved"
@@ -72,7 +75,7 @@ export const flows: Flow[] = [
     numeral: "I",
     title: "The first recipe.",
     lede:
-      "Sign in, share a web recipe into Hearth, read it, edit a step, save. From the sage cover to a library of one — end to end.",
+      "Sign in, share a web recipe into Hearth, read it, scale it for tonight's table, edit a step, save. From the sage cover to a library of one — end to end.",
     steps: [
       {
         numeral: "I",
@@ -140,13 +143,31 @@ export const flows: Flow[] = [
         numeral: "VII",
         name: "Recipe · detail",
         detailTitle: "The cookbook page.",
-        note: "The cookbook-page moment. Hero photo, Lora title, method set in Roman numerals. No Edit button in the chrome — editing is per-item via long-press. The ochre halo marks step iv as the long-press target.",
-        render: "recipe-detail",
-        screenSlug: "recipe-detail",
-        tap: "Long-press step iv",
+        note: "The cookbook-page moment. Hero photo, Lora title, method set in Roman numerals. The Ingredients eyebrow reads INGREDIENTS · serves 4, with 'serves 4' typeset as an inline-link cross-reference (Lora italic Ochre, 1px ochre underline). The ochre halo marks it as the next tap.",
+        render: "recipe-detail-tappable",
+        screenSlug: "recipe-detail-tappable",
+        tap: "Tap serves 4",
       },
       {
         numeral: "VIII",
+        name: "Portion · overlay",
+        detailTitle: "A theatrical dim-down.",
+        note: "The dreamy moment. The page lightens under a cream wash and blurs behind, and the scale strip floats centered in the viewport — '— 2 · 4 · 6 · 8 · 12 —'. The current yield (4) sits currently-selected and larger, carrying the chapter-rule hairline beneath. The ochre halo lands on 8 as the next tap. No card, no border, no pill — the blur is the container. Scale is a lens over a fixed recipe; no Save, no version bump.",
+        render: "recipe-detail-overlay",
+        screenSlug: "recipe-detail-overlay",
+        tap: "Tap 8",
+      },
+      {
+        numeral: "IX",
+        name: "Recipe · detail, scaled",
+        detailTitle: "Tonight's a double batch.",
+        note: "The page quietly rerendered at serves 8 — ingredient quantities and each method step's mise doubled. Step TEXT is unchanged; timing and pan cues are cook judgment, not math. Long-press is the structural-edit entry; the ochre halo returns to step iv to mark the handoff into the edit arc.",
+        render: "recipe-detail-scaled",
+        screenSlug: "recipe-detail-scaled",
+        tap: "Long-press step iv",
+      },
+      {
+        numeral: "X",
         name: "Recipe · long-press menu",
         detailTitle: "The long-press menu.",
         note: "iOS-style context menu. The page blurs and dims; step iv is plucked above the dim layer with a soft shadow; a quiet two-row menu — Edit · Delete — floats below. This is the discoverability answer: there is no Edit button, long-press is the single entry point.",
@@ -155,7 +176,7 @@ export const flows: Flow[] = [
         tap: "Edit",
       },
       {
-        numeral: "IX",
+        numeral: "XI",
         name: "Recipe · editing step iv",
         detailTitle: "Editing step iv.",
         note: "Inline edit — step iv is swapped for a live textarea inside the recipe page, '8 minutes' updated to '10–12 minutes.' The page stays put so the cook keeps their bearings; the iOS keyboard is docked at the foot. Save creates a new version; Cancel discards.",
@@ -164,7 +185,7 @@ export const flows: Flow[] = [
         tap: "Save",
       },
       {
-        numeral: "X",
+        numeral: "XII",
         name: "Recipe · saved",
         detailTitle: "The book, quietly changed.",
         note: "Same page, quietly updated. Folio now reads 'page 1 · version ii.' No celebration — the book-spine test holds.",

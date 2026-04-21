@@ -30,6 +30,16 @@ export type SampleRecipe = {
   ingredients: string[];
   method: MethodStep[];
   editedMethod: MethodStep[];
+  /** Doubled yield — pre-scaled companion used by the portion-scale
+   *  candidates in Flow I. We keep this as static data (rather than
+   *  parsing quantities at runtime) for the same reason `editedMethod`
+   *  is static: the design binder shows outcomes, not runtime math.
+   *  Method step TEXT is deliberately NOT doubled — timing and pan
+   *  cues are cook judgment. Only top-ingredient quantities and the
+   *  per-step `mise` lines change. */
+  servesDoubled: number;
+  ingredientsDoubled: string[];
+  methodDoubled: MethodStep[];
 };
 
 export const sampleRecipe: SampleRecipe = {
@@ -97,6 +107,43 @@ export const sampleRecipe: SampleRecipe = {
     {
       text: "Off heat, stir in butter and torn basil. Taste; pepper heavily.",
       mise: ["3 tbsp butter", "1 cup basil", "black pepper"],
+    },
+    {
+      text: "Spoon onto toasted bread or polenta.",
+      mise: ["toasted bread or polenta"],
+    },
+  ],
+  servesDoubled: 8,
+  ingredientsDoubled: [
+    "12 ears sweet corn, kernels scraped (cobs reserved)",
+    "2 shallots, minced",
+    "6 garlic cloves, thinly sliced",
+    "2 cups dry white wine",
+    "2 tbsp white miso",
+    "2 cups basil leaves, torn",
+    "6 tbsp unsalted butter",
+    "Olive oil, salt, black pepper",
+  ],
+  methodDoubled: [
+    {
+      text: "Scrape kernels into a bowl. Simmer the stripped cobs in 3 cups water for 20 minutes for a quick corn stock. Strain.",
+      mise: ["12 ears sweet corn", "6 cups water"],
+    },
+    {
+      text: "Heat a wide pan over medium. Coat with olive oil, sweat shallot until translucent, 4 minutes. Add garlic, 30 seconds.",
+      mise: ["olive oil", "2 shallots", "6 garlic cloves"],
+    },
+    {
+      text: "Add kernels and a pinch of salt. Cook 3 minutes, until they pop and turn glossy.",
+      mise: ["the scraped kernels", "salt"],
+    },
+    {
+      text: "Deglaze with wine; reduce by half. Add 2 cups stock and the miso. Simmer gently 8 minutes — it should thicken to a loose ragù.",
+      mise: ["2 cups white wine", "4 cups corn stock", "2 tbsp white miso"],
+    },
+    {
+      text: "Off heat, stir in butter and torn basil. Taste; pepper heavily.",
+      mise: ["6 tbsp butter", "2 cups basil", "black pepper"],
     },
     {
       text: "Spoon onto toasted bread or polenta.",
