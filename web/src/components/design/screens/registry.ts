@@ -16,6 +16,7 @@ import BookRecipes from "./BookRecipes.astro";
 import BookSettings from "./BookSettings.astro";
 import BookTitleCover from "./BookTitleCover.astro";
 import BookPreview from "./BookPreview.astro";
+import BookSpreadEdit from "./BookSpreadEdit.astro";
 
 /**
  * Maps a FlowStep's `render` key to its Astro component. Shared by
@@ -40,4 +41,5 @@ export const screenComponents: Record<ScreenRender, any> = {
   "book-settings": BookSettings,
   "book-title-cover": BookTitleCover,
   "book-preview": BookPreview,
+  "book-spread-edit": BookSpreadEdit,
 };

@@ -28,6 +28,10 @@
 
 - chore: Removed the blocking `generate` dep from `task typecheck` so the typecheck loop no longer forces a full codegen pass on every run.
 
+- feat: Drew step VIII of Flow II (`book-spread-edit`) as a real screen instead of a placeholder — renders the active spread at 0.52× with a two-option layout picker above it that swaps the left page's layout on click; demonstrates the per-spread override pattern deferred in the original Flow II note.
+
+- refactor: Recipe-edit Cancel/Save moved out of a floating accessory bar and now render inline under the active method-step textarea (via `saveTap` on `MethodList`) — the edit controls attach to what's being edited rather than to separate chrome, and the edit screen keeps only the context strip and keyboard dock.
+
 ## 2026-04-20
 
 - refactor: Consolidated design system into a single source of truth at `web/src/styles/tokens.css` (brand book with ~570 lines of inline rationale on palette, type, motion, bans, and principles); removed `DESIGN.md` and `.impeccable.md` so no file can contradict tokens.css.

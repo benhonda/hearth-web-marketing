@@ -3,16 +3,17 @@
  * Screen IX · Recipe · editing step iv (inline).
  *
  * Thin composition: the full RecipeDetail with `editingIndex={3}` so
- * step iv renders as a live textarea in-place. This screen adds only
- * the edit chrome:
+ * step iv renders as a live textarea in-place. Cancel + Save live
+ * directly under the textarea (inside MethodList) — attached to what's
+ * being edited, not floating chrome.
+ *
+ * This screen owns only:
  *   · a quiet top strip showing "Editing · step iv" context
- *   · an iOS-style keyboard accessory bar above the keyboard with
- *     Cancel + Save — thumb-accessible while keyboard is up
  *   · the iOS keyboard docked at the bottom
  *
- * All three strips are `position: sticky` within the phone's scroll
- * viewport. An inline script scrolls the textarea into the visible
- * band on load (what iOS does when a buried input focuses).
+ * Both strips are `position: sticky` in the phone's scroll viewport;
+ * an inline script scrolls the textarea into the visible band on load
+ * so the step iv edit + its Cancel/Save sit clear of the keyboard.
  */
 import RecipeDetail from "./RecipeDetail.astro";
 import IosKeyboard from "../ui/IosKeyboard.astro";
@@ -26,13 +27,9 @@ const { showTap = false } = Astro.props;
     <span class="edit-bar__eyebrow">Editing · step iv</span>
   </header>
 
-  <RecipeDetail editingIndex={3} hideHeader />
+  <RecipeDetail editingIndex={3} hideHeader editSaveTap={showTap} />
 
-  <div class="edit__dock">
-    <div class="edit__accessory" role="toolbar" aria-label="Edit actions">
-      <button class="edit__cancel" type="button">Cancel</button>
-      <button class={showTap ? "edit__save edit__save--tap" : "edit__save"} type="button">Save</button>
-    </div>
+  <div class="edit__keyboard-dock">
     <IosKeyboard suggestions={["minutes", "12", "just"] as [string, string, string]} />
   </div>
 </div>
@@ -53,8 +50,9 @@ const { showTap = false } = Astro.props;
           offsetTop += el.offsetTop;
           el = el.offsetParent;
         }
-        // Land the textarea just below the sticky edit-bar.
-        scroller.scrollTop = Math.max(0, offsetTop - 140);
+        // Land the textarea just below the sticky top strip; leaves
+        // room for Cancel/Save underneath, still clear of the keyboard.
+        scroller.scrollTop = Math.max(0, offsetTop - 120);
       });
     }
     if (document.readyState === "complete") run();
@@ -68,7 +66,7 @@ const { showTap = false } = Astro.props;
     min-height: 100%;
   }
 
-  /* Top strip — quiet context label, no buttons ─────────── */
+  /* Top strip — quiet context label ──────────────────────── */
 
   .edit-bar {
     position: sticky;
@@ -90,62 +88,11 @@ const { showTap = false } = Astro.props;
     white-space: nowrap;
   }
 
-  /* Bottom dock — accessory bar + keyboard, sticky as one ── */
+  /* Keyboard dock ─────────────────────────────────────────── */
 
-  .edit__dock {
+  .edit__keyboard-dock {
     position: sticky;
     bottom: 0;
     z-index: 10;
-  }
-
-  .edit__accessory {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 6px 14px;
-    background: #EFE9DC;
-    border-top: 1px solid rgba(31, 27, 23, 0.1);
-    border-bottom: 1px solid rgba(31, 27, 23, 0.06);
-  }
-
-  .edit__cancel,
-  .edit__save {
-    appearance: none;
-    -webkit-appearance: none;
-    display: inline-flex;
-    align-items: center;
-    min-height: 32px;
-    padding: 4px 10px;
-    border: 0;
-    border-radius: 6px;
-    background: transparent;
-    font-family: var(--f-body);
-    font-size: 14px;
-    line-height: 1;
-    cursor: pointer;
-  }
-
-  .edit__cancel {
-    color: var(--c-ash);
-    font-weight: 400;
-  }
-
-  .edit__save {
-    position: relative;
-    color: var(--c-ochre);
-    font-weight: 500;
-  }
-
-  .edit__save--tap::after {
-    content: "";
-    position: absolute;
-    inset: -4px;
-    border-radius: 999px;
-    border: 3px solid var(--annotation);
-    box-shadow: var(--annotation-glow);
-    pointer-events: none;
-    opacity: var(--halo-opacity);
-    transition: opacity 180ms ease;
-    z-index: 50;
   }
 </style>
