@@ -17,6 +17,7 @@ interface Props {
   tone?: "corn" | "sage" | "ochre";      // placeholder gradient when no photo
   href?: string;
   showTap?: boolean;         // flow-binder halo
+  dimmed?: boolean;          // selection-out state on selection screens
 }
 
 const {
@@ -27,6 +28,7 @@ const {
   tone = "corn",
   href = "#",
   showTap = false,
+  dimmed = false,
 } = Astro.props;
 
 const photoStyle = photo
@@ -34,7 +36,7 @@ const photoStyle = photo
   : `aspect-ratio: ${aspect}`;
 ---
 
-<a class={showTap ? "tile tile--tap" : "tile"} href={href}>
+<a class:list={["tile", showTap && "tile--tap", dimmed && "tile--dim"]} href={href}>
   <div
     class={photo ? "tile__photo tile__photo--image" : `tile__photo tile__photo--${tone}`}
     style={photoStyle}
@@ -52,7 +54,13 @@ const photoStyle = photo
     color: inherit;
     text-decoration: none;
     position: relative;
+    transition: opacity var(--motion-state) var(--ease-state);
   }
+  /* Selection-out state — not in the book. 40% is the floor where the
+     tile still reads as "present in the library" but unmistakably
+     "not selected." No additional chrome, no checkmark — opacity
+     carries the whole thing. */
+  .tile--dim { opacity: 0.38; }
 
   .tile__photo {
     width: 100%;

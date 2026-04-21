@@ -1,0 +1,78 @@
+---
+/**
+ * BookSpread — two facing BookPages, rendered at natural 640×400
+ * (two 320×400 pages + a hairline spine in the middle). Parent
+ * transforms this down to fit phone width; the internal page ratio
+ * stays honest to the 8×10 book trim.
+ *
+ * For V1 the left and right pages are independent BookPage
+ * instances — one recipe per page is the default. A future two-page
+ * spread layout (e.g., the 1-photo-b "photo facing the method"
+ * treatment) would grow a `spanning` prop or a dedicated variant.
+ * Noted in README under 'Real page & cover layouts' TODO (item 5).
+ */
+import BookPage, { type PageLayout } from "./BookPage.astro";
+import type { SampleRecipe } from "~/lib/design/sample-recipe";
+
+interface Props {
+  left: { recipe: SampleRecipe; layout: PageLayout };
+  right: { recipe: SampleRecipe; layout: PageLayout };
+}
+
+const { left, right } = Astro.props;
+---
+
+<div class="spread" aria-label="Facing pages">
+  <div class="spread__page spread__page--left">
+    <BookPage layout={left.layout} recipe={left.recipe} />
+  </div>
+  <div class="spread__spine" aria-hidden="true"></div>
+  <div class="spread__page spread__page--right">
+    <BookPage layout={right.layout} recipe={right.recipe} />
+  </div>
+</div>
+
+<style>
+  /* Natural size — two 320×400 pages plus a 0 spine (visual only). */
+  .spread {
+    position: relative;
+    width: 640px;
+    height: 400px;
+    display: grid;
+    grid-template-columns: 320px 320px;
+    background: var(--c-cream);
+    border-radius: var(--r-page);
+    box-shadow: var(--shadow-lift);
+  }
+  /* Page wrappers just host the BookPage and clip its rounded corners
+     where they meet the spine (so the spine reads as a book gutter
+     rather than two separate cards). */
+  .spread__page {
+    position: relative;
+    width: 320px;
+    height: 400px;
+    overflow: hidden;
+  }
+  .spread__page--left  { border-radius: var(--r-page) 0 0 var(--r-page); }
+  .spread__page--right { border-radius: 0 var(--r-page) var(--r-page) 0; }
+
+  /* Spine — a subtle inner shadow at the gutter. Not a solid line;
+     that would read as a border. Instead, a vertical soft shadow
+     from each side creates a valley. */
+  .spread__spine {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 2px;
+    height: 100%;
+    transform: translateX(-50%);
+    background: linear-gradient(
+      to right,
+      rgba(31, 27, 23, 0.18) 0%,
+      rgba(31, 27, 23, 0.08) 40%,
+      rgba(31, 27, 23, 0.08) 60%,
+      rgba(31, 27, 23, 0.18) 100%
+    );
+    pointer-events: none;
+  }
+</style>

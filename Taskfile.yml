@@ -94,8 +94,8 @@ tasks:
     desc: Run TypeScript type checking on app and all services
     aliases:
       - typecheck:all
-    deps:
-      - generate
+    # deps:
+    #   - generate
     dir: web
     cmds:
       - bun run typecheck

@@ -1,5 +1,33 @@
 # Changelog
 
+## 2026-04-21
+
+- feat: Added Flow II (`/design/flows/02-make-a-book`) — the complete ten-step boutique book flow from library through occasion, recipe selection, global layout picker, spread preview, cover editing, per-spread editing, review & finalize, and concierge hand-off; replaces the abstract "make a book" placeholder with a drawn flow the concierge validation will run against.
+
+- feat: Added the `library-populated` screen — a 27-recipe photo waterfall at depth, with a typographic "When you're ready to make these into a book —" invitation at the foot as the single entry point into Flow II (no button, no saturated CTA; the book moment opens from the library itself).
+
+- feat: Added `BookCover.astro` and `BookPage.astro` skeleton components (one component per surface, two cover and six page layout variants driven by `grid-template-areas`, natural size 320×400) so the Global-settings picker renders real miniatures at `scale(0.42)` instead of sketch thumbnails; the finishing design pass on each layout is deferred — see README → "Real page & cover layouts" for the circle-back note.
+
+- refactor: Recipe editing replaced the dedicated Edit form with an in-place long-press → iOS context menu → live textarea pattern. Added `recipe-edit-menu` as a new step (VIII) and demoted `recipe-edit` (now step IX) to a thin composition over `recipe-detail` plus a sticky iOS keyboard dock with Cancel/Save accessory bar. There is no Edit button in the recipe chrome anymore — long-press on the target is the single edit entry point.
+
+- feat: Method steps now carry a per-step `mise` line (amounts in hand at the pan, em-middot separated, rendered in Deep Ochre italic above each step's prose) following the Zuni/Ottolenghi/Prune convention; the top ingredient list stays as the shopping summary. Required a data-model change on `sampleRecipe.method` / `editedMethod` from `string[]` to `MethodStep[]`.
+
+- refactor: Collapsed every `/design/screens/[slug]` detail page to a one-line `<ScreenDetail slug="..."/>` call; eyebrow, poetic title, and director's note now resolve from a single source (`flows.ts` via a new `getScreen()` helper), and `FlowStep` gained `detailTitle` + `tone` fields to support dark-surface screens.
+
+- refactor: Extracted the flow-step screen-component registry into `screens/registry.ts` so `FlowStoryboard` and the new `ScreenDetail` share one map, and split the storyboard caption into a reusable `ScreenCaption.astro`.
+
+- refactor: Removed the "— page one —" / "— page 1 —" folio labels from library-empty, library-of-one, recipe-detail, and recipe-saved — the convention was fighting the minimal cookbook-page typography.
+
+- feat: Added `IosKeyboard.astro` (docked QWERTY with shift / 123 / space / return and a three-cell suggestion strip) and `StepHeader.astro` (chapter-mark step numeral + title) as primitives for the book flow.
+
+- feat: `LibraryTile` gained a `dimmed` prop (opacity 0.38) used on `book-recipes` to carry "not in the book" selection state — no checkmarks, no saturated accents; opacity alone is the entire affordance.
+
+- chore: Added `playwright` as a dev dependency and rewrote the `screenshot-website` skill to wrap a bundled `scripts/screenshot.ts`, removing the old per-repo `/products/*` password-gate handling that wasn't relevant here.
+
+- chore: `bit.config.json` now points at the production registry `bit.adpharm.digital` instead of localhost.
+
+- chore: Removed the blocking `generate` dep from `task typecheck` so the typecheck loop no longer forces a full codegen pass on every run.
+
 ## 2026-04-20
 
 - refactor: Consolidated design system into a single source of truth at `web/src/styles/tokens.css` (brand book with ~570 lines of inline rationale on palette, type, motion, bans, and principles); removed `DESIGN.md` and `.impeccable.md` so no file can contradict tokens.css.

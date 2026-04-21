@@ -1,17 +1,31 @@
 ---
 /**
  * Method list — italic lowercase Roman numerals (i. ii. iii.) in Deep
- * Ochre, DM Sans body. Direct translation of the cookbook-step pattern
- * defined in tokens.css §2 (Typography).
+ * Ochre, DM Sans body. Each step optionally carries a `mise` line above
+ * its prose: the amounts in hand at the pan for *that* step, separated
+ * by em-middots. This is the cookbook-native answer to the
+ * scroll-up-for-amounts problem — it matches how Zuni, Ottolenghi, and
+ * Prune are actually typeset.
  */
+import type { MethodStep } from "~/lib/design/sample-recipe";
 
 interface Props {
-  items: string[];
+  items: MethodStep[];
   label?: string;
-  highlightIndex?: number; // optional — mark a single step visually
+  highlightIndex?: number; // optional — mark a single step visually (ochre bar)
+  tapIndex?: number;       // optional — wrap a step in the storyboard tap halo
+  editIndex?: number;      // optional — render this step as an active textarea
+  saveTap?: boolean;       // optional — halo the Save button under the textarea
 }
 
-const { items, label = "Method", highlightIndex } = Astro.props;
+const {
+  items,
+  label = "Method",
+  highlightIndex,
+  tapIndex,
+  editIndex,
+  saveTap = false,
+} = Astro.props;
 
 function toRoman(n: number): string {
   const map: [number, string][] = [
@@ -32,12 +46,41 @@ function toRoman(n: number): string {
 <section class="method">
   <span class="method__eyebrow">{label}</span>
   <ol class="method__list">
-    {items.map((item, i) => (
-      <li class={highlightIndex === i ? "method__li method__li--on" : "method__li"}>
-        <span class="method__num">{toRoman(i + 1)}.</span>
-        <span class="method__text">{item}</span>
-      </li>
-    ))}
+    {items.map((item, i) => {
+      const isEditing = editIndex === i;
+      const classes = [
+        "method__li",
+        highlightIndex === i && "method__li--on",
+        tapIndex === i && "method__li--tap",
+        isEditing && "method__li--editing",
+      ].filter(Boolean).join(" ");
+      return (
+        <li class={classes}>
+          {item.mise.length > 0 && (
+            <span class="method__mise">{item.mise.join(" · ")}</span>
+          )}
+          <div class="method__row">
+            <span class="method__num">{toRoman(i + 1)}.</span>
+            {isEditing ? (
+              <textarea class="method__textarea" rows={4}>{item.text}</textarea>
+            ) : (
+              <span class="method__text">{item.text}</span>
+            )}
+          </div>
+          {isEditing && (
+            <div class="method__edit-actions">
+              <button class="method__cancel" type="button">Cancel</button>
+              <button
+                class={saveTap ? "method__save method__save--tap" : "method__save"}
+                type="button"
+              >
+                Save
+              </button>
+            </div>
+          )}
+        </li>
+      );
+    })}
   </ol>
 </section>
 
@@ -54,18 +97,13 @@ function toRoman(n: number): string {
   }
   .method__list {
     display: grid;
-    gap: 12px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
     padding: 0;
     margin: 0;
     list-style: none;
   }
   .method__li {
-    display: grid;
-    grid-template-columns: 30px 1fr;
-    gap: 2px;
-    align-items: baseline;
-  }
-  .method__li--on {
     position: relative;
   }
   .method__li--on::before {
@@ -77,6 +115,38 @@ function toRoman(n: number): string {
     width: 2px;
     background: var(--c-ochre);
     border-radius: 2px;
+  }
+
+  /* Storyboard-only: halo the step the user is about to long-press. */
+  .method__li--tap::after {
+    content: "";
+    position: absolute;
+    inset: -6px -10px;
+    border: 3px solid var(--annotation);
+    border-radius: 10px;
+    box-shadow: var(--annotation-glow);
+    pointer-events: none;
+    opacity: var(--halo-opacity);
+    transition: opacity 180ms ease;
+    z-index: 50;
+  }
+  .method__mise {
+    display: block;
+    padding-left: 32px;
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 11.5px;
+    line-height: 1.4;
+    color: var(--c-ochre);
+    letter-spacing: 0.005em;
+    margin-bottom: 3px;
+  }
+  .method__row {
+    display: grid;
+    grid-template-columns: 30px minmax(0, 1fr);
+    column-gap: 2px;
+    align-items: baseline;
   }
   .method__num {
     font-family: var(--f-display);
@@ -91,5 +161,79 @@ function toRoman(n: number): string {
     font-size: 13.5px;
     line-height: 1.6;
     color: var(--c-ink);
+  }
+
+  /* Edit state — one step live in a textarea ─────────────── */
+
+  .method__li--editing .method__num {
+    color: var(--c-ink);
+  }
+
+  .method__textarea {
+    width: 100%;
+    font-family: var(--f-body);
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--c-ink);
+    background: #ffffff;
+    border: 1px solid var(--c-ink);
+    border-radius: 2px;
+    padding: 8px 10px;
+    resize: none;
+    box-shadow: 0 0 0 3px rgba(122, 90, 38, 0.18);
+  }
+  .method__textarea:focus { outline: none; }
+
+  /* Inline edit actions — live directly under the textarea so the
+     save/cancel affordance is attached to what's being edited. */
+
+  .method__edit-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 14px;
+    margin-top: 10px;
+    padding-left: 32px;   /* align with text column, skip numeral gutter */
+  }
+
+  .method__cancel,
+  .method__save {
+    appearance: none;
+    -webkit-appearance: none;
+    display: inline-flex;
+    align-items: center;
+    min-height: 30px;
+    padding: 4px 10px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    font-family: var(--f-body);
+    font-size: 13.5px;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .method__cancel {
+    color: var(--c-ash);
+    font-weight: 400;
+  }
+
+  .method__save {
+    position: relative;
+    color: var(--c-ochre);
+    font-weight: 500;
+  }
+
+  .method__save--tap::after {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    border-radius: 999px;
+    border: 3px solid var(--annotation);
+    box-shadow: var(--annotation-glow);
+    pointer-events: none;
+    opacity: var(--halo-opacity);
+    transition: opacity 180ms ease;
+    z-index: 50;
   }
 </style>

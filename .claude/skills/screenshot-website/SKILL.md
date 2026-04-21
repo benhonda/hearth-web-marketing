@@ -5,78 +5,41 @@ description: Take a full-page screenshot of any URL (localhost dev servers or re
 
 # Screenshot a website
 
-The repo ships a Playwright-based screenshot script at `scripts/screenshot-page.ts`. This skill is a thin wrapper around it: call the script, then read the PNG back through the Read tool to audit it visually. Images are first-class — the Read tool surfaces them to you like any other file.
+Use the script bundled with this skill. Don't write your own — the bundled one already sets `prefers-reduced-motion: reduce` (so below-the-fold sections aren't stuck at opacity:0), uses a sensible viewport, and waits for networkidle.
 
-## When to reach for this
-
-- The user asks to screenshot a page, capture localhost, visually check a layout, or grab a mobile view.
-- You've just made non-trivial UI changes and a dev server is running — a quick screenshot catches broken layouts, overflow, missing tokens, or motion elements stuck invisible that typechecks won't flag.
-- You need to compare before/after on a visual change.
-
-Skip it when there's no dev server running and no remote URL to point at — say so and ask the user to start the server rather than guessing.
-
-## First-time setup (per machine)
-
-The script depends on the `playwright` npm package (already listed in `package.json`, so `bun install` covers it) **plus a Chromium browser binary**, which Playwright installs separately. Run this once per machine — it's idempotent and a no-op if already installed:
+## Do this
 
 ```bash
-bunx playwright install chromium
+bun .claude/skills/screenshot-website/scripts/screenshot.ts <url> <output.png>
 ```
 
-The binary caches to `~/.cache/adpharm-landing-page-browsers` (the path the script sets via `PLAYWRIGHT_BROWSERS_PATH`). If you skip this step, the first screenshot attempt fails with a Playwright error complaining about a missing browser — the fix is always to run the command above.
+Figure out the port from the user's terminal or `curl -s http://localhost:PORT/ -o /dev/null -w "%{http_code}\n"`. Common ports: Next.js :3000, Astro :4321, Vite :5173. Don't guess, don't start the dev server yourself.
 
-If `bun install` hasn't been run in the repo yet, run that first. Don't start a dev server as part of setup (this repo's rules prohibit agents from running `bun run dev` / `task start`) — ask the user to start it if one isn't already up.
+After it writes the PNG, read the file with the Read tool. You can see images — scan for overflow, broken layout, typography hierarchy, theme tokens, stuck-invisible elements.
 
-## Invocation
+Flags:
 
-```bash
-bun scripts/screenshot-page.ts <url> <output.png> [--viewport <WxH>]
-```
+- `--viewport 390x844` — mobile capture (default 1440x900 @2x)
+- `--wait 3000` — longer settle after networkidle (default 1500ms, for slow-bootstrapping apps)
 
-Examples:
+## If it fails
 
-```bash
-# Desktop capture of a localhost page
-bun scripts/screenshot-page.ts http://localhost:3000/ /tmp/home.png
+Try the command first. Only reach for these when an actual error comes back:
 
-# Mobile viewport (iPhone 14 Pro dimensions)
-bun scripts/screenshot-page.ts http://localhost:3000/pricing /tmp/pricing-mobile.png --viewport 390x844
+- **`Cannot find module 'playwright'`** → `bun add -d playwright` in the host repo, retry. (The script does `import { chromium } from "playwright"`, which needs playwright in the project's `node_modules`.)
+- **`Executable doesn't exist` / "browser not found"** → `bunx playwright install chromium` once, retry. One-time browser binary download.
+- **`Host system is missing dependencies`** (Linux, including some devcontainers) → Chromium binary is there but system libs like `libnss3`, `libgtk-3-0` are missing. Fix: just run `bunx playwright install-deps chromium` — it auto-switches to root via passwordless sudo, which most devcontainers have. Don't preemptively assume sudo is blocked; try first. Only stop and ask the user if you get an actual permission error (not a lock error).
+- **apt lock / `Could not get lock /var/lib/dpkg/lock-frontend`** during install-deps → another `apt-get` is already running (often one you or the user kicked off a moment ago). Check with `pgrep -x apt-get`; if nothing's running, retry — the collision is transient. If two installs raced and you see `rename failed ... /var/cache/apt/archives/partial/...`, that's the same root cause — wait until no apt-get process remains, then retry once.
+- **`ECONNREFUSED`** → wrong port, or dev server not running. Confirm with the user.
+- **Captured a login/unlock page instead of the target** → URL is behind auth. The generic script can't handle that. Either the host repo has a specialized script (check `scripts/` for anything screenshot-y first), or you need to unlock in a preceding step.
+- **Page looks blank or half-rendered** → try `--wait 3000` (or higher) for slow JS apps.
 
-# Remote site
-bun scripts/screenshot-page.ts https://example.com /tmp/example.png
-```
+## One caveat
 
-Defaults worth knowing:
-- **Viewport:** 1440x900 at 2x device scale, full-page (captures below the fold).
-- **Reduced motion:** the script sets `prefers-reduced-motion: reduce` so reveal-on-scroll animations render in their final state. Without this, a full-page screenshot of an animated site captures the hero correctly and leaves every section below at opacity:0.
-- **Output format:** must end in `.png`, `.jpg`, `.jpeg`, or `.webp`.
+Some repos ship a specialized screenshot script (e.g., this one's `scripts/screenshot-page.ts` auto-unlocks a password gate). If you see one in `scripts/` that does screenshot things, prefer it — it likely knows something about the repo the generic script doesn't. Otherwise, use the bundled script above.
 
-## Repo-specific quirk: password-gated /products/*
+## Out of scope
 
-Paths under `/products/` are behind a password middleware. The script auto-unlocks them using `PRODUCTS_MASTER_PASSWORD` from `.env.vercel` and then navigates to the target. You don't need to do anything special — just pass the real target URL.
-
-If the password isn't set, the script warns and captures the unlock form instead of the target. That's the signal to populate `.env.vercel` or ask the user for the password.
-
-## After capturing: read the PNG
-
-Use the Read tool on the output path. Claude can see images. Scan for:
-- Broken layout, horizontal overflow, elements bleeding off-screen
-- Columns stacking when they should be side-by-side (or vice versa)
-- Typography hierarchy missing — headline / subheadline / body not visually distinct
-- Theme tokens not applied (light flashes in a dark design, wrong accent color, accent used as a field instead of as accent)
-- Sticky nav missing or stuck visible when it should be hidden pre-scroll
-- **Elements stuck invisible or counters reading 0.** Because the screenshot runs under reduced-motion, this isn't a layout bug — it's a specific motion target that isn't honoring `prefers-reduced-motion: reduce`. Fix the motion element's reduced-motion handling (CSS override, or JS checking `matchMedia` and snapping to the final value), not the layout.
-
-Report findings concisely. If the image looks right, say so and move on.
-
-## Common failure modes
-
-- **`ECONNREFUSED` / `net::ERR_CONNECTION_REFUSED`** — dev server isn't running. Tell the user; don't start it yourself (per repo rules, the agent never runs `bun run dev` / `task start`).
-- **Captured the unlock form instead of the page** — `.env.vercel` missing `PRODUCTS_MASTER_PASSWORD`, or the URL isn't a `/products/*` path that needs unlocking. Surface the warning the script printed.
-- **Page looks blank or half-rendered** — the script waits for `networkidle` plus 1.5s of motion settle; if a site lazy-loads well past that, consider a custom wait, but default is almost always enough.
-- **Script errors on `playwright` import or "browser not found"** — Chromium binary missing. Run the setup command from the top of this skill: `bunx playwright install chromium`. The package itself (`playwright` in `package.json`) is handled by `bun install`; the browser binary is a separate download.
-
-## What this skill does not do
-
-- It does not name or organize output files for you. Pick a path that makes sense for the task — `/tmp/<something>.png` is fine for throwaway captures; project-local paths are fine for ones the user will keep. If you're building an iterative workflow (multiple captures of the same page over time), the caller should pick a naming scheme (e.g., `build-01.png`, `build-02.png`) — this skill just takes the snapshot.
-- It does not click, scroll, or interact beyond the one unlock-form case above. For interaction flows, write a dedicated Playwright script instead of extending this one.
+- Naming output files for iterative workflows — caller picks (`/tmp/*.png` for throwaway, project-local for keepers).
+- Multi-step flows (login → navigate → screenshot). Write a dedicated Playwright script for those.
+- Starting dev servers. Agent doesn't run `bun run dev` / `task start` in this repo family.

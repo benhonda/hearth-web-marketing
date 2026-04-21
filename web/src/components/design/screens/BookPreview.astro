@@ -1,0 +1,331 @@
+---
+/**
+ * Screen VII (Flow II) · Preview & Edit.
+ *
+ * The flip-through surface, reached directly from Global settings
+ * (VI). Defaults to the cover as the first "page" — tap it to edit
+ * the title / subtitle / cover photo (lands on VIII). Paginate with
+ * the prev / next chevrons to see spreads; tap a spread to edit it
+ * (lands on IX). When done, "Review & finalize" proceeds to X.
+ *
+ * Interactivity: a scoped client-side script drives the pager. Each
+ * slide is rendered into the DOM and toggled via the `hidden`
+ * attribute; the tap hint, pager label, and halo target update in
+ * lockstep. No framework — vanilla, inlined, scoped to the `.prev`
+ * root so multiple instances wouldn't collide.
+ */
+import BookCover from "../ui/BookCover.astro";
+import BookSpread from "../ui/BookSpread.astro";
+import { sampleRecipe } from "~/lib/design/sample-recipe";
+import type { SampleRecipe } from "~/lib/design/sample-recipe";
+
+interface Props { showTap?: boolean; }
+const { showTap = false } = Astro.props;
+
+// Minimal second-recipe stand-in for the mockup. Real recipe data
+// lands when we circle back to layouts (README note).
+const recipeA: SampleRecipe = sampleRecipe;
+const recipeB: SampleRecipe = {
+  ...sampleRecipe,
+  title: "Slow-roast tomato pasta",
+  minutes: 90,
+  serves: 4,
+};
+---
+
+<div class="prev" data-preview-root>
+  <nav class="prev__topbar" aria-label="Back">
+    <button class="prev__back" type="button" aria-label="Back">
+      <span aria-hidden="true">‹</span>
+    </button>
+  </nav>
+
+  <header class="prev__head">
+    <span class="prev__eyebrow">Preview &amp; Edit</span>
+    <hr class="prev__rule" aria-hidden="true" />
+  </header>
+
+  <div class="prev__stage">
+    {/* Slide 0 — the cover, centered, single page. */}
+    <div class="prev__slide" data-slide="cover">
+      <div class={showTap ? "prev__cover-wrap prev__cover-wrap--tap" : "prev__cover-wrap"}>
+        <div class="prev__cover-scale">
+          <BookCover
+            layout="plate"
+            title="For Us."
+            subtitle="A year at the table."
+            photo={sampleRecipe.photo}
+          />
+        </div>
+      </div>
+    </div>
+
+    {/* Slide 1 — a recipe spread, two facing pages. */}
+    <div class="prev__slide" data-slide="spread" hidden>
+      <div class={showTap ? "prev__spread-wrap prev__spread-wrap--tap" : "prev__spread-wrap"}>
+        <div class="prev__spread-scale">
+          <BookSpread
+            left={{ recipe: recipeA, layout: "1-photo-a" }}
+            right={{ recipe: recipeB, layout: "2-photos-b" }}
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="prev__pager">
+    <button class="prev__pager-btn" type="button" aria-label="Previous" data-pager="prev">‹</button>
+    <span class="prev__pager-label" data-pager-label>cover</span>
+    <button class="prev__pager-btn" type="button" aria-label="Next" data-pager="next">›</button>
+  </div>
+
+  <p class="prev__hint" data-tap-hint>Tap the cover to edit.</p>
+
+  <div class="prev__foot">
+    <button class="prev__finalize" type="button">Review &amp; finalize</button>
+  </div>
+</div>
+
+<script>
+  // Pager — scoped to each .prev root so mocks on the flow canvas
+  // don't fight the mock on the 1× stage page.
+  document.querySelectorAll<HTMLElement>("[data-preview-root]").forEach((root) => {
+    const slides = Array.from(root.querySelectorAll<HTMLElement>("[data-slide]"));
+    const prev = root.querySelector<HTMLButtonElement>('[data-pager="prev"]');
+    const next = root.querySelector<HTMLButtonElement>('[data-pager="next"]');
+    const label = root.querySelector<HTMLElement>("[data-pager-label]");
+    const hint = root.querySelector<HTMLElement>("[data-tap-hint]");
+
+    if (!prev || !next || !label || !hint || slides.length === 0) return;
+
+    const meta: Record<string, { label: string; hint: string }> = {
+      cover: { label: "cover", hint: "Tap the cover to edit." },
+      spread: { label: "spread i", hint: "Tap the spread to edit." },
+    };
+
+    let idx = 0;
+    const render = () => {
+      slides.forEach((slide, i) => {
+        slide.hidden = i !== idx;
+      });
+      const key = slides[idx]?.dataset.slide ?? "cover";
+      const m = meta[key] ?? meta.cover;
+      label.textContent = m.label;
+      hint.textContent = m.hint;
+      prev.disabled = idx === 0;
+      next.disabled = idx === slides.length - 1;
+      prev.style.opacity = prev.disabled ? "0.35" : "1";
+      next.style.opacity = next.disabled ? "0.35" : "1";
+    };
+
+    prev.addEventListener("click", () => {
+      if (idx > 0) { idx -= 1; render(); }
+    });
+    next.addEventListener("click", () => {
+      if (idx < slides.length - 1) { idx += 1; render(); }
+    });
+
+    render();
+  });
+</script>
+
+<style>
+  .prev {
+    display: grid;
+    grid-template-rows: auto auto 1fr auto auto auto;
+    min-height: 100%;
+    padding-bottom: 44px;
+  }
+
+  .prev__topbar { padding: 62px 12px 0; }
+  .prev__back {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding-bottom: 2px;
+    font-family: var(--f-display);
+    font-size: 26px;
+    line-height: 1;
+    color: var(--c-ink);
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+  }
+
+  /* Header — one small-cap eyebrow + chapter rule. No lede. The
+     "Your book, so far." felt descriptive-of-the-obvious; the screen
+     is the preview, the title just names it. */
+  .prev__head {
+    display: grid;
+    justify-items: center;
+    gap: 6px;
+    padding: 6px 22px 18px;
+    text-align: center;
+  }
+  .prev__eyebrow {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 10.5px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--c-ochre);
+  }
+  .prev__rule {
+    border: 0;
+    width: var(--rule-chapter);
+    height: var(--rule-weight-chapter);
+    background: var(--c-ochre);
+    margin: 2px 0 0;
+  }
+
+  /* Stage — the 1fr row that holds whichever slide is visible.
+     Flexbox so centering works the same way regardless of how the
+     slide's children are sized. */
+  .prev__stage {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 22px;
+    min-width: 0;
+  }
+
+  /* A slide is hidden via the [hidden] attribute except the active
+     one. Each visible slide centers its wrap horizontally with a
+     margin-inline: auto as a belt-and-suspenders fallback in case
+     flex alignment doesn't resolve as expected on some browsers. */
+  .prev__slide {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+  .prev__slide[hidden] { display: none; }
+
+  /* Cover slide — scale 0.56 × 320 = ~179 wide, 0.56 × 400 = 224 tall. */
+  .prev__cover-wrap {
+    position: relative;
+    width: 179px;
+    height: 224px;
+    margin: 0 auto;
+    cursor: pointer;
+  }
+  .prev__cover-scale {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 320px;
+    height: 400px;
+    transform: scale(0.56);
+    transform-origin: top left;
+    pointer-events: none;
+  }
+  .prev__cover-wrap--tap::after {
+    content: "";
+    position: absolute;
+    inset: -10px;
+    border-radius: 6px;
+    border: 3px solid var(--annotation);
+    box-shadow: var(--annotation-glow);
+    pointer-events: none;
+    opacity: var(--halo-opacity);
+    transition: opacity 180ms ease;
+    z-index: 50;
+  }
+
+  /* Spread slide — scale 0.48 × 640 = 307, 0.48 × 400 = 192. */
+  .prev__spread-wrap {
+    position: relative;
+    width: 307px;
+    height: 192px;
+    margin: 0 auto;
+    cursor: pointer;
+  }
+  .prev__spread-scale {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 640px;
+    height: 400px;
+    transform: scale(0.48);
+    transform-origin: top left;
+    pointer-events: none;
+  }
+  .prev__spread-wrap--tap::after {
+    content: "";
+    position: absolute;
+    inset: -10px;
+    border-radius: 6px;
+    border: 3px solid var(--annotation);
+    box-shadow: var(--annotation-glow);
+    pointer-events: none;
+    opacity: var(--halo-opacity);
+    transition: opacity 180ms ease;
+    z-index: 50;
+  }
+
+  .prev__pager {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 18px;
+    padding: 14px 22px 0;
+  }
+  .prev__pager-btn {
+    font-family: var(--f-display);
+    font-size: 22px;
+    line-height: 1;
+    color: var(--c-ochre);
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    padding: 4px 6px;
+    transition: opacity var(--motion-state) var(--ease-state);
+  }
+  .prev__pager-btn:disabled { cursor: default; }
+  .prev__pager-label {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 14px;
+    color: var(--c-ash);
+    letter-spacing: 0.02em;
+    min-width: 8ch;
+    text-align: center;
+  }
+
+  .prev__hint {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 12.5px;
+    color: var(--c-ash);
+    text-align: center;
+    margin: 8px 0 0;
+  }
+
+  .prev__foot { padding: 22px 24px 0; }
+
+  /* Explicit S1-outlined CTA. Every property stated so global button
+     reset (font:inherit; background:none; border:none) can't strip
+     anything. display: block so width:100% is honoured without relying
+     on any flex/grid parent behaviour. */
+  .prev__finalize {
+    display: block;
+    width: 100%;
+    height: 48px;
+    padding: 0;
+    border-radius: 999px;
+    border: 1px solid var(--c-conifer);
+    background: transparent;
+    color: var(--c-conifer);
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 14.5px;
+    line-height: 1;
+    letter-spacing: 0.01em;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color var(--motion-state) var(--ease-state),
+                color var(--motion-state) var(--ease-state);
+  }
+</style>

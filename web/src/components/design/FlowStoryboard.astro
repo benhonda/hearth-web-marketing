@@ -8,33 +8,13 @@
  * `screenComponents` registry below. New screens: add a component import
  * and register it. Placeholders render as dimmed "Next pass" phones.
  */
-import type { Flow, ScreenRender } from "~/lib/design/flows";
+import type { Flow } from "~/lib/design/flows";
 import PhoneFrame from "./PhoneFrame.astro";
-import WelcomeScreen from "./screens/WelcomeScreen.astro";
-import LibraryEmpty from "./screens/LibraryEmpty.astro";
-import MobileSafariRecipe from "./screens/MobileSafariRecipe.astro";
-import ShareSheet from "./screens/ShareSheet.astro";
-import ImportPreview from "./screens/ImportPreview.astro";
-import LibraryOneRecipe from "./screens/LibraryOneRecipe.astro";
-import RecipeDetail from "./screens/RecipeDetail.astro";
-import RecipeEdit from "./screens/RecipeEdit.astro";
-import RecipeSaved from "./screens/RecipeSaved.astro";
+import ScreenCaption from "./ScreenCaption.astro";
+import { screenComponents } from "./screens/registry";
 
 type Props = { flow: Flow; showHeader?: boolean };
 const { flow, showHeader = true } = Astro.props;
-
-// Screen component registry. Keys match ScreenRender values in flows.ts.
-const screenComponents: Record<ScreenRender, any> = {
-  welcome: WelcomeScreen,
-  "library-empty": LibraryEmpty,
-  "mobile-safari-recipe": MobileSafariRecipe,
-  "share-sheet": ShareSheet,
-  "import-preview": ImportPreview,
-  "library-one-recipe": LibraryOneRecipe,
-  "recipe-detail": RecipeDetail,
-  "recipe-edit": RecipeEdit,
-  "recipe-saved": RecipeSaved,
-};
 ---
 
 <section class="flow-storyboard" aria-labelledby={`flow-${flow.slug}`}>
@@ -53,12 +33,11 @@ const screenComponents: Record<ScreenRender, any> = {
     <div class="canvas__track">
       {flow.steps.map((step) => {
         const Component = step.render ? screenComponents[step.render] : null;
-        const screenHref = step.screenSlug ? `/design/screens/${step.screenSlug}` : null;
 
         return (
           <div class="cell">
             {Component ? (
-              <PhoneFrame surface={step.surface ?? "cream"} variant="canvas" label={`${step.numeral} · ${step.name}`}>
+              <PhoneFrame surface={step.surface ?? "cream"} tone={step.tone} variant="canvas" label={`${step.numeral} · ${step.name}`}>
                 <Component showTap={true} />
               </PhoneFrame>
             ) : (
@@ -73,22 +52,7 @@ const screenComponents: Record<ScreenRender, any> = {
               </div>
             )}
 
-            <div class="screen-caption">
-              <span class="screen-caption__eyebrow">{step.numeral} · {step.name}</span>
-              <p class="screen-caption__note">{step.note}</p>
-              {step.tap && (
-                <p class={step.tapExternal ? "screen-caption__tap screen-caption__tap--external" : "screen-caption__tap"}>
-                  <span class="screen-caption__tap-arrow" aria-hidden="true">↳</span>
-                  {step.tap}
-                </p>
-              )}
-              {screenHref && (
-                <a class="screen-caption__link" href={screenHref}>
-                  <span>Inspect at 1×</span>
-                  <span class="screen-caption__chev" aria-hidden="true">→</span>
-                </a>
-              )}
-            </div>
+            <ScreenCaption step={step} showInspectLink={true} />
           </div>
         );
       })}

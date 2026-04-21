@@ -1,0 +1,36 @@
+---
+/**
+ * The per-step caption shared by the flow storyboard and the screen
+ * detail page. Both render from the same FlowStep so the copy cannot
+ * drift between surfaces. The "Inspect at 1×" link is flow-only; on the
+ * detail page itself it has nothing to link to.
+ */
+import type { FlowStep } from "~/lib/design/flows";
+
+interface Props {
+  step: FlowStep;
+  showInspectLink?: boolean;
+}
+
+const { step, showInspectLink = false } = Astro.props;
+const screenHref = showInspectLink && step.screenSlug
+  ? `/design/screens/${step.screenSlug}`
+  : null;
+---
+
+<div class="screen-caption">
+  <span class="screen-caption__eyebrow">{step.numeral} · {step.name}</span>
+  <p class="screen-caption__note">{step.note}</p>
+  {step.tap && (
+    <p class={step.tapExternal ? "screen-caption__tap screen-caption__tap--external" : "screen-caption__tap"}>
+      <span class="screen-caption__tap-arrow" aria-hidden="true">↳</span>
+      {step.tap}
+    </p>
+  )}
+  {screenHref && (
+    <a class="screen-caption__link" href={screenHref}>
+      <span>Inspect at 1×</span>
+      <span class="screen-caption__chev" aria-hidden="true">→</span>
+    </a>
+  )}
+</div>

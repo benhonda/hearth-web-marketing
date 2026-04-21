@@ -1,0 +1,137 @@
+---
+/**
+ * Screen V (Flow II) · The recipes.
+ *
+ * Step iii of iv. The photo waterfall returns — same 27-tile library
+ * from screen I, now in selection mode. Dimmed tiles read as "not in
+ * the book"; full-opacity tiles are in. No checkmarks, no pill chrome,
+ * no saturated accents — opacity alone carries the binary state.
+ *
+ * The meta line below the grid sets running totals in cookbook voice:
+ * recipe count, page estimate (~3 pages/recipe mapped to the 40/60/80
+ * tiers from MVP.md), indicative price. No final price yet — that
+ * comes with the first proof, per the concierge model.
+ */
+import StepHeader from "../ui/StepHeader.astro";
+import LibraryGrid from "../ui/LibraryGrid.astro";
+import { sampleLibraryTiles } from "~/lib/design/sample-library";
+
+interface Props { showTap?: boolean; }
+const { showTap = false } = Astro.props;
+
+// Three tiles dimmed to show the selection-out state. Chosen to span
+// the visible rows so the mechanic is legible without scrolling:
+// index 2 (left col, row 2), index 5 (right col, row 3), index 14
+// (left col, mid-grid).
+const dimmedIndices = new Set([2, 5, 14]);
+const tiles = sampleLibraryTiles.map((t, i) => ({ ...t, dimmed: dimmedIndices.has(i) }));
+const selectedCount = tiles.length - dimmedIndices.size;
+---
+
+<div class="rec">
+  <nav class="rec__topbar" aria-label="Back">
+    <button class="rec__back" type="button" aria-label="Back">
+      <span aria-hidden="true">‹</span>
+    </button>
+  </nav>
+
+  <StepHeader step="II" title="The recipes" lede="What goes in the book." />
+
+  <LibraryGrid tiles={tiles} />
+
+  <p class="rec__meta">
+    <span>{selectedCount} in the book</span>
+    <span class="rec__dot" aria-hidden="true">·</span>
+    <span>about 80 pages</span>
+    <span class="rec__dot" aria-hidden="true">·</span>
+    <span>around $139</span>
+  </p>
+
+  <div class="rec__foot">
+    <button class={showTap ? "rec__continue rec__continue--tap" : "rec__continue"} type="button">
+      Continue
+    </button>
+  </div>
+</div>
+
+<style>
+  .rec {
+    display: grid;
+    grid-template-rows: auto auto auto auto auto;
+    min-height: 100%;
+    padding-bottom: 44px;
+  }
+
+  .rec__topbar { padding: 62px 12px 0; }
+  .rec__back {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding-bottom: 2px;
+    font-family: var(--f-display);
+    font-size: 26px;
+    line-height: 1;
+    color: var(--c-ink);
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+  }
+
+  /* Meta line — the running colophon. Center-aligned, em-middot
+     separators per tokens.css voice rules. Italic Lora keeps it
+     literary; plain DM Sans would read as tech UI. */
+  .rec__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: center;
+    gap: 8px;
+    padding: 24px 22px 0;
+    margin: 0;
+    text-align: center;
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 13.5px;
+    line-height: 1.4;
+    color: var(--c-ash);
+  }
+  .rec__dot {
+    color: var(--c-oat);
+    font-style: normal;
+  }
+
+  .rec__foot {
+    padding: 20px 24px 0;
+  }
+
+  .rec__continue {
+    position: relative;
+    width: 100%;
+    height: 48px;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--c-conifer);
+    border: 1px solid var(--c-conifer);
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 14.5px;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    transition: background-color var(--motion-state) var(--ease-state);
+  }
+
+  .rec__continue--tap::after {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    border-radius: 999px;
+    border: 3px solid var(--annotation);
+    box-shadow: var(--annotation-glow);
+    pointer-events: none;
+    opacity: var(--halo-opacity);
+    transition: opacity 180ms ease;
+    z-index: 50;
+  }
+</style>

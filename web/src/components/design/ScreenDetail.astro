@@ -1,0 +1,47 @@
+---
+/**
+ * /design/screens/[slug] detail page. Keeps the original stage styling
+ * — eyebrow · rule · poetic h1 · lede — but pulls every piece of copy
+ * from the matching FlowStep in `flows.ts`, so the detail page and the
+ * flow caption read from one source.
+ *
+ * Only `detailTitle` is detail-only; `name` and `note` are identical to
+ * what the flow caption shows.
+ */
+import DesignLayout from "~/layouts/DesignLayout.astro";
+import ScreenStage from "./ScreenStage.astro";
+import PhoneFrame from "./PhoneFrame.astro";
+import { getScreen } from "~/lib/design/flows";
+import { screenComponents } from "./screens/registry";
+
+interface Props {
+  slug: string;
+}
+
+const { slug } = Astro.props;
+const resolved = getScreen(slug);
+if (!resolved) {
+  throw new Error(`ScreenDetail: no flow step with screenSlug="${slug}"`);
+}
+const { flow, step } = resolved;
+if (!step.render) {
+  throw new Error(`ScreenDetail: step "${slug}" has no render key`);
+}
+
+const Component = screenComponents[step.render];
+const eyebrow = `${step.numeral} · ${step.name}`;
+const pageTitle = `${step.name} · Flow ${flow.numeral} · Screen ${step.numeral}`;
+---
+
+<DesignLayout title={pageTitle}>
+  <ScreenStage eyebrow={eyebrow} title={step.detailTitle} note={step.note}>
+    <PhoneFrame
+      surface={step.surface ?? "cream"}
+      tone={step.tone}
+      variant="single"
+      label={eyebrow}
+    >
+      <Component />
+    </PhoneFrame>
+  </ScreenStage>
+</DesignLayout>

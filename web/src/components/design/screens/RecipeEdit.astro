@@ -1,115 +1,84 @@
 ---
 /**
- * Screen VIII · Recipe · edit.
+ * Screen IX · Recipe · editing step iv (inline).
  *
- * User has tapped Edit. The recipe is still visible, but step iv is
- * live in a textarea — the text has been updated from "8 minutes" to
- * "10–12 minutes" (the classic home-cook correction). The active step
- * gets the Input Fill background and a Warm Charcoal focus border.
- * Save becomes the primary action; Cancel discards.
+ * Thin composition: the full RecipeDetail with `editingIndex={3}` so
+ * step iv renders as a live textarea in-place. This screen adds only
+ * the edit chrome:
+ *   · a quiet top strip showing "Editing · step iv" context
+ *   · an iOS-style keyboard accessory bar above the keyboard with
+ *     Cancel + Save — thumb-accessible while keyboard is up
+ *   · the iOS keyboard docked at the bottom
  *
- * This is one of two edit conventions we're using — the other is the
- * "tap any section" pattern on import preview. Eventually this one wins
- * in-app: direct inline edit, no separate form screen.
+ * All three strips are `position: sticky` within the phone's scroll
+ * viewport. An inline script scrolls the textarea into the visible
+ * band on load (what iOS does when a buried input focuses).
  */
-import IngredientsList from "../ui/IngredientsList.astro";
-import { sampleRecipe } from "~/lib/design/sample-recipe";
+import RecipeDetail from "./RecipeDetail.astro";
+import IosKeyboard from "../ui/IosKeyboard.astro";
 
 interface Props { showTap?: boolean; }
 const { showTap = false } = Astro.props;
-
-const editingIndex = 3; // step iv
-const romanForStep = "iv";
-
-function toRoman(n: number): string {
-  const map: [number, string][] = [
-    [10, "x"], [9, "ix"], [5, "v"], [4, "iv"], [1, "i"],
-  ];
-  let result = "";
-  let v = n;
-  for (const [value, symbol] of map) {
-    while (v >= value) { result += symbol; v -= value; }
-  }
-  return result;
-}
 ---
 
 <div class="edit">
   <header class="edit-bar">
-    <button class="edit-bar__cancel" type="button">Cancel</button>
-    <span class="edit-bar__eyebrow">Editing · step {romanForStep}</span>
-    <button class={showTap ? "edit-bar__save edit-bar__save--tap" : "edit-bar__save"} type="button">Save</button>
+    <span class="edit-bar__eyebrow">Editing · step iv</span>
   </header>
 
-  <div class="edit__hero" aria-hidden="true" style={`background-image: url(${sampleRecipe.photo})`} />
+  <RecipeDetail editingIndex={3} hideHeader />
 
-  <div class="edit__body">
-    <span class="edit__source">From {sampleRecipe.source}</span>
-    <h1 class="edit__title">{sampleRecipe.title}</h1>
-    <p class="edit__meta">
-      <em>Serves {sampleRecipe.serves}</em>
-      <span aria-hidden="true"> · </span>
-      <em>{sampleRecipe.minutes} minutes</em>
-    </p>
-
-    <hr class="edit__rule" />
-
-    <IngredientsList items={sampleRecipe.ingredients} />
-
-    <hr class="edit__rule" />
-
-    <section>
-      <span class="method__eyebrow">Method</span>
-      <ol class="method">
-        {sampleRecipe.editedMethod.map((item, i) => {
-          const r = toRoman(i + 1);
-          const isEditing = i === editingIndex;
-          return (
-            <li class={isEditing ? "method__li method__li--editing" : "method__li"}>
-              <span class="method__num">{r}.</span>
-              {isEditing ? (
-                <label class="method__field">
-                  <textarea class="method__textarea" rows={4}>{item}</textarea>
-                  <span class="method__caret" aria-hidden="true" />
-                </label>
-              ) : (
-                <span class="method__text">{item}</span>
-              )}
-            </li>
-          );
-        })}
-      </ol>
-    </section>
-
-    <p class="edit__hint">
-      <em>This creates a new version.</em> The original stays in history.
-    </p>
+  <div class="edit__dock">
+    <div class="edit__accessory" role="toolbar" aria-label="Edit actions">
+      <button class="edit__cancel" type="button">Cancel</button>
+      <button class={showTap ? "edit__save edit__save--tap" : "edit__save"} type="button">Save</button>
+    </div>
+    <IosKeyboard suggestions={["minutes", "12", "just"] as [string, string, string]} />
   </div>
 </div>
 
+<script is:inline>
+  (function () {
+    function run() {
+      document.querySelectorAll(".edit").forEach(function (edit) {
+        var scroller = edit.closest(".phone__scroll");
+        var ta = edit.querySelector(".method__textarea");
+        if (!scroller || !ta) return;
+        // Walk offsetParent chain for the textarea's position in the
+        // scroller's own coordinate system. Immune to ancestor
+        // transforms (e.g. canvas phones at scale(0.58)) unlike rects.
+        var offsetTop = 0;
+        var el = ta;
+        while (el && el !== scroller) {
+          offsetTop += el.offsetTop;
+          el = el.offsetParent;
+        }
+        // Land the textarea just below the sticky edit-bar.
+        scroller.scrollTop = Math.max(0, offsetTop - 140);
+      });
+    }
+    if (document.readyState === "complete") run();
+    else window.addEventListener("load", run);
+  })();
+</script>
+
 <style>
   .edit {
-    display: grid;
-    grid-template-rows: auto auto 1fr;
+    position: relative;
     min-height: 100%;
-    padding-bottom: 44px;
   }
 
-  /* Bar ──────────────────────────────────────────────────── */
+  /* Top strip — quiet context label, no buttons ─────────── */
 
   .edit-bar {
-    padding: 62px 22px 14px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    padding: 62px 22px 12px;
     display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    align-items: center;
-    gap: 12px;
+    place-items: center;
+    background: var(--c-cream);
     border-bottom: 1px solid rgba(31, 27, 23, 0.08);
-  }
-  .edit-bar__cancel {
-    justify-self: flex-start;
-    font-family: var(--f-body);
-    font-size: 14px;
-    color: var(--c-ash);
   }
   .edit-bar__eyebrow {
     font-family: var(--f-body);
@@ -120,16 +89,54 @@ function toRoman(n: number): string {
     color: var(--c-ochre);
     white-space: nowrap;
   }
-  .edit-bar__save {
-    position: relative;
-    justify-self: flex-end;
-    font-family: var(--f-body);
-    font-weight: 500;
-    font-size: 14px;
-    color: var(--c-ochre);
-    padding: 4px 8px;
+
+  /* Bottom dock — accessory bar + keyboard, sticky as one ── */
+
+  .edit__dock {
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
   }
-  .edit-bar__save--tap::after {
+
+  .edit__accessory {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 14px;
+    background: #EFE9DC;
+    border-top: 1px solid rgba(31, 27, 23, 0.1);
+    border-bottom: 1px solid rgba(31, 27, 23, 0.06);
+  }
+
+  .edit__cancel,
+  .edit__save {
+    appearance: none;
+    -webkit-appearance: none;
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    padding: 4px 10px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    font-family: var(--f-body);
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .edit__cancel {
+    color: var(--c-ash);
+    font-weight: 400;
+  }
+
+  .edit__save {
+    position: relative;
+    color: var(--c-ochre);
+    font-weight: 500;
+  }
+
+  .edit__save--tap::after {
     content: "";
     position: absolute;
     inset: -4px;
@@ -140,161 +147,5 @@ function toRoman(n: number): string {
     opacity: var(--halo-opacity);
     transition: opacity 180ms ease;
     z-index: 50;
-  }
-
-  /* Compact hero — visual anchor, smaller than the detail screen's */
-
-  .edit__hero {
-    width: 100%;
-    aspect-ratio: 16 / 7;
-    background-color: var(--c-oat);
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    opacity: 0.92;
-  }
-
-  /* Body ─────────────────────────────────────────────────── */
-
-  .edit__body {
-    padding: 18px 22px 20px;
-    display: grid;
-    gap: 8px;
-  }
-
-  .edit__source {
-    font-family: var(--f-body);
-    font-weight: 500;
-    font-size: 9.5px;
-    letter-spacing: 0.28em;
-    text-transform: uppercase;
-    color: var(--c-ochre);
-  }
-
-  .edit__title {
-    font-family: var(--f-display);
-    font-weight: 400;
-    font-size: 24px;
-    line-height: 1.1;
-    letter-spacing: -0.01em;
-    color: var(--c-ink);
-    text-wrap: balance;
-  }
-
-  .edit__meta {
-    font-family: var(--f-display);
-    font-size: 13px;
-    color: var(--c-ash);
-  }
-  .edit__meta em {
-    font-style: italic;
-    color: var(--c-ink);
-  }
-
-  .edit__rule {
-    border: 0;
-    height: 1px;
-    background: rgba(31, 27, 23, 0.1);
-    margin: 8px 0;
-  }
-
-  .edit__hint {
-    font-family: var(--f-display);
-    font-size: 12.5px;
-    color: var(--c-oat);
-    margin-top: 10px;
-    line-height: 1.5;
-  }
-  .edit__hint em {
-    font-style: italic;
-    color: var(--c-ochre);
-  }
-
-  /* Method — inline, with one step in edit mode ─────────── */
-
-  .method__eyebrow {
-    font-family: var(--f-body);
-    font-weight: 500;
-    font-size: 10px;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--c-ochre);
-    display: block;
-    margin-bottom: 10px;
-  }
-
-  .method {
-    display: grid;
-    gap: 12px;
-    padding: 0;
-    margin: 0;
-    list-style: none;
-  }
-
-  .method__li {
-    display: grid;
-    grid-template-columns: 30px 1fr;
-    gap: 2px;
-    align-items: baseline;
-  }
-
-  .method__num {
-    font-family: var(--f-display);
-    font-style: italic;
-    font-weight: 400;
-    font-size: 14px;
-    color: var(--c-ochre);
-    line-height: 1.55;
-  }
-
-  .method__text {
-    font-family: var(--f-body);
-    font-size: 13.5px;
-    line-height: 1.6;
-    color: var(--c-ink);
-  }
-
-  /* The one step in edit mode ─────────────────────────────── */
-
-  .method__li--editing .method__num {
-    color: var(--c-ink);
-  }
-
-  .method__field {
-    position: relative;
-    display: block;
-  }
-
-  .method__textarea {
-    width: 100%;
-    font-family: var(--f-body);
-    font-size: 13.5px;
-    line-height: 1.6;
-    color: var(--c-ink);
-    background: #ffffff;
-    border: 1px solid var(--c-ink);
-    border-radius: 2px;
-    padding: 8px 10px;
-    resize: none;
-    box-shadow: 0 0 0 3px rgba(122, 90, 38, 0.18);
-  }
-  .method__textarea:focus { outline: none; }
-
-  /* Implied caret — visually present, purely decorative */
-  .method__caret {
-    position: absolute;
-    right: 14px;
-    bottom: 14px;
-    width: 1.5px;
-    height: 15px;
-    background: var(--c-ink);
-    animation: caret 1.1s steps(2) infinite;
-  }
-  @keyframes caret {
-    0%, 50% { opacity: 1; }
-    51%, 100% { opacity: 0; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .method__caret { animation: none; opacity: 1; }
   }
 </style>

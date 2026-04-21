@@ -1,0 +1,202 @@
+---
+/**
+ * Screen III (Flow II) · The occasion.
+ *
+ * Step i of iv in the book flow. Chapter-mark rhythm (StepHeader) sets
+ * the cookbook cadence. Body is a quiet cluster of typographic chips —
+ * the Secondary S3 pattern from tokens.css (soft filled, pill, no
+ * border). One chip shows the selected state for the mockup.
+ *
+ * Below the chips, a free-text field in case none of the presets fit.
+ * The Continue CTA uses the Secondary S1 outlined treatment — this is
+ * procedural advance, not a commitment moment. Primary/foil pills are
+ * reserved for Begin (screen II) and Send to Hearth Press (screen VI).
+ */
+import StepHeader from "../ui/StepHeader.astro";
+
+interface Props { showTap?: boolean; }
+const { showTap = false } = Astro.props;
+
+// One chip pre-selected in the mockup so the selection state reads at
+// a glance in the binder. Anniversary plays well with the archetype
+// (a gift for a partner) without being as expected as Mother's Day.
+const occasions = [
+  { label: "Mother's Day", selected: false },
+  { label: "Anniversary", selected: true },
+  { label: "Wedding", selected: false },
+  { label: "A phase of life", selected: false },
+  { label: "Just because", selected: false },
+];
+---
+
+<div class="occ">
+  <nav class="occ__topbar" aria-label="Back">
+    <button class="occ__back" type="button" aria-label="Back">
+      <span aria-hidden="true">‹</span>
+    </button>
+  </nav>
+
+  <StepHeader step="I" title="The occasion" lede="What are we making this for?" />
+
+  <div class="occ__chips" role="radiogroup" aria-label="Occasion">
+    {occasions.map(({ label, selected }) => (
+      <button
+        class={selected ? "occ__chip occ__chip--on" : "occ__chip"}
+        type="button"
+        role="radio"
+        aria-checked={selected}
+      >
+        {label}
+      </button>
+    ))}
+  </div>
+
+  <div class="occ__field">
+    <label class="occ__field-label" for="occ-more">Or tell us more</label>
+    <input
+      id="occ-more"
+      class="occ__input"
+      type="text"
+      placeholder="The occasion, in your words…"
+    />
+  </div>
+
+  <div class="occ__foot">
+    <button class={showTap ? "occ__continue occ__continue--tap" : "occ__continue"} type="button">
+      Continue
+    </button>
+  </div>
+</div>
+
+<style>
+  .occ {
+    display: grid;
+    grid-template-rows: auto auto auto auto 1fr auto;
+    min-height: 100%;
+    padding-bottom: 44px;
+  }
+
+  /* Minimal topbar — just the back chevron. No title duplication
+     with the StepHeader below. */
+  .occ__topbar {
+    padding: 62px 12px 0;
+  }
+  .occ__back {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding-bottom: 2px;
+    font-family: var(--f-display);
+    font-size: 26px;
+    line-height: 1;
+    color: var(--c-ink);
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+  }
+
+  /* Chip cluster — flowy wrap, not a strict grid. Chips vary in
+     length so a grid would leave ragged gaps. Center-aligned to
+     echo the chapter-mark rhythm above. */
+  .occ__chips {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 24px 0;
+  }
+
+  .occ__chip {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 13px;
+    letter-spacing: 0.01em;
+    color: var(--c-ink);
+    background: #e8e1d1; /* Secondary S3 soft-fill on cream per tokens.css */
+    border: 0;
+    border-radius: 999px;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition:
+      background-color var(--motion-state) var(--ease-state),
+      color var(--motion-state) var(--ease-state);
+  }
+
+  .occ__chip--on {
+    background: var(--c-conifer);
+    color: var(--c-ink-inverse);
+  }
+
+  /* Free-text fallback. Per tokens.css inputs: square (2px), cream
+     off-white fill, barely-there border. */
+  .occ__field {
+    display: grid;
+    gap: 6px;
+    padding: 28px 24px 0;
+  }
+  .occ__field-label {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 10.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--c-ash);
+  }
+  .occ__input {
+    width: 100%;
+    height: 44px;
+    border-radius: var(--r-page);
+    background: var(--c-input);
+    border: var(--b-input);
+    padding: 0 14px;
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 14.5px;
+    color: var(--c-ink);
+  }
+  .occ__input::placeholder {
+    color: var(--c-oat);
+    font-style: italic;
+  }
+
+  /* Continue — Secondary S1 outlined. Reserved the foil Primary for
+     the flow's terminal CTAs (Begin, Send to Hearth Press). */
+  .occ__foot {
+    align-self: end;
+    display: grid;
+    padding: 36px 24px 0;
+  }
+
+  .occ__continue {
+    position: relative;
+    width: 100%;
+    height: 48px;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--c-conifer);
+    border: 1px solid var(--c-conifer);
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 14.5px;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    transition:
+      background-color var(--motion-state) var(--ease-state),
+      color var(--motion-state) var(--ease-state);
+  }
+
+  .occ__continue--tap::after {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    border-radius: 999px;
+    border: 3px solid var(--annotation);
+    box-shadow: var(--annotation-glow);
+    pointer-events: none;
+    opacity: var(--halo-opacity);
+    transition: opacity 180ms ease;
+    z-index: 50;
+  }
+</style>

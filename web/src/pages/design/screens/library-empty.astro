@@ -1,18 +1,5 @@
 ---
-import DesignLayout from "~/layouts/DesignLayout.astro";
-import ScreenStage from "~/components/design/ScreenStage.astro";
-import PhoneFrame from "~/components/design/PhoneFrame.astro";
-import LibraryEmptyScreen from "~/components/design/screens/LibraryEmpty.astro";
+import ScreenDetail from "~/components/design/ScreenDetail.astro";
 ---
 
-<DesignLayout title="Library · empty · Screen II">
-  <ScreenStage
-    eyebrow="II · Library · empty"
-    title="A library, waiting."
-    note="Chapter-opener framing: short rule, small-caps eyebrow, Lora italic title, a teaching line, an em-dash folio at the foot. No plus button — share is the path in V1."
-  >
-    <PhoneFrame surface="cream" variant="single" label="Library · empty">
-      <LibraryEmptyScreen />
-    </PhoneFrame>
-  </ScreenStage>
-</DesignLayout>
+<ScreenDetail slug="library-empty" />

@@ -3,21 +3,33 @@
  * the import preview, detail, edit, and saved screens all show the
  * same content, so the flow feels continuous.
  *
- * The original method step iii reads "8 minutes" — the edit flow (VIII)
+ * Each method step carries a `mise` — the amounts needed *for that step*,
+ * in chef's-mise order. The top ingredient list remains the shopping
+ * summary; the mise is what's in hand at the pan. This is the Zuni /
+ * Ottolenghi pattern: the cook never scrolls up mid-step to remember
+ * "how many kernels?".
+ *
+ * The original method step iv reads "8 minutes" — the edit flow (VIII)
  * changes it to "10–12 minutes" to reflect a real home-cook correction.
  */
+
+export type MethodStep = {
+  text: string;
+  mise: string[];
+};
 
 export type SampleRecipe = {
   title: string;
   source: string;
   url: string;
-  photo: string; // public path, served from /public
+  photo: string; // primary photo (keeps existing uses working)
+  photos?: string[]; // optional additional photos; slot 0 mirrors `photo`
   serves: number;
   minutes: number;
   lede: string;
   ingredients: string[];
-  method: string[];
-  editedMethod: string[];
+  method: MethodStep[];
+  editedMethod: MethodStep[];
 };
 
 export const sampleRecipe: SampleRecipe = {
@@ -40,19 +52,55 @@ export const sampleRecipe: SampleRecipe = {
     "Olive oil, salt, black pepper",
   ],
   method: [
-    "Scrape kernels into a bowl. Simmer the stripped cobs in 3 cups water for 20 minutes for a quick corn stock. Strain.",
-    "Heat a wide pan over medium. Coat with olive oil, sweat shallot until translucent, 4 minutes. Add garlic, 30 seconds.",
-    "Add kernels and a pinch of salt. Cook 3 minutes, until they pop and turn glossy.",
-    "Deglaze with wine; reduce by half. Add 2 cups stock and the miso. Simmer gently 8 minutes — it should thicken to a loose ragù.",
-    "Off heat, stir in butter and torn basil. Taste; pepper heavily.",
-    "Spoon onto toasted bread or polenta.",
+    {
+      text: "Scrape kernels into a bowl. Simmer the stripped cobs in 3 cups water for 20 minutes for a quick corn stock. Strain.",
+      mise: ["6 ears sweet corn", "3 cups water"],
+    },
+    {
+      text: "Heat a wide pan over medium. Coat with olive oil, sweat shallot until translucent, 4 minutes. Add garlic, 30 seconds.",
+      mise: ["olive oil", "1 shallot", "3 garlic cloves"],
+    },
+    {
+      text: "Add kernels and a pinch of salt. Cook 3 minutes, until they pop and turn glossy.",
+      mise: ["the scraped kernels", "salt"],
+    },
+    {
+      text: "Deglaze with wine; reduce by half. Add 2 cups stock and the miso. Simmer gently 8 minutes — it should thicken to a loose ragù.",
+      mise: ["1 cup white wine", "2 cups corn stock", "1 tbsp white miso"],
+    },
+    {
+      text: "Off heat, stir in butter and torn basil. Taste; pepper heavily.",
+      mise: ["3 tbsp butter", "1 cup basil", "black pepper"],
+    },
+    {
+      text: "Spoon onto toasted bread or polenta.",
+      mise: ["toasted bread or polenta"],
+    },
   ],
   editedMethod: [
-    "Scrape kernels into a bowl. Simmer the stripped cobs in 3 cups water for 20 minutes for a quick corn stock. Strain.",
-    "Heat a wide pan over medium. Coat with olive oil, sweat shallot until translucent, 4 minutes. Add garlic, 30 seconds.",
-    "Add kernels and a pinch of salt. Cook 3 minutes, until they pop and turn glossy.",
-    "Deglaze with wine; reduce by half. Add 2 cups stock and the miso. Simmer gently 10–12 minutes — it should thicken to a loose ragù.",
-    "Off heat, stir in butter and torn basil. Taste; pepper heavily.",
-    "Spoon onto toasted bread or polenta.",
+    {
+      text: "Scrape kernels into a bowl. Simmer the stripped cobs in 3 cups water for 20 minutes for a quick corn stock. Strain.",
+      mise: ["6 ears sweet corn", "3 cups water"],
+    },
+    {
+      text: "Heat a wide pan over medium. Coat with olive oil, sweat shallot until translucent, 4 minutes. Add garlic, 30 seconds.",
+      mise: ["olive oil", "1 shallot", "3 garlic cloves"],
+    },
+    {
+      text: "Add kernels and a pinch of salt. Cook 3 minutes, until they pop and turn glossy.",
+      mise: ["the scraped kernels", "salt"],
+    },
+    {
+      text: "Deglaze with wine; reduce by half. Add 2 cups stock and the miso. Simmer gently 10–12 minutes — it should thicken to a loose ragù.",
+      mise: ["1 cup white wine", "2 cups corn stock", "1 tbsp white miso"],
+    },
+    {
+      text: "Off heat, stir in butter and torn basil. Taste; pepper heavily.",
+      mise: ["3 tbsp butter", "1 cup basil", "black pepper"],
+    },
+    {
+      text: "Spoon onto toasted bread or polenta.",
+      mise: ["toasted bread or polenta"],
+    },
   ],
 };

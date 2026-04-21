@@ -1,0 +1,198 @@
+---
+/**
+ * Screen II (Flow II) · A cookbook of your own.
+ *
+ * The second hardcover moment in the app. Sibling of WelcomeScreen —
+ * same sage cloth, same foil, same cover-grammar — but a distinct
+ * composition so it doesn't read as a duplicate. Welcome is the app's
+ * cover; this is the chapter cover for "a book made with you."
+ *
+ * Composition, top → bottom:
+ *   · Small letterhead crest: HEARTH PRESS eyebrow + foil rule
+ *   · Foil-stamped Lora display italic title — the cover line
+ *   · Lora italic lede setting the expectation (hardcover, 8×10,
+ *     designed with you, ~3 weeks)
+ *   · Chapter rule (44×1.5px foil)
+ *   · Single Primary CTA pill: "Begin"
+ *   · Quiet T1 tertiary under it: "Not now"
+ *
+ * No pricing on this screen — pricing surfaces later on V/VI.
+ */
+interface Props { showTap?: boolean; }
+const { showTap = false } = Astro.props;
+---
+
+<div class="inv">
+  <div class="inv__top">
+    <span class="inv__eyebrow">Hearth Press</span>
+    <span class="inv__rule inv__rule--short" aria-hidden="true"></span>
+  </div>
+
+  <div class="inv__plate">
+    <h1 class="inv__title">
+      A cookbook<br />of your own.
+    </h1>
+    <span class="inv__rule inv__rule--chapter" aria-hidden="true"></span>
+    <div class="inv__lede">
+      <span>Hardcover · 8×10 · premium paper.</span>
+      <span>Designed with you — not from a template.</span>
+      <span>About three weeks, first note to door.</span>
+    </div>
+  </div>
+
+  <div class="inv__foot">
+    <button class={showTap ? "inv__begin inv__begin--tap" : "inv__begin"} type="button">
+      <span>Begin</span>
+    </button>
+    <button class="inv__defer" type="button">Not now</button>
+  </div>
+</div>
+
+<style>
+  .inv {
+    position: relative;
+    width: 100%;
+    min-height: 100%;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    padding: 74px 36px 46px;
+    color: var(--c-ink-inverse);
+  }
+
+  /* Letterhead crest — matches Welcome's top grammar but tighter. */
+  .inv__top {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .inv__eyebrow {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    color: var(--c-foil-light);
+  }
+
+  .inv__rule {
+    display: block;
+    background: var(--c-foil);
+    opacity: 0.7;
+  }
+  .inv__rule--short {
+    width: 28px;
+    height: 1px;
+  }
+  .inv__rule--chapter {
+    width: 44px;
+    height: 1.5px;
+    opacity: 0.85;
+  }
+
+  /* Title plate — the "engraved plate" at the center of the cover.
+     Vertically centered via grid-row 1fr above. */
+  .inv__plate {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    text-align: center;
+    margin-top: -6%;
+  }
+
+  /* Foil-stamped display. Lora italic is the system's display italic
+     voice — Marcellus has no italic. Sized to feel like a title page,
+     not a splash. */
+  .inv__title {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 40px;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    color: var(--c-foil);
+    text-wrap: balance;
+    margin: 0;
+    /* Faint foil-stamp press, same press depth as Welcome's wordmark. */
+    text-shadow:
+      0 1px 0 rgba(184, 147, 74, 0.08),
+      0 0 22px rgba(184, 147, 74, 0.08);
+  }
+
+  /* Stanza-style lede — three distinct thoughts, each its own line
+     with a small vertical breath. Max-width kept generous so a phrase
+     only wraps as a last resort, not mid-thought. */
+  .inv__lede {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--c-linen);
+    max-width: 36ch;
+    text-wrap: balance;
+  }
+  .inv__lede > span { display: block; }
+
+  /* Foot: one Primary CTA, one quiet T1 tertiary. */
+  .inv__foot {
+    display: grid;
+    gap: 14px;
+    padding-bottom: 8px;
+  }
+
+  /* Primary CTA: foil-light pill, warm-charcoal text, pill radius.
+     Matches the six-token button system in tokens.css. */
+  .inv__begin {
+    position: relative;
+    width: 100%;
+    height: 50px;
+    border-radius: 999px;
+    background: var(--c-foil-light);
+    color: var(--c-ink);
+    border: 0;
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 15px;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    box-shadow: var(--shadow-button);
+    transition: background-color var(--motion-state) var(--ease-state);
+  }
+
+  .inv__begin--tap::after {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    border-radius: 999px;
+    border: 3px solid var(--annotation);
+    box-shadow: var(--annotation-glow);
+    pointer-events: none;
+    opacity: var(--halo-opacity);
+    transition: opacity 180ms ease;
+    z-index: 50;
+  }
+
+  /* T1 tertiary — no container, subtle, leaves an exit. */
+  .inv__defer {
+    background: transparent;
+    border: 0;
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 13px;
+    line-height: 1;
+    color: var(--c-stone);
+    cursor: pointer;
+    padding: 6px;
+    justify-self: center;
+    letter-spacing: 0.01em;
+    transition: color var(--motion-state) var(--ease-state);
+  }
+</style>

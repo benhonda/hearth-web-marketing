@@ -1,18 +1,5 @@
 ---
-import DesignLayout from "~/layouts/DesignLayout.astro";
-import ScreenStage from "~/components/design/ScreenStage.astro";
-import PhoneFrame from "~/components/design/PhoneFrame.astro";
-import RecipeDetailScreen from "~/components/design/screens/RecipeDetail.astro";
+import ScreenDetail from "~/components/design/ScreenDetail.astro";
 ---
 
-<DesignLayout title="Recipe · detail · Screen VII">
-  <ScreenStage
-    eyebrow="VII · Recipe · detail"
-    title="The cookbook page."
-    note="Full-bleed hero, Lora title, italic lede, method set in italic Roman numerals. This is the page that has to pass the book-spine test — print it, bind it, shelve it, no one knows it was an app first."
-  >
-    <PhoneFrame surface="cream" variant="single" label="Recipe detail · Summer Corn & Basil Ragù">
-      <RecipeDetailScreen />
-    </PhoneFrame>
-  </ScreenStage>
-</DesignLayout>
+<ScreenDetail slug="recipe-detail" />
