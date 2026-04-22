@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-04-22
+
+- feat: Added `ROADMAP.md` — the V1 scope-creep shield. Twenty numbered items across Phase 0 (concierge validation), Phase 1 (ship the wedge — design system → compare-to-original), and Phase 2 (ship-week polish), each with a weight dot (● / ●● / ●●●) and a one-line scope cap. Phase 3 is explicitly "nothing builds here" — only the validation ladder in `MVP.md` runs post-launch; new features must go through the Shelved table first. The doc is deliberately long so that scrolling it is itself the deterrent against adding anything above the line.
+
+- feat: Added `/design/roadmap` — a full-bleed horizontal-scroll timeline that renders `ROADMAP.md` visually. One ochre line; twenty node titles alternate up/down off the line; phase transitions interrupt the line as taller italic roman numerals (0 / I / II). Hover or tap any node to reveal its scope cap in a popover. The scroll length is the point — the page makes the V1 surface area physically visible. Added a `Roadmap` entry to the `/design/*` topbar nav.
+
+- chore: Added inspiration-reference photos under `web/public/insp/covers/` (Magnolia Table, Sunday Suppers) and `web/public/insp/spreads/` (Magnolia Table ×3, Sunday Suppers ×2, French Laundry, Gramercy Tavern) — source material for the deferred "real page & cover layouts" design pass noted in README.
+
 ## 2026-04-21
 
 - feat: Added portion-scaling to Flow I — inserted three new steps (VII tappable, VIII overlay, IX scaled) between the canonical recipe page and the long-press edit handoff, stretching Flow I from ten to twelve numbered steps. The Ingredients eyebrow on Recipe · detail now reads `INGREDIENTS · serves 4` with the "serves 4" fragment typeset as an inline small-caps link (same DM Sans 500 / 10px / 0.3em / Ochre DNA as the eyebrow, distinguished only by a 0.75px underline) so the affordance reads as a sub-chapter of the eyebrow, not a foreign button. Tapping it opens a theatrical cream-wash overlay (74% cream + 10px backdrop-blur, no card/border/pill — the blur IS the container) with a centered scale strip `— 2 · 4 · 6 · 8 · 12 —`; the current yield sits selected and larger, with the 44×1.5px chapter-rule narrowed to the numeral's width. Picking 8 re-renders the page with doubled ingredient quantities and per-step mise — but method step TEXT stays unchanged, since timing and pan cues are cook judgment, not math. Scale is a lens over a fixed recipe; no Save, no version bump.

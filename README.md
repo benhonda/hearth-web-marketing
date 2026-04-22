@@ -41,6 +41,7 @@ Hearth is a recipe app that is also a publishing house. Home cooks save recipes 
 
 - [`PRODUCT.md`](./PRODUCT.md) — north-star brief, positioning, principles, validation plan
 - [`MVP.md`](./MVP.md) — V1 scope, shelved-features register, build order
+- [`ROADMAP.md`](./ROADMAP.md) — ordered build list for V1, with a per-item scope cap; scope-creep shield
 - [`CLAUDE.md`](./CLAUDE.md) — AI assistant guidelines
 
 ## Status

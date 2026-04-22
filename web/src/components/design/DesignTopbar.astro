@@ -30,6 +30,11 @@ const topLinks: NavItem[] = [
     label: "Book",
     match: (p) => p.startsWith("/design/book"),
   },
+  {
+    href: "/design/roadmap",
+    label: "Roadmap",
+    match: (p) => p.startsWith("/design/roadmap"),
+  },
 ];
 
 const activeFlow = flows.find((f) => path === `/design/flows/${f.slug}`);
