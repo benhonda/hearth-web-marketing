@@ -10,6 +10,30 @@ Hearth is a recipe app that is also a publishing house. Home cooks save recipes 
 
 - [ ] Apr 21: Flow of user uploading photos and seeing how that affects book layout
 
+- [ ] **2026-04-22 · Open questions & follow-ups**
+
+  **Import (web URL → recipe)**
+  - [ ] Build web URL import as the primary import method
+  - [ ] Pull hero image from imported URLs
+  - [ ] Ensure attribution to original source (blog name, title) on imported recipes
+
+  **Edit (beyond line-items)**
+  - [ ] Redesign edit to go beyond line-item ingredient/instruction edits (e.g., notes)
+  - [ ] Handle cascading effects when ingredients change (impact on instructions)
+
+  **Photos & imagery**
+  - [ ] User-uploaded photos as the default option
+  - [ ] Evaluate AI-generated food imagery as the primary fallback for missing or low-quality user photos — stock libraries won't have the specificity needed for recipe variations
+
+  **Unit conversion**
+  - [ ] Volume → weight conversion (cups / tablespoons → grams / ounces)
+  - [ ] Source or build an ingredient density database to power accurate conversion
+
+  **Legal / copyright**
+  - [ ] Research image copyright boundaries, especially for the print-on-demand book use case
+  - [ ] Draft ToS clarifying user responsibility for copyrighted content in their book compilations
+  - [ ] Consult a lawyer about platform liability for the print-on-demand book feature
+
 - [ ] **2026-04-21 · Real page & cover layouts (deferred from design binder, Flow II)**
 
   **Context.** While drawing the `02-make-a-book` flow in the design binder, we reached the cover/page layout picker (originally main-line step VI "Global settings"; now lives in the Settings sub-flow as `book-layout`), where the user picks a cover layout and one page layout per photo-count bucket (1, 2, 3+). The thumbnails in that picker had been abstract skeleton sketches — solid rectangles and hairlines. Ben flagged that this would force us to keep two sources of truth: the skeleton thumbnails here, and the real rendered layouts on the preview / per-page-edit screens later. We agreed the right pattern is **one component rendered at two scales** — full-size on Preview (V) / The page (VII), scale(0.42) inside the layout picker frames.
@@ -41,7 +65,7 @@ Hearth is a recipe app that is also a publishing house. Home cooks save recipes 
 
 - [`PRODUCT.md`](./PRODUCT.md) — north-star brief, positioning, principles, validation plan
 - [`MVP.md`](./MVP.md) — V1 scope, shelved-features register, build order
-- [`ROADMAP.md`](./ROADMAP.md) — ordered build list for V1, with a per-item scope cap; scope-creep shield
+- [`/design/roadmap`](./web/src/pages/design/roadmap.astro) — rendered V1 build list with per-item scope caps; the scope-creep shield (replaces the old `ROADMAP.md`)
 - [`CLAUDE.md`](./CLAUDE.md) — AI assistant guidelines
 
 ## Status

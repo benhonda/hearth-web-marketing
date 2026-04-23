@@ -1,3 +1,10 @@
 {
-  "host": "https://bit.adpharm.digital"
+  "host": "https://bit.adpharm.digital",
+  "tracked": [
+    {
+      "path": ".claude/skills/screenshot-website",
+      "slug": "skills/screenshot-website",
+      "kind": "folder"
+    }
+  ]
 }

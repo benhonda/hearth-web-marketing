@@ -42,6 +42,32 @@ const pages: { layout: PageLayout; label: string; bucket: string; note: string }
 
 const coverTitle = "For Us.";
 const coverSubtitle = "A year at the table.";
+
+/* ─────────────────────────────────────────────────────────────
+   Exploration-only assets. Unsplash CDN URLs — not bundled, not
+   production. These mockups are sketches; the real flow still
+   consumes BookCover / BookPage with the two approved covers and
+   six approved page layouts. Winners here get promoted later.
+   ───────────────────────────────────────────────────────────── */
+const U = {
+  plate:    "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&auto=format&fit=crop&q=80",
+  pasta:    "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=800&auto=format&fit=crop&q=80",
+  bread:    "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=800&auto=format&fit=crop&q=80",
+  salad:    "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&auto=format&fit=crop&q=80",
+  moody:    "https://images.unsplash.com/photo-1432139555190-58524dae6a55?w=800&auto=format&fit=crop&q=80",
+  kitchen:  "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&auto=format&fit=crop&q=80",
+  table:    "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&auto=format&fit=crop&q=80",
+  portrait: "https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=800&auto=format&fit=crop&q=80",
+};
+
+/* Short essay used by the Pasta-style `spread-story` concept. Three
+   short paragraphs drive the left-page density; kept inline here
+   rather than in sample-recipe.ts because it's exploration-only. */
+const sampleEssay = [
+  "Corn in August is everything July's corn pretended to be — sweeter, heavier, almost guilty on the tongue. The trick to a ragù like this one is knowing when to walk away from the pan. Too long and the kernels collapse into porridge; too short and they bite.",
+  "We make this on evenings when the farmers' market has overshot the week's intended plan. There's always a shallot knocking around somewhere. A glass of dry wine fixes the rest.",
+  "The miso isn't authenticity-breaking — it finishes the stock with a quiet funk that reads as depth, not seasoning. Salt lightly, then pepper aggressively.",
+];
 ---
 
 <DesignLayout title="Book">
@@ -131,6 +157,679 @@ const coverSubtitle = "A year at the table.";
             </figcaption>
           </figure>
         ))}
+      </div>
+    </section>
+
+    {/* ───────── Explorations ───────── */}
+    <section class="spec spec--exp" id="explorations">
+      <div class="spec__head">
+        <p class="eyebrow">Explorations · 2026-04 · sketches</p>
+        <hr class="rule" aria-hidden="true" />
+        <h2 class="spec__title">Sketches — concepts to triage.</h2>
+        <p class="lede">
+          Inline mockups only; nothing here is wired into <code>BookCover</code>
+          or <code>BookPage</code> yet. Most will get scrapped — that's the
+          point of the sketchbook. Winners get promoted to real layouts.
+          Photos are Unsplash placeholders.
+        </p>
+      </div>
+
+      {/* ─── Cover concepts ─── */}
+      <div class="exp-group">
+        <header class="exp-group__head">
+          <h3 class="exp-group__title">Cover concepts <span class="exp-group__count">· seven</span></h3>
+          <p class="exp-group__note">All at natural 320 × 400. Reference in caption ties each back to the inspiration plate.</p>
+        </header>
+
+        <div class="exp-rows">
+          {/* 1 ─ title-top */}
+          <article class="exp-row exp-row--cover">
+            <figure class="exp-row__insp">
+              <img src="/insp/covers/magnolia-table.png" alt="Magnolia Table cover" loading="lazy" />
+              <figcaption>Magnolia Table · Joanna Gaines</figcaption>
+            </figure>
+            <figure class="specimen exp-row__work">
+              <div class="specimen__stage">
+                <article class="xc xc--title-top">
+                  <span class="xc__eyebrow">Hearth Press</span>
+                  <span class="xc__eyebrow-rule" aria-hidden="true"></span>
+                  <h4 class="xc__title">{coverTitle}</h4>
+                  <p class="xc__subtitle">{coverSubtitle}</p>
+                  <div class="xc__plate" style={`background-image:url(${U.plate})`} aria-hidden="true"></div>
+                  <div class="xc__author xc__author--serif">Ben Honda</div>
+                </article>
+              </div>
+              <figcaption class="specimen__cap">
+                <p class="specimen__label"><code>title-top</code><span class="specimen__bucket">ref · Magnolia Table</span></p>
+                <p class="specimen__note">Title lives above the plate; author at foot. Sibling of <code>plate</code>.</p>
+              </figcaption>
+            </figure>
+          </article>
+
+          {/* 2 ─ italian */}
+          <article class="exp-row exp-row--cover">
+            <figure class="exp-row__insp">
+              <img src="/insp/covers/italian-summer.png" alt="Italian Summer cover" loading="lazy" />
+              <figcaption>Italian Summer · Natalie Obradovich</figcaption>
+            </figure>
+            <figure class="specimen exp-row__work">
+              <div class="specimen__stage">
+                <article class="xc xc--italian">
+                  <div class="xc__plate xc__plate--sm" style={`background-image:url(${U.table})`} aria-hidden="true"></div>
+                  <h4 class="xc__bigtype">FOR<br/>US.</h4>
+                  <p class="xc__tag">Ben Honda</p>
+                </article>
+              </div>
+              <figcaption class="specimen__cap">
+                <p class="specimen__label"><code>italian</code><span class="specimen__bucket">ref · Italian Summer</span></p>
+                <p class="specimen__note">Tiny plate, enormous stacked serif caps title below.</p>
+              </figcaption>
+            </figure>
+          </article>
+
+          {/* 3 ─ window */}
+          <article class="exp-row exp-row--cover">
+            <figure class="exp-row__insp">
+              <img src="/insp/covers/home-therapy.png" alt="Home Therapy cover" loading="lazy" />
+              <figcaption>Home Therapy · Anita Yokota</figcaption>
+            </figure>
+            <figure class="specimen exp-row__work">
+              <div class="specimen__stage">
+                <article class="xc xc--window">
+                  <h4 class="xc__title xc__title--left">{coverTitle}</h4>
+                  <p class="xc__sub xc__sub--left">{coverSubtitle}</p>
+                  <div class="xc__win" style={`background-image:url(${U.kitchen})`} aria-hidden="true"></div>
+                  <div class="xc__author xc--ink">Ben Honda</div>
+                </article>
+              </div>
+              <figcaption class="specimen__cap">
+                <p class="specimen__label"><code>window</code><span class="specimen__bucket">ref · Home Therapy</span></p>
+                <p class="specimen__note">Warm-cream ground, italic title top-left, windowed photo in the bottom ⅔.</p>
+              </figcaption>
+            </figure>
+          </article>
+
+          {/* 4 ─ display */}
+          <article class="exp-row exp-row--cover">
+            <figure class="exp-row__insp">
+              <img src="/insp/covers/joie.png" alt="Joie cover" loading="lazy" />
+              <figcaption>Joie · Ajiri Aki</figcaption>
+            </figure>
+            <figure class="specimen exp-row__work">
+              <div class="specimen__stage">
+                <article class="xc xc--display">
+                  <h4 class="xc__display">For Us.</h4>
+                  <div class="xc__plate xc__plate--joie" style={`background-image:url(${U.portrait})`} aria-hidden="true"></div>
+                  <p class="xc__displaySub">A YEAR AT THE TABLE</p>
+                  <p class="xc__displayAuthor">Ben Honda</p>
+                </article>
+              </div>
+              <figcaption class="specimen__cap">
+                <p class="specimen__label"><code>display</code><span class="specimen__bucket">ref · Joie</span></p>
+                <p class="specimen__note">Oversized accent-color title up top, photo plate centered, tagline + author foot. Hero is the type; plate grounds it.</p>
+              </figcaption>
+            </figure>
+          </article>
+
+          {/* 5 ─ minimal */}
+          <article class="exp-row exp-row--cover">
+            <figure class="exp-row__insp">
+              <img src="/insp/covers/sunday-suppers.png" alt="Sunday Suppers cover" loading="lazy" />
+              <figcaption>Sunday Suppers · Karen Mordechai</figcaption>
+            </figure>
+            <figure class="specimen exp-row__work">
+              <div class="specimen__stage">
+                <article class="xc xc--minimal">
+                  <div class="xc__plate xc__plate--40" style={`background-image:url(${U.moody})`} aria-hidden="true"></div>
+                  <p class="xc__tracked">FOR · US</p>
+                  <p class="xc__tracked xc__tracked--small">A YEAR · AT THE TABLE</p>
+                  <div class="xc__wordmark xc--ink">HEARTH</div>
+                </article>
+              </div>
+              <figcaption class="specimen__cap">
+                <p class="specimen__label"><code>minimal</code><span class="specimen__bucket">ref · Sunday Suppers</span></p>
+                <p class="specimen__note">Linen ground, small plate, tiny letterspaced caps title. Maximum air.</p>
+              </figcaption>
+            </figure>
+          </article>
+
+          {/* 6 ─ typographic */}
+          <article class="exp-row exp-row--cover">
+            <figure class="exp-row__insp">
+              <img src="/insp/covers/surf-tribe.png" alt="Surf Tribe cover" loading="lazy" />
+              <figcaption>Surf Tribe · Stephan Vanfleteren</figcaption>
+            </figure>
+            <figure class="specimen exp-row__work">
+              <div class="specimen__stage">
+                <article class="xc xc--typo">
+                  <h4 class="xc__stack">FOR<br/>US.</h4>
+                  <p class="xc__tag">Ben Honda</p>
+                  <div class="xc__wordmark">HEARTH PRESS</div>
+                </article>
+              </div>
+              <figcaption class="specimen__cap">
+                <p class="specimen__label"><code>typographic</code><span class="specimen__bucket">ref · Surf Tribe · README V2</span></p>
+                <p class="specimen__note">Pure-type cloth cover. README has this as V2 — sketching it so we can see it.</p>
+              </figcaption>
+            </figure>
+          </article>
+
+          {/* 7 ─ art-of-home */}
+          <article class="exp-row exp-row--cover">
+            <figure class="exp-row__insp">
+              <img src="/insp/covers/the-art-of-home.png" alt="The Art of Home cover" loading="lazy" />
+              <figcaption>The Art of Home · Shea McGee</figcaption>
+            </figure>
+            <figure class="specimen exp-row__work">
+              <div class="specimen__stage">
+                <article class="xc xc--art">
+                  <h4 class="xc__artTitle">For <em>Us.</em></h4>
+                  <div class="xc__plate xc__plate--55" style={`background-image:url(${U.portrait})`} aria-hidden="true"></div>
+                  <p class="xc__sub xc--ink"><em>Written by</em> Ben Honda</p>
+                </article>
+              </div>
+              <figcaption class="specimen__cap">
+                <p class="specimen__label"><code>art-of-home</code><span class="specimen__bucket">ref · The Art of Home</span></p>
+                <p class="specimen__note">Restrained, near-white sibling of <code>plate</code>. Italic title small at top.</p>
+              </figcaption>
+            </figure>
+          </article>
+        </div>
+      </div>
+
+      {/* ─── Spread concepts (facing pages, 640×400) ─── */}
+      <div class="exp-group">
+        <header class="exp-group__head">
+          <h3 class="exp-group__title">Spread concepts <span class="exp-group__count">· six</span></h3>
+          <p class="exp-group__note">Facing pages, 640 × 400. Gutter down the middle. These ask whether V2 should let spreads compose as pairs, not just single pages.</p>
+        </header>
+
+        <div class="exp-rows">
+          {/* 1 ─ spread-photo-facing */}
+          <article class="exp-row exp-row--spread">
+            <figure class="exp-row__insp">
+              <img src="/insp/spreads/french-laundry.png" alt="The French Laundry spread" loading="lazy" />
+              <figcaption>The French Laundry · photo-facing recipe spread</figcaption>
+            </figure>
+            <figure class="specimen exp-row__work">
+              <div class="specimen__stage">
+                <div class="xs">
+                  <div class="xs__page xs__page--L xs__bleed" style={`background-image:url(${sampleRecipe.photo})`} aria-hidden="true">
+                    <span class="xs__rail">I · SUPPERS</span>
+                  </div>
+                  <div class="xs__gutter" aria-hidden="true"></div>
+                  <div class="xs__page xs__page--R">
+                    <h4 class="xs__title">{sampleRecipe.title}</h4>
+                    <p class="xs__meta">{sampleRecipe.minutes} min · Serves {sampleRecipe.serves}</p>
+                    <div class="xs__rbody">
+                      <div>
+                        <span class="xs__label">Ingredients</span>
+                        <ul class="xs__ul">
+                          {sampleRecipe.ingredients.slice(0, 6).map((ing) => <li>{ing}</li>)}
+                        </ul>
+                      </div>
+                      <div>
+                        <span class="xs__label">Method</span>
+                        <ol class="xs__ol">
+                          {sampleRecipe.method.slice(0, 4).map((step, i) => {
+                            const roman = ["i", "ii", "iii", "iv"][i];
+                            return (<li><span class="xs__roman">{roman}.</span><span>{step.text}</span></li>);
+                          })}
+                        </ol>
+                      </div>
+                    </div>
+                    <p class="xs__folio">— 42 —</p>
+                  </div>
+                </div>
+              </div>
+              <figcaption class="specimen__cap">
+                <p class="specimen__label"><code>spread-photo-facing</code><span class="specimen__bucket">640 × 400 · French Laundry</span></p>
+                <p class="specimen__note">Photo full-bleeds the left page. Right page carries the full recipe.</p>
+              </figcaption>
+            </figure>
+          </article>
+
+          {/* 2 ─ spread-classic (Magnolia Truffle Butter Rolls match) */}
+          <article class="exp-row exp-row--spread">
+            <figure class="exp-row__insp">
+              <img src="/insp/spreads/magnolia-table.png" alt="Magnolia Table Truffle Butter Rolls spread" loading="lazy" />
+              <figcaption>Magnolia Table · Truffle Butter Rolls — photo-left, classical recipe-right.</figcaption>
+            </figure>
+            <figure class="specimen exp-row__work">
+              <div class="specimen__stage">
+                <div class="xs">
+                  <div class="xs__page xs__page--L xs__bleed" style={`background-image:url(${U.bread})`} aria-hidden="true"></div>
+                  <div class="xs__gutter" aria-hidden="true"></div>
+                  <div class="xs__page xs__page--R xs__page--classic">
+                    <header class="xs__classicHead">
+                      <h4 class="xs__classicTitle">{sampleRecipe.title}</h4>
+                      <p class="xs__classicMeta">SERVES {sampleRecipe.serves} · {sampleRecipe.minutes} MIN · WEEKNIGHT</p>
+                    </header>
+                    <p class="xs__classicLede">{sampleRecipe.lede}</p>
+                    <div class="xs__classicBody">
+                      <div class="xs__classicIng">
+                        <span class="xs__label">Ingredients</span>
+                        <ul class="xs__ul">
+                          {sampleRecipe.ingredients.slice(0, 7).map((ing) => <li>{ing}</li>)}
+                        </ul>
+                      </div>
+                      <div class="xs__classicMethod">
+                        {sampleRecipe.method.slice(0, 5).map((step) => (
+                          <p>{step.text}</p>
+                        ))}
+                      </div>
+                    </div>
+                    <p class="xs__folio">— 12 —</p>
+                  </div>
+                </div>
+              </div>
+              <figcaption class="specimen__cap">
+                <p class="specimen__label"><code>spread-classic</code><span class="specimen__bucket">640 × 400 · Magnolia Truffle</span></p>
+                <p class="specimen__note">Photo full-bleeds the left page. Right page runs classical recipe: centered italic title, tracked-caps meta, italic lede, narrow ingredients column + prose method.</p>
+              </figcaption>
+            </figure>
+          </article>
+
+          {/* 3 ─ spread-chapter-opener */}
+          <article class="exp-row exp-row--spread">
+            <figure class="exp-row__insp">
+              <img src="/insp/spreads/magnolia-table-3.png" alt="Magnolia Table Appetizers & Starters chapter opener" loading="lazy" />
+              <figcaption>Magnolia Table · Appetizers &amp; Starters (chapter opener)</figcaption>
+            </figure>
+            <figure class="specimen exp-row__work">
+              <div class="specimen__stage">
+                <div class="xs">
+                  <div class="xs__page xs__page--L xs__bleed xs__bleed--dark" style={`background-image:url(${U.moody})`} aria-hidden="true">
+                    <span class="xs__rail">CHAPTER · III</span>
+                    <div class="xs__chap-wrap">
+                      <p class="xs__chap-eyebrow">Chapter three</p>
+                      <h4 class="xs__chap-title">Suppers</h4>
+                    </div>
+                  </div>
+                  <div class="xs__gutter" aria-hidden="true"></div>
+                  <div class="xs__page xs__page--R xs__page--epigraph">
+                    <p class="xs__epi">
+                      <em>"The best thing any of us can do with an evening is feed the people we love."</em>
+                    </p>
+                    <p class="xs__epi-attr">— Ben</p>
+                  </div>
+                </div>
+              </div>
+              <figcaption class="specimen__cap">
+                <p class="specimen__label"><code>spread-chapter-opener</code><span class="specimen__bucket">640 × 400 · Magnolia-3</span></p>
+                <p class="specimen__note">Moody full-bleed left with foil chapter title; epigraph floats centered on cream right.</p>
+              </figcaption>
+            </figure>
+          </article>
+
+          {/* 4 ─ spread-quote */}
+          <article class="exp-row exp-row--spread">
+            <figure class="exp-row__insp">
+              <img src="/insp/spreads/magnolia-table-2.png" alt="Magnolia Table photo + pullquote spread" loading="lazy" />
+              <figcaption>Magnolia Table · kitchen + pullquote spread</figcaption>
+            </figure>
+            <figure class="specimen exp-row__work">
+              <div class="specimen__stage">
+                <div class="xs">
+                  <div class="xs__page xs__page--L xs__bleed" style={`background-image:url(${U.kitchen})`} aria-hidden="true"></div>
+                  <div class="xs__gutter" aria-hidden="true"></div>
+                  <div class="xs__page xs__page--R xs__page--quote">
+                    <p class="xs__pull">
+                      <em>Fine details, shifts in flavor — every meal and moment can become what we make of it.</em>
+                    </p>
+                    <p class="xs__pull-attr">HEARTH · I</p>
+                  </div>
+                </div>
+              </div>
+              <figcaption class="specimen__cap">
+                <p class="specimen__label"><code>spread-quote</code><span class="specimen__bucket">640 × 400 · Magnolia-2</span></p>
+                <p class="specimen__note">Full-bleed portrait on left; pullquote floats on the cream right page. A narrative break between recipes.</p>
+              </figcaption>
+            </figure>
+          </article>
+
+          {/* 5 ─ spread-story (Pasta match — story left, recipe right) */}
+          <article class="exp-row exp-row--spread">
+            <figure class="exp-row__insp">
+              <img src="/insp/spreads/pasta.png" alt="Pasta recipe spread" loading="lazy" />
+              <figcaption>Pasta spread · story-left, photo + recipe-right</figcaption>
+            </figure>
+            <figure class="specimen exp-row__work">
+              <div class="specimen__stage">
+                <div class="xs">
+                  <div class="xs__page xs__page--L xs__page--storyL">
+                    <h4 class="xs__storyTitle">{sampleRecipe.title}</h4>
+                    {sampleEssay.map((para) => <p class="xs__storyPara">{para}</p>)}
+                    <p class="xs__folio">— 88 —</p>
+                  </div>
+                  <div class="xs__gutter" aria-hidden="true"></div>
+                  <div class="xs__page xs__page--R xs__page--storyR">
+                    <div class="xs__storyHero" style={`background-image:url(${sampleRecipe.photo})`} aria-hidden="true"></div>
+                    <p class="xs__storyMeta">SERVES {sampleRecipe.serves} · {sampleRecipe.minutes} MIN</p>
+                    <div class="xs__storyBody">
+                      <div class="xs__storyIng">
+                        <span class="xs__label">Ingredients</span>
+                        <ul class="xs__ul">
+                          {sampleRecipe.ingredients.slice(0, 6).map((ing) => <li>{ing}</li>)}
+                        </ul>
+                      </div>
+                      <div class="xs__storyMeth">
+                        <span class="xs__label">Method</span>
+                        <ol class="xs__ol">
+                          {sampleRecipe.method.slice(0, 4).map((step, i) => {
+                            const roman = ["i", "ii", "iii", "iv"][i];
+                            return (<li><span class="xs__roman">{roman}.</span><span>{step.text}</span></li>);
+                          })}
+                        </ol>
+                      </div>
+                    </div>
+                    <div class="xs__storyPan" style={`background-image:url(${U.bread})`} aria-hidden="true"></div>
+                    <p class="xs__folio">— 89 —</p>
+                  </div>
+                </div>
+              </div>
+              <figcaption class="specimen__cap">
+                <p class="specimen__label"><code>spread-story</code><span class="specimen__bucket">640 × 400 · Pasta</span></p>
+                <p class="specimen__note">Narrative essay + title on the left; hero photo top + meta + ingredients/method columns + small pan photo at foot on the right.</p>
+              </figcaption>
+            </figure>
+          </article>
+
+          {/* 6 ─ spread-airy (Sunday Suppers match — extreme negative space) */}
+          <article class="exp-row exp-row--spread">
+            <figure class="exp-row__insp">
+              <img src="/insp/spreads/sunday-suppers.png" alt="Sunday Suppers open book spread" loading="lazy" />
+              <figcaption>Sunday Suppers · tiny content on airy pages</figcaption>
+            </figure>
+            <figure class="specimen exp-row__work">
+              <div class="specimen__stage">
+                <div class="xs">
+                  <div class="xs__page xs__page--L xs__page--airyL">
+                    <h4 class="xs__airyTitle">{sampleRecipe.title}</h4>
+                    <p class="xs__airyMeta">{sampleRecipe.minutes} min · Serves {sampleRecipe.serves}</p>
+                    <span class="xs__airyLabel">Ingredients</span>
+                    <ul class="xs__airyUl">
+                      {sampleRecipe.ingredients.slice(0, 5).map((ing) => <li>{ing}</li>)}
+                    </ul>
+                    <p class="xs__folio">— 52 —</p>
+                  </div>
+                  <div class="xs__gutter" aria-hidden="true"></div>
+                  <div class="xs__page xs__page--R xs__page--airyR">
+                    <div class="xs__airyPhoto" style={`background-image:url(${U.kitchen})`} aria-hidden="true"></div>
+                    <ol class="xs__airyOl">
+                      {sampleRecipe.method.slice(0, 3).map((step, i) => {
+                        const roman = ["i", "ii", "iii"][i];
+                        return (<li><span class="xs__roman">{roman}.</span><span>{step.text}</span></li>);
+                      })}
+                    </ol>
+                    <p class="xs__folio">— 53 —</p>
+                  </div>
+                </div>
+              </div>
+              <figcaption class="specimen__cap">
+                <p class="specimen__label"><code>spread-airy</code><span class="specimen__bucket">640 × 400 · Sunday Suppers</span></p>
+                <p class="specimen__note">Extreme negative space. Tiny title + 5 ingredients left; small centered photo + 3 method lines right. The whole book breathes.</p>
+              </figcaption>
+            </figure>
+          </article>
+        </div>
+      </div>
+
+      {/* ─── Custom concepts — single-page, no direct ref ─── */}
+      <div class="exp-group">
+        <header class="exp-group__head">
+          <h3 class="exp-group__title">Custom concepts <span class="exp-group__count">· six · no direct ref</span></h3>
+          <p class="exp-group__note">Inventions — either clean-sheet ideas (hero-bleed) or misreads of spread references kept because the result was still interesting. Three single-page + three spread variants. The ref-backed siblings live above.</p>
+        </header>
+
+        <div class="exp-rows">
+          {/* 1 ─ page-hero-bleed */}
+          <article class="exp-row exp-row--page">
+            <figure class="exp-row__insp exp-row__insp--empty">
+              <div class="exp-row__placeholder" aria-hidden="true">
+                <p>No direct ref</p>
+                <p class="exp-row__placeholder-sub">Clean-sheet: a "signature dish" beat — photo-bleed page whose recipe text continues overleaf.</p>
+              </div>
+            </figure>
+            <figure class="specimen exp-row__work">
+              <div class="specimen__stage">
+                <article class="xp xp--hero">
+                  <div class="xp__bleed" style={`background-image:url(${sampleRecipe.photo})`} aria-hidden="true"></div>
+                  <div class="xp__scrim" aria-hidden="true"></div>
+                  <span class="xp__rail">SIGNATURE</span>
+                  <div class="xp__hero-title">
+                    <h4 class="xp__ht">{sampleRecipe.title}</h4>
+                    <p class="xp__hm">{sampleRecipe.minutes} min · Serves {sampleRecipe.serves}</p>
+                  </div>
+                  <p class="xp__continues">Recipe continues →</p>
+                </article>
+              </div>
+              <figcaption class="specimen__cap">
+                <p class="specimen__label"><code>page-hero-bleed</code><span class="specimen__bucket">single page</span></p>
+                <p class="specimen__note">Full-bleed photo, foil italic title overlay. The dramatic "signature dish" beat; recipe text overleaf.</p>
+              </figcaption>
+            </figure>
+          </article>
+
+          {/* 2 ─ page-asymmetric (compression of spread-asymmetric) */}
+          <article class="exp-row exp-row--page">
+            <figure class="exp-row__insp exp-row__insp--empty">
+              <div class="exp-row__placeholder" aria-hidden="true">
+                <p>No direct ref</p>
+                <p class="exp-row__placeholder-sub">Compression of <code>spread-asymmetric</code> into one page — when the recipe has to fit on a single leaf.</p>
+              </div>
+            </figure>
+            <figure class="specimen exp-row__work">
+              <div class="specimen__stage">
+                <article class="xp xp--asym">
+                  <header class="xp__ahead">
+                    <h4 class="xp__atitle">{sampleRecipe.title}</h4>
+                    <p class="xp__ameta">{sampleRecipe.minutes} min · Serves {sampleRecipe.serves}</p>
+                  </header>
+                  <div class="xp__aphoto" style={`background-image:url(${sampleRecipe.photo})`} aria-hidden="true"></div>
+                  <div class="xp__amethod">
+                    <span class="xp__alabel">Method</span>
+                    <ol class="xp__aol">
+                      {sampleRecipe.method.slice(0, 4).map((step, i) => {
+                        const roman = ["i", "ii", "iii", "iv"][i];
+                        return (
+                          <li><span class="xp__aroman">{roman}.</span><span>{step.text}</span></li>
+                        );
+                      })}
+                    </ol>
+                  </div>
+                  <div class="xp__aing">
+                    <span class="xp__alabel">Ingredients</span>
+                    <ul class="xp__aul">
+                      {sampleRecipe.ingredients.slice(0, 5).map((ing) => <li>{ing}</li>)}
+                    </ul>
+                  </div>
+                  <div class="xp__aphoto2" style={`background-image:url(${U.bread})`} aria-hidden="true"></div>
+                  <p class="xp__afolio">— page —</p>
+                </article>
+              </div>
+              <figcaption class="specimen__cap">
+                <p class="specimen__label"><code>page-asymmetric</code><span class="specimen__bucket">single page</span></p>
+                <p class="specimen__note">Title+photo top, method column left, ingredients right, small second photo bottom-right. Pasta density, one page.</p>
+              </figcaption>
+            </figure>
+          </article>
+
+          {/* 3 ─ page-inset (compression of spread-text-inset) */}
+          <article class="exp-row exp-row--page">
+            <figure class="exp-row__insp exp-row__insp--empty">
+              <div class="exp-row__placeholder" aria-hidden="true">
+                <p>No direct ref</p>
+                <p class="exp-row__placeholder-sub">Compression of <code>spread-text-inset</code> into one page — editorial density, photo embedded in the column.</p>
+              </div>
+            </figure>
+            <figure class="specimen exp-row__work">
+              <div class="specimen__stage">
+                <article class="xp xp--inset">
+                  <header class="xp__ihead">
+                    <h4 class="xp__ititle">{sampleRecipe.title}</h4>
+                    <p class="xp__imeta">{sampleRecipe.minutes} min · Serves {sampleRecipe.serves}</p>
+                  </header>
+                  <div class="xp__ibody">
+                    <div class="xp__ileft">
+                      <span class="xp__ilabel">Ingredients</span>
+                      <ul class="xp__iul">
+                        {sampleRecipe.ingredients.slice(0, 6).map((ing) => <li>{ing}</li>)}
+                      </ul>
+                    </div>
+                    <div class="xp__iright">
+                      <span class="xp__ilabel">Method</span>
+                      <div class="xp__iinset" style={`background-image:url(${U.pasta})`} aria-hidden="true"></div>
+                      <ol class="xp__iol">
+                        {sampleRecipe.method.slice(0, 4).map((step, i) => {
+                          const roman = ["i", "ii", "iii", "iv"][i];
+                          return (<li><span class="xp__iroman">{roman}.</span><span>{step.text}</span></li>);
+                        })}
+                      </ol>
+                    </div>
+                  </div>
+                  <p class="xp__ifolio">— page —</p>
+                </article>
+              </div>
+              <figcaption class="specimen__cap">
+                <p class="specimen__label"><code>page-inset</code><span class="specimen__bucket">single page</span></p>
+                <p class="specimen__note">Two-column editorial. Small inset photo lives inside the method column. Text-dominant.</p>
+              </figcaption>
+            </figure>
+          </article>
+
+          {/* 4 ─ spread-dual-text (was spread-text-only — my misread of Magnolia) */}
+          <article class="exp-row exp-row--spread">
+            <figure class="exp-row__insp exp-row__insp--empty">
+              <div class="exp-row__placeholder" aria-hidden="true">
+                <p>No direct ref</p>
+                <p class="exp-row__placeholder-sub">I originally paired this with Magnolia Truffle Rolls, but that ref has a photo left + classical text right — see <code>spread-classic</code>. Extending text across both pages was my invention.</p>
+              </div>
+            </figure>
+            <figure class="specimen exp-row__work">
+              <div class="specimen__stage">
+                <div class="xs">
+                  <div class="xs__page xs__page--L xs__page--text">
+                    <h4 class="xs__tLitle">{sampleRecipe.title}</h4>
+                    <p class="xs__tLede">{sampleRecipe.lede}</p>
+                    <span class="xs__label">Ingredients</span>
+                    <ul class="xs__ul xs__ul--wide">
+                      {sampleRecipe.ingredients.map((ing) => <li>{ing}</li>)}
+                    </ul>
+                    <p class="xs__folio">— 43 —</p>
+                  </div>
+                  <div class="xs__gutter" aria-hidden="true"></div>
+                  <div class="xs__page xs__page--R xs__page--text">
+                    <span class="xs__label">Method</span>
+                    <ol class="xs__ol xs__ol--wide">
+                      {sampleRecipe.method.map((step, i) => {
+                        const roman = ["i", "ii", "iii", "iv", "v", "vi"][i];
+                        return (<li><span class="xs__roman">{roman}.</span><span>{step.text}</span></li>);
+                      })}
+                    </ol>
+                    <p class="xs__folio">— 44 —</p>
+                  </div>
+                </div>
+              </div>
+              <figcaption class="specimen__cap">
+                <p class="specimen__label"><code>spread-dual-text</code><span class="specimen__bucket">640 × 400 · custom</span></p>
+                <p class="specimen__note">Zero photos across both pages. Good for un-photographed recipes or a deliberate typographic beat between image-heavy spreads.</p>
+              </figcaption>
+            </figure>
+          </article>
+
+          {/* 5 ─ spread-asym-dense (was spread-asymmetric — my misread of Pasta) */}
+          <article class="exp-row exp-row--spread">
+            <figure class="exp-row__insp exp-row__insp--empty">
+              <div class="exp-row__placeholder" aria-hidden="true">
+                <p>No direct ref</p>
+                <p class="exp-row__placeholder-sub">My original take on the Pasta spread — title + lede + hero-bleed photo on the left; dense method + ingredients on the right. The actual Pasta ref puts the essay on the left and photos on the right; see <code>spread-story</code>.</p>
+              </div>
+            </figure>
+            <figure class="specimen exp-row__work">
+              <div class="specimen__stage">
+                <div class="xs">
+                  <div class="xs__page xs__page--L xs__page--asymL">
+                    <h4 class="xs__title">{sampleRecipe.title}</h4>
+                    <p class="xs__meta">{sampleRecipe.minutes} min · Serves {sampleRecipe.serves}</p>
+                    <p class="xs__asymLede">{sampleRecipe.lede}</p>
+                    <div class="xs__asymPhoto" style={`background-image:url(${sampleRecipe.photo})`} aria-hidden="true"></div>
+                    <p class="xs__folio">— 46 —</p>
+                  </div>
+                  <div class="xs__gutter" aria-hidden="true"></div>
+                  <div class="xs__page xs__page--R xs__page--asymR">
+                    <div class="xs__asymTopPhoto" style={`background-image:url(${U.bread})`} aria-hidden="true"></div>
+                    <div class="xs__asymMethod">
+                      <span class="xs__label">Method</span>
+                      <ol class="xs__ol">
+                        {sampleRecipe.method.slice(0, 5).map((step, i) => {
+                          const roman = ["i", "ii", "iii", "iv", "v"][i];
+                          return (<li><span class="xs__roman">{roman}.</span><span>{step.text}</span></li>);
+                        })}
+                      </ol>
+                    </div>
+                    <div class="xs__asymIng">
+                      <span class="xs__label">Ingredients</span>
+                      <ul class="xs__ul">
+                        {sampleRecipe.ingredients.slice(0, 6).map((ing) => <li>{ing}</li>)}
+                      </ul>
+                    </div>
+                    <p class="xs__folio">— 47 —</p>
+                  </div>
+                </div>
+              </div>
+              <figcaption class="specimen__cap">
+                <p class="specimen__label"><code>spread-asym-dense</code><span class="specimen__bucket">640 × 400 · custom</span></p>
+                <p class="specimen__note">Photo bleeds the bottom of the left page under title + lede; right page packs a top photo, method column, ingredients column.</p>
+              </figcaption>
+            </figure>
+          </article>
+
+          {/* 6 ─ spread-inset-facing (was spread-text-inset — my misread of Sunday Suppers) */}
+          <article class="exp-row exp-row--spread">
+            <figure class="exp-row__insp exp-row__insp--empty">
+              <div class="exp-row__placeholder" aria-hidden="true">
+                <p>No direct ref</p>
+                <p class="exp-row__placeholder-sub">My original take on Sunday Suppers — title + ingredients left, photo-then-method right. The actual ref is far airier; see <code>spread-airy</code> above.</p>
+              </div>
+            </figure>
+            <figure class="specimen exp-row__work">
+              <div class="specimen__stage">
+                <div class="xs">
+                  <div class="xs__page xs__page--L xs__page--suppL">
+                    <h4 class="xs__tLitle">{sampleRecipe.title}</h4>
+                    <p class="xs__meta">{sampleRecipe.minutes} min · Serves {sampleRecipe.serves}</p>
+                    <div class="xs__suppIng">
+                      <span class="xs__label">Ingredients</span>
+                      <ul class="xs__ul">
+                        {sampleRecipe.ingredients.slice(0, 6).map((ing) => <li>{ing}</li>)}
+                      </ul>
+                    </div>
+                    <p class="xs__folio">— 52 —</p>
+                  </div>
+                  <div class="xs__gutter" aria-hidden="true"></div>
+                  <div class="xs__page xs__page--R xs__page--suppR">
+                    <div class="xs__suppInset" style={`background-image:url(${U.pasta})`} aria-hidden="true"></div>
+                    <div class="xs__suppMethod">
+                      <span class="xs__label">Method</span>
+                      <ol class="xs__ol">
+                        {sampleRecipe.method.slice(0, 4).map((step, i) => {
+                          const roman = ["i", "ii", "iii", "iv"][i];
+                          return (<li><span class="xs__roman">{roman}.</span><span>{step.text}</span></li>);
+                        })}
+                      </ol>
+                    </div>
+                    <p class="xs__folio">— 53 —</p>
+                  </div>
+                </div>
+              </div>
+              <figcaption class="specimen__cap">
+                <p class="specimen__label"><code>spread-inset-facing</code><span class="specimen__bucket">640 × 400 · custom</span></p>
+                <p class="specimen__note">Title + ingredients on the left; small inset photo + method on the right. Fuller than the Sunday Suppers ref.</p>
+              </figcaption>
+            </figure>
+          </article>
+        </div>
       </div>
     </section>
 
@@ -299,5 +998,1351 @@ const coverSubtitle = "A year at the table.";
     font-family: var(--f-mono);
     font-style: normal;
     color: var(--c-ochre);
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     EXPLORATIONS — concept sketches. Scoped under `.xc` (cover),
+     `.xp` (page), `.xs` (spread). Inline-only; nothing here is
+     promoted to BookCover / BookPage until a concept earns it.
+     ══════════════════════════════════════════════════════════════ */
+
+  .spec--exp { gap: var(--space-3xl); }
+
+  .exp-group { display: grid; gap: var(--space-2xl); }
+  .exp-group__head { display: grid; gap: var(--space-xs); max-width: 52rem; }
+  .exp-group__title {
+    font-family: var(--f-display);
+    font-weight: 400;
+    font-size: 1.25rem;
+    letter-spacing: -0.008em;
+    color: var(--c-ink);
+    margin: 0;
+  }
+  .exp-group__count {
+    font-style: italic;
+    color: var(--c-ash);
+    font-size: 0.9em;
+  }
+  .exp-group__note {
+    font-family: var(--f-display);
+    font-style: italic;
+    color: var(--c-ash);
+    font-size: var(--fs-meta);
+    margin: 0;
+    max-width: 52ch;
+  }
+
+  /* ─── Row layout — one concept per row, inspiration ↔ rendered sketch. */
+  .exp-rows {
+    display: grid;
+    gap: var(--space-4xl);
+  }
+  .exp-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--space-2xl);
+    align-items: start;
+    padding-block: var(--space-lg);
+    border-top: var(--b-divider);
+  }
+  .exp-row:first-child { border-top: 0; padding-top: 0; }
+  .exp-row__insp {
+    margin: 0;
+    display: grid;
+    gap: var(--space-sm);
+    position: sticky;
+    top: var(--space-xl);
+  }
+  .exp-row__insp img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 30rem;
+    object-fit: contain;
+    border-radius: var(--r-page);
+    background: var(--c-chrome);
+    box-shadow: var(--shadow-paper);
+  }
+  .exp-row__insp figcaption {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: var(--fs-meta);
+    color: var(--c-ash);
+    text-align: left;
+    max-width: 36ch;
+  }
+  .exp-row__work {
+    margin: 0;
+  }
+  /* Let the stage breathe on its own; no stretch */
+  .exp-row__work .specimen__stage {
+    justify-content: flex-start;
+    padding: 0;
+  }
+  /* Wider minimum when the specimen is a 640-wide spread */
+  .exp-row--spread .specimen__stage { overflow-x: auto; }
+  @media (max-width: 72rem) {
+    .exp-row {
+      grid-template-columns: 1fr;
+      gap: var(--space-lg);
+    }
+    .exp-row__insp { position: static; }
+  }
+
+  /* ──────────────────────────────────────────────────────────────
+     COVERS — all 320 × 400. `.xc` is the concept-sketch equivalent
+     of `.cov`; kept separate so real BookCover internals don't mix
+     with exploration styles.
+     ────────────────────────────────────────────────────────────── */
+  .xc {
+    position: relative;
+    width: 320px;
+    aspect-ratio: 4 / 5;
+    border-radius: var(--r-page);
+    overflow: hidden;
+    box-shadow: var(--shadow-lift);
+    color: var(--c-ink-inverse);
+    display: grid;
+    justify-items: center;
+  }
+  /* Shared cloth weave — matches .cov--plate's double-diagonal pattern */
+  .xc--cloth {
+    background-image:
+      repeating-linear-gradient(45deg,  transparent 0, transparent 3px, rgba(244,239,230,0.012) 3px, rgba(244,239,230,0.012) 4px),
+      repeating-linear-gradient(-45deg, transparent 0, transparent 3px, rgba(0,0,0,0.03) 3px, rgba(0,0,0,0.03) 4px);
+  }
+
+  .xc__eyebrow {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 0.36em;
+    text-transform: uppercase;
+    color: var(--c-foil-light);
+  }
+  .xc__eyebrow-rule {
+    display: block;
+    width: 24px;
+    height: 1px;
+    background: var(--c-foil);
+    opacity: 0.65;
+  }
+  .xc__title {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 30px;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    color: var(--c-foil);
+    margin: 0;
+    text-align: center;
+    text-wrap: balance;
+  }
+  .xc__subtitle, .xc__sub {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 13px;
+    color: var(--c-linen);
+    margin: 0;
+    text-align: center;
+    text-wrap: balance;
+  }
+  .xc__author {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--c-foil);
+    align-self: end;
+  }
+  .xc__wordmark {
+    font-family: var(--f-wordmark);
+    font-weight: 400;
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--c-foil);
+    align-self: end;
+    opacity: 0.9;
+  }
+  .xc__plate {
+    width: 58%;
+    aspect-ratio: 4 / 5;
+    background-color: var(--c-oat);
+    background-size: cover;
+    background-position: center;
+    border-radius: var(--r-page);
+    box-shadow: inset 0 0 0 0.5px rgba(0,0,0,0.35), 0 3px 8px rgba(0,0,0,0.28);
+  }
+  .xc__plate--sm { width: 44%; }
+  .xc__plate--40 { width: 40%; }
+  .xc__plate--55 { width: 56%; }
+
+  /* Ink-dark text for cream-ground covers (minimal, art-of-home, window) */
+  .xc--ink { color: var(--c-ink) !important; }
+
+  /* ─ 1 · title-top ─────────────────────────────────────── */
+  .xc--title-top {
+    background: var(--c-conifer);
+    background-image:
+      repeating-linear-gradient(45deg,  transparent 0, transparent 3px, rgba(244,239,230,0.012) 3px, rgba(244,239,230,0.012) 4px),
+      repeating-linear-gradient(-45deg, transparent 0, transparent 3px, rgba(0,0,0,0.03) 3px, rgba(0,0,0,0.03) 4px);
+    grid-template-rows: auto auto auto auto 1fr auto;
+    gap: 8px;
+    padding: 28px 24px 26px;
+  }
+  .xc--title-top .xc__title { margin-top: 2px; }
+  .xc--title-top .xc__plate { width: 64%; margin-top: 8px; }
+
+  /* ─ 2 · italian ───────────────────────────────────────── */
+  .xc--italian {
+    background: #f7f2e8;
+    grid-template-rows: auto auto auto 1fr;
+    gap: 16px;
+    padding: 40px 28px 28px;
+    color: var(--c-ink);
+  }
+  .xc__bigtype {
+    font-family: var(--f-display);
+    font-weight: 400;
+    font-size: 64px;
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+    color: var(--c-ink);
+    margin: 0;
+    text-align: center;
+    text-transform: uppercase;
+  }
+  .xc__tag {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 11px;
+    color: var(--c-ash);
+    margin: 0;
+    text-align: center;
+  }
+  .xc--italian .xc__tag { align-self: end; }
+
+  /* ─ 3 · window ────────────────────────────────────────── */
+  .xc--window {
+    background: #e8d5c4; /* warm dusty tone — no token, sketch-inline */
+    grid-template-rows: auto auto 1fr auto;
+    justify-items: start;
+    padding: 24px 24px 18px;
+    gap: 4px;
+  }
+  .xc--window .xc__title--left {
+    text-align: left;
+    color: var(--c-ink);
+    font-size: 34px;
+    font-style: italic;
+    letter-spacing: -0.015em;
+  }
+  .xc--window .xc__sub--left {
+    text-align: left;
+    color: var(--c-ochre);
+    font-style: italic;
+    font-size: 12px;
+    max-width: 20ch;
+  }
+  .xc__win {
+    width: 100%;
+    height: 62%;
+    margin-top: 10px;
+    background-color: var(--c-oat);
+    background-size: cover;
+    background-position: center;
+    border-radius: var(--r-page);
+    box-shadow: inset 0 0 0 0.5px rgba(0,0,0,0.22), 0 3px 8px rgba(0,0,0,0.18);
+    align-self: end;
+  }
+  .xc--window .xc__author {
+    position: absolute;
+    left: 24px;
+    bottom: 16px;
+    color: var(--c-ochre);
+  }
+
+  /* ─ 4 · display ───────────────────────────────────────── */
+  .xc--display {
+    background: var(--c-conifer);
+    background-image:
+      repeating-linear-gradient(45deg,  transparent 0, transparent 3px, rgba(244,239,230,0.012) 3px, rgba(244,239,230,0.012) 4px),
+      repeating-linear-gradient(-45deg, transparent 0, transparent 3px, rgba(0,0,0,0.03) 3px, rgba(0,0,0,0.03) 4px);
+    grid-template-rows: auto 1fr auto auto;
+    padding: 28px 24px 26px;
+    gap: 8px;
+  }
+  .xc__display {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 76px;
+    line-height: 0.95;
+    letter-spacing: -0.025em;
+    color: var(--c-foil);
+    margin: 0;
+    align-self: center;
+    text-align: center;
+  }
+  .xc__tiny {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--c-linen);
+    margin: 0;
+    text-align: center;
+  }
+
+  /* ─ 5 · minimal ───────────────────────────────────────── */
+  .xc--minimal {
+    background: #ece6da;
+    grid-template-rows: 1fr auto auto auto 1fr auto;
+    padding: 44px 24px 22px;
+    gap: 10px;
+    color: var(--c-ink);
+  }
+  .xc--minimal .xc__plate {
+    box-shadow: inset 0 0 0 0.5px rgba(0,0,0,0.14), 0 2px 6px rgba(0,0,0,0.12);
+  }
+  .xc__tracked {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.6em;
+    text-transform: uppercase;
+    color: var(--c-ochre);
+    margin: 0;
+    text-align: center;
+  }
+  .xc--minimal .xc__sub { color: var(--c-ash); font-size: 11px; }
+  .xc--minimal .xc__wordmark { color: var(--c-ochre); opacity: 0.7; }
+
+  /* ─ 6 · typographic ───────────────────────────────────── */
+  .xc--typo {
+    background: var(--c-conifer);
+    background-image:
+      repeating-linear-gradient(45deg,  transparent 0, transparent 3px, rgba(244,239,230,0.012) 3px, rgba(244,239,230,0.012) 4px),
+      repeating-linear-gradient(-45deg, transparent 0, transparent 3px, rgba(0,0,0,0.03) 3px, rgba(0,0,0,0.03) 4px);
+    grid-template-rows: 1fr auto auto;
+    padding: 48px 24px 24px;
+    gap: 14px;
+  }
+  .xc__stack {
+    font-family: var(--f-display);
+    font-weight: 400;
+    font-size: 80px;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    color: var(--c-foil-light);
+    margin: 0;
+    text-align: center;
+    text-transform: uppercase;
+    align-self: center;
+  }
+  .xc--typo .xc__tag { color: var(--c-linen); font-size: 12px; }
+  .xc--typo .xc__wordmark { font-size: 9px; align-self: end; }
+
+  /* ─ 7 · art-of-home ───────────────────────────────────── */
+  .xc--art {
+    background: #f5efe6;
+    grid-template-rows: auto 1fr auto;
+    padding: 36px 28px 28px;
+    gap: 14px;
+    color: var(--c-ink);
+  }
+  .xc__artTitle {
+    font-family: var(--f-display);
+    font-weight: 400;
+    font-size: 26px;
+    line-height: 1.1;
+    letter-spacing: -0.008em;
+    color: var(--c-ink);
+    margin: 0;
+    text-align: center;
+  }
+  .xc__artTitle em { font-style: italic; color: var(--c-ochre); }
+  .xc--art .xc__plate { align-self: center; }
+  .xc--art .xc__sub { color: var(--c-ash); font-size: 12px; }
+
+  /* ══════════════════════════════════════════════════════════════
+     PAGES — single-page concepts (320 × 400).
+     ══════════════════════════════════════════════════════════════ */
+  .xp {
+    position: relative;
+    width: 320px;
+    aspect-ratio: 4 / 5;
+    background: var(--c-cream);
+    border-radius: var(--r-page);
+    overflow: hidden;
+    box-shadow:
+      inset 0 0 0 0.5px rgba(0, 0, 0, 0.06),
+      0 1px 2px rgba(0, 0, 0, 0.04);
+  }
+
+  /* ─ hero-bleed ────────────────────────────────────────── */
+  .xp--hero { color: var(--c-ink-inverse); }
+  .xp__bleed {
+    position: absolute;
+    inset: 0;
+    background-color: var(--c-oat);
+    background-size: cover;
+    background-position: center;
+  }
+  .xp__scrim {
+    position: absolute;
+    inset: 35% 0 0 0;
+    background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.72) 95%);
+  }
+  .xp__rail {
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%) rotate(-90deg);
+    transform-origin: center;
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 8px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--c-foil);
+  }
+  .xp__hero-title {
+    position: absolute;
+    left: 24px;
+    right: 24px;
+    bottom: 46px;
+    display: grid;
+    gap: 6px;
+  }
+  .xp__ht {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 28px;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    color: var(--c-foil);
+    margin: 0;
+    text-wrap: balance;
+  }
+  .xp__hm {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 11px;
+    color: var(--c-linen);
+    margin: 0;
+  }
+  .xp__continues {
+    position: absolute;
+    right: 18px;
+    bottom: 16px;
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 9px;
+    color: var(--c-linen);
+    opacity: 0.85;
+    margin: 0;
+  }
+
+  /* ─ asymmetric (Pasta spread, compressed) ─────────────── */
+  .xp--asym {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto 1fr auto auto;
+    grid-template-areas:
+      "head  photo"
+      "head  ing"
+      "meth  ing"
+      "meth  photo2"
+      "folio folio";
+    gap: 6px 10px;
+    padding: 14px 14px 8px;
+  }
+  .xp__ahead { grid-area: head; display: grid; gap: 3px; align-content: start; }
+  .xp__atitle {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    color: var(--c-ink);
+    margin: 0;
+    text-wrap: balance;
+  }
+  .xp__ameta {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 9px;
+    color: var(--c-ash);
+    margin: 0;
+  }
+  .xp__aphoto {
+    grid-area: photo;
+    background-color: var(--c-oat);
+    background-size: cover;
+    background-position: center;
+    min-height: 75px;
+    box-shadow: inset 0 0 0 0.5px rgba(0,0,0,0.12);
+  }
+  .xp__amethod { grid-area: meth; display: grid; gap: 3px; align-content: start; }
+  .xp__aing    { grid-area: ing;  display: grid; gap: 3px; align-content: start; }
+  .xp__aphoto2 {
+    grid-area: photo2;
+    background-color: var(--c-oat);
+    background-size: cover;
+    background-position: center;
+    min-height: 40px;
+    box-shadow: inset 0 0 0 0.5px rgba(0,0,0,0.12);
+  }
+  .xp__alabel {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 7px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--c-ochre);
+  }
+  .xp__aol, .xp__aul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-family: var(--f-body);
+    font-size: 7.5px;
+    line-height: 1.35;
+    color: var(--c-ink);
+  }
+  .xp__aol li { display: flex; gap: 3px; }
+  .xp__aroman {
+    font-family: var(--f-display);
+    font-style: italic;
+    color: var(--c-ochre);
+    flex-shrink: 0;
+    min-width: 10px;
+  }
+  .xp__afolio {
+    grid-area: folio;
+    margin: 0;
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 8px;
+    color: var(--c-ochre);
+    text-align: center;
+  }
+
+  /* ─ inset (Sunday Suppers) ────────────────────────────── */
+  .xp--inset {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    padding: 16px 16px 10px;
+    gap: 10px;
+  }
+  .xp__ihead { display: grid; gap: 3px; }
+  .xp__ititle {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.1;
+    color: var(--c-ink);
+    margin: 0;
+  }
+  .xp__imeta {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 9.5px;
+    color: var(--c-ash);
+    margin: 0;
+  }
+  .xp__ibody {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    gap: 12px;
+    overflow: hidden;
+  }
+  .xp__ileft, .xp__iright {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .xp__ilabel {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 7px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--c-ochre);
+  }
+  .xp__iul, .xp__iol {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-family: var(--f-body);
+    font-size: 8px;
+    line-height: 1.4;
+    color: var(--c-ink);
+  }
+  .xp__iol li { display: flex; gap: 3px; }
+  .xp__iroman {
+    font-family: var(--f-display);
+    font-style: italic;
+    color: var(--c-ochre);
+    flex-shrink: 0;
+    min-width: 10px;
+  }
+  .xp__iinset {
+    width: 100%;
+    height: 70px;
+    background-color: var(--c-oat);
+    background-size: cover;
+    background-position: center;
+    margin-bottom: 2px;
+    box-shadow: inset 0 0 0 0.5px rgba(0,0,0,0.12);
+  }
+  .xp__ifolio {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 8px;
+    color: var(--c-ochre);
+    text-align: center;
+    margin: 0;
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     SPREADS — two facing pages, 640 × 400. Gutter shadow between.
+     ══════════════════════════════════════════════════════════════ */
+  .xs {
+    position: relative;
+    width: 640px;
+    height: 400px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: var(--c-cream);
+    border-radius: var(--r-page);
+    overflow: hidden;
+    box-shadow: var(--shadow-lift);
+  }
+  .xs__page {
+    position: relative;
+    padding: 18px 20px 12px;
+    overflow: hidden;
+  }
+  .xs__page--L { padding-right: 26px; }
+  .xs__page--R { padding-left: 26px; }
+  .xs__gutter {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 16px;
+    transform: translateX(-50%);
+    pointer-events: none;
+    background: linear-gradient(to right,
+      transparent 0%,
+      rgba(0,0,0,0.08) 48%,
+      rgba(0,0,0,0.18) 50%,
+      rgba(0,0,0,0.08) 52%,
+      transparent 100%
+    );
+  }
+  .xs__bleed {
+    padding: 0 !important;
+    background-color: var(--c-oat);
+    background-size: cover;
+    background-position: center;
+  }
+  .xs__bleed--dark::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(135deg, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.65) 100%),
+      rgba(0,0,0,0.15);
+  }
+  .xs__rail {
+    position: absolute;
+    top: 50%;
+    left: 8px;
+    transform: translateY(-50%) rotate(-90deg);
+    transform-origin: center;
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 7px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--c-foil);
+    z-index: 2;
+  }
+
+  .xs__title {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 22px;
+    line-height: 1.1;
+    color: var(--c-ink);
+    margin: 0 0 2px;
+    text-wrap: balance;
+  }
+  .xs__meta {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 10px;
+    color: var(--c-ash);
+    margin: 0 0 12px;
+  }
+  .xs__rbody {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 14px;
+  }
+  .xs__label {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 7px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--c-ochre);
+    display: block;
+    margin-bottom: 4px;
+  }
+  .xs__ul, .xs__ol {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-family: var(--f-body);
+    font-size: 8.5px;
+    line-height: 1.45;
+    color: var(--c-ink);
+  }
+  .xs__ol li { display: flex; gap: 4px; }
+  .xs__roman {
+    font-family: var(--f-display);
+    font-style: italic;
+    color: var(--c-ochre);
+    flex-shrink: 0;
+    min-width: 12px;
+  }
+  .xs__folio {
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 8px;
+    color: var(--c-ochre);
+    margin: 0;
+  }
+  .xs__page--L .xs__folio { right: 26px; left: 20px; }
+  .xs__page--R .xs__folio { left: 26px; right: 20px; }
+
+  /* ─ text-only ─────────────────────────────────────────── */
+  .xs__page--text { padding: 26px 24px 20px; }
+  .xs__tLitle {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 28px;
+    line-height: 1.05;
+    color: var(--c-ink);
+    margin: 0 0 8px;
+    text-wrap: balance;
+  }
+  .xs__tLede {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--c-ash);
+    margin: 0 0 16px;
+    max-width: 30ch;
+  }
+  .xs__ul--wide, .xs__ol--wide { font-size: 9.5px; gap: 4px; }
+
+  /* ─ chapter-opener ────────────────────────────────────── */
+  .xs__chap-wrap {
+    position: absolute;
+    left: 30px;
+    right: 30px;
+    bottom: 34px;
+    z-index: 2;
+    display: grid;
+    gap: 4px;
+  }
+  .xs__chap-eyebrow {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 9px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--c-foil-light);
+    margin: 0;
+  }
+  .xs__chap-title {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 42px;
+    line-height: 1;
+    letter-spacing: -0.015em;
+    color: var(--c-foil);
+    margin: 0;
+  }
+  .xs__page--epigraph {
+    display: grid;
+    place-items: center;
+    padding: 40px;
+  }
+  .xs__epi {
+    font-family: var(--f-display);
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--c-ink);
+    margin: 0 0 14px;
+    text-align: center;
+    max-width: 26ch;
+    text-wrap: balance;
+  }
+  .xs__epi-attr {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 8px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--c-ochre);
+    margin: 0;
+    text-align: center;
+  }
+
+  /* ─ quote ─────────────────────────────────────────────── */
+  .xs__page--quote {
+    display: grid;
+    place-items: center;
+    padding: 48px 36px;
+  }
+  .xs__pull {
+    font-family: var(--f-display);
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--c-ink);
+    margin: 0 0 16px;
+    text-align: center;
+    max-width: 24ch;
+    text-wrap: balance;
+  }
+  .xs__pull-attr {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 8px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--c-ochre);
+    margin: 0;
+    text-align: center;
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     v2 fixes — overrides after first review. Kept at end of sheet
+     so the diff from v1 is obvious; when concepts stabilize these
+     get folded back into the primary rules.
+     ══════════════════════════════════════════════════════════════ */
+
+  /* ─ Fix 1 · display: add photo plate, Joie voice ─── */
+  .xc--display {
+    grid-template-rows: auto auto auto auto;
+    gap: 12px;
+    padding: 30px 28px 24px;
+    justify-items: center;
+  }
+  .xc--display .xc__display {
+    font-size: 58px;
+    line-height: 0.95;
+    margin: 0;
+    align-self: start;
+  }
+  .xc__plate--joie {
+    width: 58%;
+    aspect-ratio: 3 / 4;
+    background-color: var(--c-oat);
+    background-size: cover;
+    background-position: center;
+    border-radius: var(--r-page);
+    box-shadow: inset 0 0 0 0.5px rgba(0,0,0,0.35), 0 3px 8px rgba(0,0,0,0.28);
+    align-self: center;
+  }
+  .xc__displaySub {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 9px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--c-linen);
+    margin: 0;
+    text-align: center;
+  }
+  .xc__displayAuthor {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 12px;
+    color: var(--c-foil);
+    margin: 0;
+    text-align: center;
+  }
+
+  /* ─ Fix 3 · chapter-opener: center the title on the moody page ─── */
+  .xs__chap-wrap {
+    top: 50%;
+    bottom: auto;
+    transform: translateY(-50%);
+    left: 38%;     /* push into the right half like the Magnolia-3 ref */
+    right: 24px;
+  }
+  .xs__chap-title {
+    font-size: 38px;
+    line-height: 1.02;
+  }
+
+  /* ─ Fix 4 · page-asymmetric: headline-size title ─── */
+  .xp__atitle {
+    font-size: 22px;
+    line-height: 1.05;
+    letter-spacing: -0.012em;
+  }
+  .xp__ameta { font-size: 10px; }
+
+  /* ─ Fix 5 · page-inset: shrink + center the inset photo ─── */
+  .xp__iinset {
+    width: 72%;
+    height: 48px;
+    margin: 6px auto 8px;
+    border-radius: 1px;
+  }
+
+  /* ─ Fix 6 · title-top: italic-serif author foot ─── */
+  .xc__author--serif {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 13px;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--c-foil);
+  }
+
+  /* ─ Fix 7 · minimal: small tracked-caps subtitle variant ─── */
+  .xc__tracked--small {
+    font-size: 8.5px;
+    letter-spacing: 0.42em;
+    color: var(--c-ash);
+    margin-top: -2px;
+  }
+
+  /* ─ Fix 8 · typographic: dark type on medium sage (Surf Tribe) ─── */
+  .xc--typo {
+    background: #7a9688;
+  }
+  .xc--typo .xc__stack  { color: var(--c-ink); }
+  .xc--typo .xc__tag    {
+    color: var(--c-ink);
+    opacity: 0.8;
+    font-style: normal;
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 0.36em;
+    text-transform: uppercase;
+  }
+  .xc--typo .xc__wordmark { color: var(--c-ink); opacity: 0.55; }
+
+  /* ─ spread-asymmetric (Pasta) ─── */
+  .xs__page--asymL {
+    display: grid;
+    grid-template-rows: auto auto auto 1fr auto;
+    gap: 6px;
+    padding: 20px 22px 14px;
+  }
+  .xs__page--asymL .xs__title {
+    font-size: 24px;
+    margin: 0;
+  }
+  .xs__page--asymL .xs__meta { margin: 0; }
+  .xs__asymLede {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 10.5px;
+    line-height: 1.55;
+    color: var(--c-ash);
+    margin: 6px 0 0;
+    max-width: 32ch;
+  }
+  .xs__asymPhoto {
+    background-color: var(--c-oat);
+    background-size: cover;
+    background-position: center;
+    margin: 10px -22px -14px -22px;
+    min-height: 160px;
+    box-shadow: inset 0 0 0 0.5px rgba(0,0,0,0.12);
+  }
+
+  .xs__page--asymR {
+    display: grid;
+    grid-template-columns: 1.35fr 1fr;
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas:
+      "photo photo"
+      "meth  ing"
+      "folio folio";
+    gap: 10px 14px;
+    padding: 16px 22px 14px 22px;
+  }
+  .xs__asymTopPhoto {
+    grid-area: photo;
+    background-color: var(--c-oat);
+    background-size: cover;
+    background-position: center;
+    min-height: 110px;
+    margin: -16px -22px 4px -22px;
+    box-shadow: inset 0 0 0 0.5px rgba(0,0,0,0.12);
+  }
+  .xs__asymMethod { grid-area: meth; display: grid; gap: 4px; align-content: start; }
+  .xs__asymIng    { grid-area: ing;  display: grid; gap: 4px; align-content: start; }
+  .xs__page--asymR .xs__folio { grid-area: folio; position: static; margin-top: 6px; }
+  .xs__page--asymR .xs__label { margin-bottom: 2px; }
+  .xs__page--asymR .xs__ul,
+  .xs__page--asymR .xs__ol { font-size: 8.5px; }
+
+  /* ─ spread-text-inset (Sunday Suppers 1) ─── */
+  .xs__page--suppL {
+    display: grid;
+    grid-template-rows: auto auto auto 1fr auto;
+    gap: 8px;
+    padding: 40px 30px 20px;
+  }
+  .xs__page--suppL .xs__tLitle {
+    font-size: 24px;
+    line-height: 1.1;
+    margin: 0 0 2px;
+  }
+  .xs__page--suppL .xs__meta { margin: 0 0 14px; }
+  .xs__suppIng { display: grid; gap: 4px; align-self: start; }
+  .xs__suppIng .xs__label { margin-bottom: 2px; }
+
+  .xs__page--suppR {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    justify-items: stretch;
+    padding: 40px 30px 20px;
+    gap: 14px;
+  }
+  .xs__suppInset {
+    width: 60%;
+    aspect-ratio: 4 / 3;
+    margin: 0 auto;
+    background-color: var(--c-oat);
+    background-size: cover;
+    background-position: center;
+    box-shadow: inset 0 0 0 0.5px rgba(0,0,0,0.12);
+    align-self: start;
+  }
+  .xs__suppMethod { display: grid; gap: 4px; align-self: start; }
+  .xs__suppMethod .xs__label { margin-bottom: 2px; }
+
+  /* ─ spread-classic (Magnolia Truffle Butter Rolls match) ─── */
+  .xs__page--classic {
+    display: grid;
+    grid-template-rows: auto auto auto 1fr auto;
+    padding: 28px 28px 14px;
+    gap: 6px;
+  }
+  .xs__classicHead { display: grid; gap: 3px; justify-items: center; text-align: center; }
+  .xs__classicTitle {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 1.05;
+    letter-spacing: -0.008em;
+    color: var(--c-ink);
+    margin: 0;
+    text-wrap: balance;
+  }
+  .xs__classicMeta {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 7.5px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--c-ochre);
+    margin: 0;
+  }
+  .xs__classicLede {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 10px;
+    line-height: 1.55;
+    color: var(--c-ash);
+    margin: 6px auto 10px;
+    max-width: 32ch;
+    text-align: center;
+  }
+  .xs__classicBody {
+    display: grid;
+    grid-template-columns: 0.9fr 1.5fr;
+    gap: 16px;
+    align-items: start;
+  }
+  .xs__classicIng { display: grid; gap: 4px; align-content: start; }
+  .xs__classicIng .xs__label { margin-bottom: 2px; }
+  .xs__classicMethod {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .xs__classicMethod p {
+    font-family: var(--f-body);
+    font-size: 8.5px;
+    line-height: 1.55;
+    color: var(--c-ink);
+    margin: 0;
+    text-indent: 1.2em;
+  }
+  .xs__classicMethod p:first-child { text-indent: 0; }
+  .xs__page--classic .xs__folio { position: static; text-align: center; margin-top: 4px; }
+
+  /* ─ spread-story (Pasta match) ─── */
+  .xs__page--storyL {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    padding: 34px 28px 16px;
+    gap: 10px;
+  }
+  .xs__storyTitle {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 26px;
+    line-height: 1.05;
+    letter-spacing: -0.012em;
+    color: var(--c-ink);
+    margin: 0 0 4px;
+    text-wrap: balance;
+  }
+  .xs__storyPara {
+    font-family: var(--f-body);
+    font-size: 8.5px;
+    line-height: 1.6;
+    color: var(--c-ink);
+    margin: 0;
+    max-width: 40ch;
+  }
+  .xs__storyPara + .xs__storyPara {
+    margin-top: 4px;
+    text-indent: 1.2em;
+  }
+  .xs__page--storyL .xs__folio { position: static; text-align: left; margin-top: auto; }
+
+  .xs__page--storyR {
+    display: grid;
+    grid-template-rows: auto auto 1fr auto auto;
+    gap: 8px;
+    padding: 0 22px 14px;
+  }
+  .xs__storyHero {
+    background-color: var(--c-oat);
+    background-size: cover;
+    background-position: center;
+    height: 150px;
+    margin: 0 -22px 6px 0;  /* bleeds right edge only */
+    box-shadow: inset 0 0 0 0.5px rgba(0,0,0,0.12);
+  }
+  .xs__storyMeta {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 8px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--c-ochre);
+    margin: 0 0 2px;
+    text-align: center;
+  }
+  .xs__storyBody {
+    display: grid;
+    grid-template-columns: 0.8fr 1.3fr;
+    gap: 14px;
+    align-items: start;
+  }
+  .xs__storyIng, .xs__storyMeth { display: grid; gap: 4px; align-content: start; }
+  .xs__storyIng .xs__label, .xs__storyMeth .xs__label { margin-bottom: 2px; }
+  .xs__storyPan {
+    background-color: var(--c-oat);
+    background-size: cover;
+    background-position: center;
+    height: 42px;
+    margin: 4px -22px 0 55%;
+    box-shadow: inset 0 0 0 0.5px rgba(0,0,0,0.12);
+  }
+  .xs__page--storyR .xs__folio { position: static; text-align: right; margin-top: 4px; }
+
+  /* ─ spread-airy (Sunday Suppers match) ─── */
+  .xs__page--airyL {
+    display: grid;
+    grid-template-rows: auto auto auto 1fr auto;
+    padding: 40px 40px 20px;
+    gap: 4px;
+  }
+  .xs__airyTitle {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 1.1;
+    color: var(--c-ink);
+    margin: 0;
+  }
+  .xs__airyMeta {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 9.5px;
+    color: var(--c-ash);
+    margin: 0 0 26px;
+  }
+  .xs__airyLabel {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 7px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--c-ochre);
+    display: block;
+    margin-bottom: 4px;
+  }
+  .xs__airyUl {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    font-family: var(--f-body);
+    font-size: 9px;
+    line-height: 1.5;
+    color: var(--c-ink);
+  }
+  .xs__page--airyL .xs__folio { position: static; text-align: left; margin-top: auto; }
+
+  .xs__page--airyR {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    padding: 48px 40px 20px;
+    gap: 22px;
+  }
+  .xs__airyPhoto {
+    width: 54%;
+    aspect-ratio: 4 / 3;
+    margin: 0 auto;
+    background-color: var(--c-oat);
+    background-size: cover;
+    background-position: center;
+    box-shadow: inset 0 0 0 0.5px rgba(0,0,0,0.12);
+  }
+  .xs__airyOl {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-family: var(--f-body);
+    font-size: 9px;
+    line-height: 1.55;
+    color: var(--c-ink);
+    align-self: start;
+  }
+  .xs__airyOl li { display: flex; gap: 6px; }
+  .xs__page--airyR .xs__folio { position: static; text-align: right; margin-top: auto; }
+
+  /* ─ "No direct ref" placeholder slot for Custom concepts ─── */
+  .exp-row__insp--empty {
+    display: grid;
+    gap: 0;
+    position: sticky;
+    top: var(--space-xl);
+  }
+  .exp-row__placeholder {
+    display: grid;
+    align-content: center;
+    justify-items: start;
+    gap: var(--space-xs);
+    padding: var(--space-xl);
+    min-height: 18rem;
+    border: 1px dashed rgba(31, 27, 23, 0.2);
+    border-radius: var(--r-page);
+    background: repeating-linear-gradient(
+      -45deg,
+      transparent 0,
+      transparent 10px,
+      rgba(31, 27, 23, 0.025) 10px,
+      rgba(31, 27, 23, 0.025) 11px
+    );
+  }
+  .exp-row__placeholder > p:first-child {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--c-ochre);
+    margin: 0;
+  }
+  .exp-row__placeholder-sub {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: var(--fs-meta);
+    color: var(--c-ash);
+    line-height: 1.55;
+    margin: 0;
+    max-width: 30ch;
+  }
+  .exp-row__placeholder code {
+    font-family: var(--f-mono);
+    font-style: normal;
+    color: var(--c-ochre);
+    font-size: 0.92em;
+  }
+
+  /* ─ Fix 9 · window: author moves into the grid flow, bottom-right,
+     so it clears the photo instead of overlaying it ─── */
+  .xc--window {
+    grid-template-rows: auto auto 1fr auto;
+    padding-bottom: 14px;
+  }
+  .xc--window .xc__win {
+    height: 58%;
+    margin-top: 8px;
+    align-self: start;   /* top of the 1fr row — leaves clear space below */
+  }
+  .xc--window .xc__author {
+    position: static;
+    justify-self: end;
+    align-self: end;
+    color: var(--c-ochre);
+    margin-top: 8px;
   }
 </style>

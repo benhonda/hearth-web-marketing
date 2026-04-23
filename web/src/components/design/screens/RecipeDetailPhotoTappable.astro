@@ -1,0 +1,15 @@
+---
+/**
+ * Flow III · I · Recipe · detail (one photo, hero tappable).
+ *
+ * The cookbook page at rest — the as-is recipe with one hero photo.
+ * Storyboard halo lands on the hero rect. The next tap is a long-press
+ * that opens the photo context menu (Flow III · II).
+ */
+import RecipeDetail from "./RecipeDetail.astro";
+
+interface Props { showTap?: boolean; }
+const { showTap } = Astro.props;
+---
+
+<RecipeDetail showTap={showTap} tapTarget="hero" />

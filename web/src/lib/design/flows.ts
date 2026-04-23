@@ -22,9 +22,11 @@ export type ScreenRender =
   | "library-one-recipe"
   | "recipe-detail"
   | "recipe-detail-tappable"
+  | "recipe-detail-photo-tappable"
   | "recipe-detail-overlay"
   | "recipe-detail-scaled"
   | "recipe-edit-menu"
+  | "recipe-photo-menu"
   | "recipe-edit"
   | "recipe-saved"
   | "library-populated"
@@ -346,6 +348,83 @@ export const flows: Flow[] = [
         surface: "sage",
         render: "book-on-its-way",
         screenSlug: "book-on-its-way",
+      },
+    ],
+  },
+  {
+    slug: "03-photographs",
+    numeral: "III",
+    title: "Photographs.",
+    lede:
+      "A photograph after dinner. Then another. And a book that knew what to do — adding photos to a recipe, and watching the layout quietly recompose around them.",
+    steps: [
+      {
+        numeral: "I",
+        name: "Recipe · detail, one photo",
+        detailTitle: "The cookbook page at rest.",
+        note:
+          "The recipe as it lives in the library today — one hero photo, title, lede, method. The cook took two more photos at dinner last night. Long-press on the hero is the entry point into the photo arc, mirroring the long-press-step grammar from Flow I.",
+        render: "recipe-detail-photo-tappable",
+        screenSlug: "recipe-detail-photo-tappable",
+        tap: "Long-press the hero",
+      },
+      {
+        numeral: "II",
+        name: "Recipe · long-press menu",
+        detailTitle: "The long-press menu.",
+        note:
+          "iOS-style context menu, sibling of the step-edit menu in Flow I. The page blurs and dims; the hero is plucked above the dim layer with a soft shadow; a two-row menu — Add photo · Replace photo — floats below. Discoverability through gesture, not chrome.",
+        render: "recipe-photo-menu",
+        screenSlug: "recipe-photo-menu",
+        tap: "Add photo",
+      },
+      {
+        numeral: "III",
+        name: "Source sheet",
+        note:
+          "Native iOS action sheet — Take Photo · Choose from Library · Cancel. Hearth doesn't reskin platform pickers; voice lives in what comes next.",
+        tap: "Choose from Library",
+      },
+      {
+        numeral: "IV",
+        name: "Photo picker",
+        note:
+          "Native Photos grid, two photos selected. The OS does the work; Hearth waits.",
+        tap: "Add (2)",
+      },
+      {
+        numeral: "V",
+        name: "Recipe · detail, three photos",
+        note:
+          "The page recomposed around the new photos. Hero on the left, two square tiles on the right, one wider tile beneath — editorial mosaic, not a carousel. Title/lede/method untouched. Folio reads 'page 1 · version iii.' The meaty design moment of the flow.",
+        tap: "Back to library",
+      },
+      {
+        numeral: "VI",
+        name: "Library · book in progress",
+        note:
+          "The library from Flow II, but the foot invitation now reads 'Your book in progress · 24 recipes →' in italic Lora. The recipe just edited sits in the waterfall with its new third photo visible.",
+        tap: "The book-in-progress invitation",
+      },
+      {
+        numeral: "VII",
+        name: "Book preview · promoted",
+        note:
+          "The recipe's page in the book, layout auto-promoted from 1-photo-a to 2-photos-b. The facing page is unchanged. A small italic Ochre aside above the spread — 'Layout adapted to your photos.' — earns one moment, then disappears on the next tap.",
+        tap: "Tap the page to edit",
+      },
+      {
+        numeral: "VIII",
+        name: "Page edit · pick a hero",
+        note:
+          "The page-edit surface from Flow II. The photo scroller carries all three photos; halo lands on the second one to swap which gets the hero slot. Layout row above, photos below, Done at the foot.",
+        tap: "The second photo",
+      },
+      {
+        numeral: "IX",
+        name: "Book preview · hero swapped",
+        note:
+          "Returns to preview with the hero swapped. The cook can keep going — Settings, Review, send to Hearth Press.",
       },
     ],
   },

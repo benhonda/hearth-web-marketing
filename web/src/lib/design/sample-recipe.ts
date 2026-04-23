@@ -42,11 +42,27 @@ export type SampleRecipe = {
   methodDoubled: MethodStep[];
 };
 
+/**
+ * Photo fixtures used by Flow III (Photographs).
+ * `photos` is the as-is state — one hero, the way the recipe lives in
+ * the library today. `photosAfter` is the post-add state once the cook
+ * has uploaded two phone snaps from last night's dinner: a process shot
+ * of the pan and a wider mise-en-place. Slot 0 stays the canonical hero
+ * in both arrays, so screens before V (the mosaic) stay visually stable.
+ */
+export const recipePhotos = ["/summer-corn-pasta.png"];
+export const recipePhotosAfter = [
+  "/summer-corn-pasta.png",
+  "/design/photos/corn-pasta-process.jpg",
+  "/design/photos/corn-pasta-mise.jpg",
+];
+
 export const sampleRecipe: SampleRecipe = {
   title: "Summer Corn & Basil Ragù",
   source: "table.kitchen",
   url: "table.kitchen/summer-corn-ragu",
   photo: "/summer-corn-pasta.png",
+  photos: recipePhotos,
   serves: 4,
   minutes: 50,
   lede:

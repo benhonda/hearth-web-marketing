@@ -133,14 +133,17 @@
 }
 
 /* Button reset layered over the link look so the trigger matches
- * Binder / Brand exactly (same underline, same hover, same ochre-on-active). */
+ * Binder / Brand exactly (same underline, same hover, same ochre-on-active).
+ * Note: do NOT use `font: inherit` here — that shorthand resets font-family
+ * and would override the DM Sans set by `.design-topbar__link`, leaving the
+ * button on the UA default. Letting `.design-topbar__link` carry the font is
+ * what keeps the trigger optically identical to the anchor links. */
 .design-topbar__flows-trigger {
   margin: 0;
   padding-block: 2px;
   padding-inline: 0;
   background: transparent;
   border: 0;
-  font: inherit;
   cursor: pointer;
   display: inline-flex;
   align-items: center;

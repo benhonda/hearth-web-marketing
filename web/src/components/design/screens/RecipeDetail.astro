@@ -44,8 +44,9 @@ interface Props {
   /** Use the doubled (serves = 8) ingredient + mise data. */
   doubled?: boolean;
   /** Which tap halo the storyboard should draw. Defaults to step-iv,
-   *  which preserves the canonical long-press handoff. */
-  tapTarget?: "step-iv" | "serves" | "overlay-8";
+   *  which preserves the canonical long-press handoff. "hero" marks
+   *  the long-press entry into Flow III's photo arc. */
+  tapTarget?: "step-iv" | "serves" | "overlay-8" | "hero";
 }
 const {
   showTap = false,
@@ -78,12 +79,17 @@ const haloStepIv =
   showTap && editingIndex === undefined && tapTarget === "step-iv";
 const haloServes = showTap && tapTarget === "serves";
 const haloOverlay8 = showTap && portionOverlay && tapTarget === "overlay-8";
+const haloHero = showTap && tapTarget === "hero";
 ---
 
 <div class="detail">
   {!hideHeader && <AppHeader variant="title" title="" />}
 
-  <div class="detail__hero" aria-hidden="true" style={`background-image: url(${sampleRecipe.photo})`}>
+  <div
+    class:list={["detail__hero", haloHero && "detail__hero--halo"]}
+    aria-hidden="true"
+    style={`background-image: url(${sampleRecipe.photo})`}
+  >
     <span class="detail__hero-credit">photograph · Mia Aquilina</span>
   </div>
 
@@ -180,6 +186,20 @@ const haloOverlay8 = showTap && portionOverlay && tapTarget === "overlay-8";
     text-transform: uppercase;
     color: rgba(255, 255, 255, 0.82);
     z-index: 1;
+  }
+
+  /* Storyboard halo — long-press handoff into Flow III's photo arc. */
+  .detail__hero--halo::before {
+    content: "";
+    position: absolute;
+    inset: 6px;
+    border: 3px solid var(--annotation);
+    border-radius: 2px;
+    box-shadow: var(--annotation-glow);
+    pointer-events: none;
+    opacity: var(--halo-opacity);
+    transition: opacity 180ms ease;
+    z-index: 50;
   }
 
   /* Body ─────────────────────────────────────────────────── */

@@ -5,7 +5,7 @@ description: Take a full-page screenshot of any URL (localhost dev servers or re
 
 # Screenshot a website
 
-Use the script bundled with this skill. Don't write your own — the bundled one already sets `prefers-reduced-motion: reduce` (so below-the-fold sections aren't stuck at opacity:0), uses a sensible viewport, and waits for networkidle.
+Use the script bundled with this skill. Don't write your own — the bundled one already sets `prefers-reduced-motion: reduce` (so below-the-fold sections aren't stuck at opacity:0), uses a sensible viewport, waits for networkidle, and caps output at 1900px so images stay under Anthropic's 2000px many-image limit.
 
 ## Do this
 
@@ -19,8 +19,9 @@ After it writes the PNG, read the file with the Read tool. You can see images �
 
 Flags:
 
-- `--viewport 390x844` — mobile capture (default 1440x900 @2x)
+- `--viewport 390x844` — mobile capture (default 1440x900 @1x)
 - `--wait 3000` — longer settle after networkidle (default 1500ms, for slow-bootstrapping apps)
+- `--max-dim 1900` — cap output width/height in px (default 1900; 0 disables). Tall full-page captures are downscaled proportionally so both dims stay under the cap. Don't raise past 1999 — the API rejects images ≥ 2000px on the many-image path.
 
 ## If it fails
 

@@ -1,5 +1,23 @@
 # Changelog
 
+## 2026-04-23
+
+- feat: Added Flow III (`/design/flows/03-photographs`) — the nine-step photographs arc, from long-pressing the hero on a one-photo recipe, through the iOS source sheet and photo picker, into the recomposed three-photo detail page, back to the library's "book in progress" invitation, into a book preview where the layout has auto-promoted from `1-photo-a` to `2-photos-b`, and finally through a per-page hero swap. Demonstrates the layout-adapts-to-your-photos moment that was previously only a note in README's TODOs.
+
+- feat: Added `recipe-detail-photo-tappable` and `recipe-photo-menu` screen components + `hero` tap target on `RecipeDetail`, so the hero long-press + lifted-photo context menu (sibling of Flow I's step-edit menu) renders as real interactive-looking mockups rather than placeholders. Added `recipePhotos` / `recipePhotosAfter` fixtures on `sampleRecipe` and seed photos under `web/public/design/photos/` so the "after" state has real imagery.
+
+- feat: Added an `Explorations` sketchbook section to `/design/book` — seven cover concepts and a set of page/spread concepts at natural 320×400, each paired with the inspiration reference photo that seeded it. These are deliberately NOT wired into `BookCover` / `BookPage` yet; they're the triage surface where concepts earn promotion into the real layout system. Photos are Unsplash placeholders and not bundled.
+
+- fix: `.design-topbar__flows-trigger` dropped `font: inherit` — the shorthand silently reset `font-family` to the UA default, leaving the Flows dropdown trigger in a different face than its neighbor anchor links; letting `.design-topbar__link` carry the DM Sans is what restores optical parity.
+
+- docs: Removed `ROADMAP.md` — the rendered `/design/roadmap` timeline page is now the single source of truth for V1 build order and per-item scope caps; the standalone markdown duplicate had to be maintained in parallel. README's Documents section now points at the rendered page.
+
+- docs: Expanded README's TODO register with an "Open questions & follow-ups" block covering web-URL recipe import (primary import path, hero-image pull, source attribution), edit-beyond-line-items (notes, cascading ingredient→instruction effects), photo strategy (user uploads as default, AI-generated imagery as the fallback because stock libraries lack recipe-variation specificity), unit conversion (volume→weight with an ingredient-density database), and legal/copyright research for the print-on-demand book path.
+
+- chore: `screenshot-website` skill now caps output at 1900px in either dimension (new `--max-dim` flag) and drops device scale factor from 2 to 1, so full-page captures stay under Anthropic's 2000px many-image limit. Oversize captures are resized in-browser via a `<canvas>` round-trip, so the skill picks up no extra native dependency.
+
+- chore: `bit.config.json` now tracks `.claude/skills/screenshot-website` as a folder under slug `skills/screenshot-website`, so the screenshot skill syncs with the bit registry alongside other tracked paths.
+
 ## 2026-04-22
 
 - feat: Added `ROADMAP.md` — the V1 scope-creep shield. Twenty numbered items across Phase 0 (concierge validation), Phase 1 (ship the wedge — design system → compare-to-original), and Phase 2 (ship-week polish), each with a weight dot (● / ●● / ●●●) and a one-line scope cap. Phase 3 is explicitly "nothing builds here" — only the validation ladder in `MVP.md` runs post-launch; new features must go through the Shelved table first. The doc is deliberately long so that scrolling it is itself the deterrent against adding anything above the line.

@@ -1,0 +1,200 @@
+---
+/**
+ * Flow III · II · Recipe · long-press menu (on the hero photo).
+ *
+ * Same long-press grammar as the step-edit menu in Flow I — gesture
+ * discoverability over chrome — but anchored on the hero rect rather
+ * than a method step. The page blurs and dims; the hero is plucked
+ * above the dim layer with a soft shadow; a quiet two-row menu
+ * (Add photo · Replace photo) floats beneath. Add photo halo'd as the
+ * next tap target; tapping it lands on III (the iOS source sheet).
+ *
+ * The hero is the PHOTO ITSELF (not a cream card), because what the
+ * user pressed was the photo. Lifting it as a photo card preserves
+ * the "I'm acting on this image" mental model.
+ */
+import RecipeDetail from "./RecipeDetail.astro";
+import { sampleRecipe } from "~/lib/design/sample-recipe";
+
+interface Props { showTap?: boolean; }
+const { showTap = false } = Astro.props;
+---
+
+<div class="menu">
+  <div class="menu__back" aria-hidden="true">
+    <div class="menu__back-shift">
+      <RecipeDetail />
+    </div>
+  </div>
+  <div class="menu__dim" aria-hidden="true" />
+
+  <div class="menu__stack" role="dialog" aria-label="Photo actions">
+    <article
+      class="plucked-hero"
+      aria-hidden="true"
+      style={`background-image: url(${sampleRecipe.photo})`}
+    >
+      <span class="plucked-hero__credit">photograph · Mia Aquilina</span>
+    </article>
+
+    <div class="ctx" role="menu">
+      <button
+        class={showTap ? "ctx__row ctx__row--add ctx__row--tap" : "ctx__row ctx__row--add"}
+        type="button"
+        role="menuitem"
+      >
+        <span class="ctx__label">Add photo</span>
+        <span class="ctx__icon" aria-hidden="true">
+          <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 4v12M4 10h12" />
+          </svg>
+        </span>
+      </button>
+      <button class="ctx__row" type="button" role="menuitem">
+        <span class="ctx__label">Replace photo</span>
+        <span class="ctx__icon" aria-hidden="true">
+          <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 7h13M12 3.5 16 7l-4 3.5M17 13H4M8 16.5 4 13l4-3.5" />
+          </svg>
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .menu {
+    position: relative;
+    width: 100%;
+    min-height: 100%;
+    overflow: hidden;
+  }
+
+  /* Blurred recipe-detail backdrop ───────────────────────── */
+
+  .menu__back {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    filter: blur(8px);
+    clip-path: inset(0);
+  }
+  .menu__back-shift {
+    /* Hero is already near the top of the page in the natural layout,
+       so unlike the step-edit menu we don't translate the back. The
+       plucked hero will rise into view at the same Y as where the
+       user long-pressed. */
+    transform: translateY(0);
+    will-change: transform;
+  }
+
+  .menu__dim {
+    position: absolute;
+    inset: 0;
+    background: rgba(20, 16, 12, 0.42);
+  }
+
+  /* Plucked hero + menu stack ────────────────────────────── */
+
+  .menu__stack {
+    position: absolute;
+    left: 18px;
+    right: 18px;
+    top: 11%;
+    display: grid;
+    gap: 14px;
+  }
+
+  /* The hero photo, lifted as its own card. 5:4 matches the in-page
+     hero so the photo looks identical, just floating. Slight rounding
+     (4px) reads as "card" without going pill — still inside the
+     2px-default rule because this is the iOS-context-menu treatment. */
+  .plucked-hero {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 5 / 4;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.35) inset,
+      0 16px 40px rgba(0, 0, 0, 0.32),
+      0 4px 10px rgba(0, 0, 0, 0.18);
+  }
+  .plucked-hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 58%, rgba(0, 0, 0, 0.4) 100%);
+  }
+  .plucked-hero__credit {
+    position: absolute;
+    bottom: 10px;
+    right: 14px;
+    font-family: var(--f-body);
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.82);
+    z-index: 1;
+  }
+
+  /* Context menu — same iOS vibrancy treatment as RecipeEditMenu. */
+  .ctx {
+    background: rgba(250, 246, 240, 0.96);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.5) inset,
+      0 14px 40px rgba(0, 0, 0, 0.22),
+      0 2px 6px rgba(0, 0, 0, 0.12);
+    display: grid;
+    grid-template-rows: auto auto;
+  }
+
+  .ctx__row {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    background: transparent;
+    border: 0;
+    width: 100%;
+    text-align: left;
+    font-family: var(--f-body);
+    font-size: 15px;
+    letter-spacing: -0.005em;
+    color: var(--c-ink);
+    cursor: pointer;
+  }
+  .ctx__row + .ctx__row {
+    border-top: 1px solid rgba(31, 27, 23, 0.1);
+  }
+
+  .ctx__icon {
+    display: inline-flex;
+    align-items: center;
+    color: currentColor;
+    opacity: 0.85;
+  }
+
+  /* Storyboard halo on the Add photo row — where the tap happens. */
+  .ctx__row--tap::after {
+    content: "";
+    position: absolute;
+    inset: 2px;
+    border: 3px solid var(--annotation);
+    border-radius: 10px;
+    box-shadow: var(--annotation-glow);
+    pointer-events: none;
+    opacity: var(--halo-opacity);
+    transition: opacity 180ms ease;
+    z-index: 50;
+  }
+</style>
