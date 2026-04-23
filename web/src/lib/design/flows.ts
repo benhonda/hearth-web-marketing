@@ -23,13 +23,18 @@ export type ScreenRender =
   | "recipe-detail"
   | "recipe-detail-tappable"
   | "recipe-detail-photo-tappable"
+  | "recipe-detail-carousel"
+  | "recipe-photo-gallery"
   | "recipe-detail-overlay"
   | "recipe-detail-scaled"
   | "recipe-edit-menu"
   | "recipe-photo-menu"
+  | "recipe-source-sheet"
+  | "photo-picker"
   | "recipe-edit"
   | "recipe-saved"
   | "library-populated"
+  | "library-book-in-progress"
   | "book-invitation"
   | "book-occasion"
   | "book-recipes"
@@ -37,6 +42,9 @@ export type ScreenRender =
   | "book-title-cover"
   | "book-preview"
   | "book-page-edit"
+  | "book-page-edit-pick-hero"
+  | "book-preview-promoted"
+  | "book-preview-hero-swapped"
   | "book-settings"
   | "book-title"
   | "book-subtitle"
@@ -381,50 +389,86 @@ export const flows: Flow[] = [
       {
         numeral: "III",
         name: "Source sheet",
+        detailTitle: "The OS takes over.",
         note:
           "Native iOS action sheet — Take Photo · Choose from Library · Cancel. Hearth doesn't reskin platform pickers; voice lives in what comes next.",
+        render: "recipe-source-sheet",
+        screenSlug: "recipe-source-sheet",
         tap: "Choose from Library",
       },
       {
         numeral: "IV",
         name: "Photo picker",
+        detailTitle: "Two photos, in order.",
         note:
-          "Native Photos grid, two photos selected. The OS does the work; Hearth waits.",
+          "Native Photos grid, two photos selected — the process shot from the pan, the wider mise. iOS numbers them 1 and 2 in the order they were picked. The OS does the work; Hearth waits.",
+        render: "photo-picker",
+        screenSlug: "photo-picker",
         tap: "Add (2)",
       },
       {
         numeral: "V",
-        name: "Recipe · detail, three photos",
+        name: "Recipe · detail, carousel",
+        detailTitle: "Realtor-grammar.",
         note:
-          "The page recomposed around the new photos. Hero on the left, two square tiles on the right, one wider tile beneath — editorial mosaic, not a carousel. Title/lede/method untouched. Folio reads 'page 1 · version iii.' The meaty design moment of the flow.",
-        tap: "Back to library",
+          "The hero band is the same real estate as the one-photo detail — full-bleed, 5:4 — but now snap-scrollable. A small '1 / 3' pill sits bottom-right on the image; the count tells the cook there's more, the tap opens the full-screen gallery. Title, lede, ingredients, method untouched; the only signal the page changed is the folio at the foot — 'page 1 · version iii.'",
+        render: "recipe-detail-carousel",
+        screenSlug: "recipe-detail-carousel",
+        tap: "Tap the 1 / 3 counter",
       },
       {
         numeral: "VI",
-        name: "Library · book in progress",
+        name: "Photo gallery",
+        detailTitle: "The photos, at full height.",
         note:
-          "The library from Flow II, but the foot invitation now reads 'Your book in progress · 24 recipes →' in italic Lora. The recipe just edited sits in the waterfall with its new third photo visible.",
-        tap: "The book-in-progress invitation",
-      },
-      {
-        numeral: "VII",
-        name: "Book preview · promoted",
-        note:
-          "The recipe's page in the book, layout auto-promoted from 1-photo-a to 2-photos-b. The facing page is unchanged. A small italic Ochre aside above the spread — 'Layout adapted to your photos.' — earns one moment, then disappears on the next tap.",
-        tap: "Tap the page to edit",
-      },
-      {
-        numeral: "VIII",
-        name: "Page edit · pick a hero",
-        note:
-          "The page-edit surface from Flow II. The photo scroller carries all three photos; halo lands on the second one to swap which gets the hero slot. Layout row above, photos below, Done at the foot.",
-        tap: "The second photo",
-      },
-      {
-        numeral: "IX",
-        name: "Book preview · hero swapped",
-        note:
-          "Returns to preview with the hero swapped. The cook can keep going — Settings, Review, send to Hearth Press.",
+          "Airbnb / realtor grammar — the detail page dissolves to a full-screen vertical photo viewer. Photos stack at their natural aspect ratios on cream with a 3px gutter between, reading as a magazine seam. No app chrome beyond a close chevron. Close returns to the recipe detail (V); the cook's photo story ends here. The sub-flow below is what happens later, when the cook navigates back to the library through the app's nav — a separate re-entry into the book.",
+        render: "recipe-photo-gallery",
+        screenSlug: "recipe-photo-gallery",
+        tap: "Close",
+        branch: {
+          label: "In the book · sub-flow",
+          steps: [
+            {
+              numeral: "",
+              name: "Library · book in progress",
+              detailTitle: "Back to the library.",
+              note:
+                "Later — the cook navigates back to the library. Same waterfall, same 27 recipes — the shift is the foot invitation. Where a fresh library reads 'When you're ready to make these into a book —', an in-progress library reads 'Your book in progress', with '24 recipes →' sitting where 'Begin your book' used to. The invitation block is still the tap target.",
+              render: "library-book-in-progress",
+              screenSlug: "library-book-in-progress",
+              tap: "The book-in-progress invitation",
+            },
+            {
+              numeral: "",
+              name: "Book preview · promoted",
+              detailTitle: "Layout adapted to your photos.",
+              note:
+                "The book absorbed the edit. The corn-ragu page auto-promoted from 1-photo-a to 2-photos-b — a single hero became a bookend rhythm (photo · text · photo). Above the spread, an italic-Ochre aside earns one moment — '— Layout adapted to your photos. —' — then disappears on the next tap.",
+              render: "book-preview-promoted",
+              screenSlug: "book-preview-promoted",
+              tap: "Tap the page to edit",
+            },
+            {
+              numeral: "",
+              name: "Page edit · pick a hero",
+              detailTitle: "Picking the hero.",
+              note:
+                "The shared edit surface (BookEdit) pointed at the corn-ragu page. Layout picker shows all four count rows with 2-photos-b active; photos section carries the recipe's three real photos with Apple-grammar numbered circles. The halo lands on the second photo — the cook's process shot — to swap which image sits in the hero well.",
+              render: "book-page-edit-pick-hero",
+              screenSlug: "book-page-edit-pick-hero",
+              tap: "The second photo",
+            },
+            {
+              numeral: "",
+              name: "Book preview · hero swapped",
+              detailTitle: "The new hero, quietly.",
+              note:
+                "The close of the sub-flow. The process shot is now the top photo in the 2-photos-b layout; the original Mia Aquilina hero sits in the bottom well. No aside, no halo — the book simply is. Cook can keep going (Settings, Review, send to Hearth Press) or close the app and come back later.",
+              render: "book-preview-hero-swapped",
+              screenSlug: "book-preview-hero-swapped",
+            },
+          ],
+        },
       },
     ],
   },

@@ -2,7 +2,17 @@
 
 ## 2026-04-23
 
-- feat: Added Flow III (`/design/flows/03-photographs`) — the nine-step photographs arc, from long-pressing the hero on a one-photo recipe, through the iOS source sheet and photo picker, into the recomposed three-photo detail page, back to the library's "book in progress" invitation, into a book preview where the layout has auto-promoted from `1-photo-a` to `2-photos-b`, and finally through a per-page hero swap. Demonstrates the layout-adapts-to-your-photos moment that was previously only a note in README's TODOs.
+- refactor: Flow III restructured from a flat nine-step arc into a six-step main line (Detail · Long-press menu · Source sheet · Photo picker · Carousel detail · Photo gallery) plus a four-step **In the book** sub-flow that branches off Photo gallery (Library · book in progress → Book preview · promoted → Page edit · pick a hero → Book preview · hero swapped). Models the real temporal gap — the cook's in-app photo story ends at the gallery close; the book-side effects are a separate re-entry later via the library nav, not a linear continuation.
+
+- feat: Drew the four previously-placeholder in-app photo screens — `recipe-source-sheet` (native iOS action sheet over an unblurred detail, since iOS only blurs under context menus not action sheets), `photo-picker` (native Photos grid with numbered selection badges on the two picks, iOS 14+ PHPicker selection-order grammar), `recipe-detail-carousel` (snap-scrollable hero band with a `1 / 3` counter pill bottom-right — realtor/Airbnb grammar, not a saturated dot-row), and `recipe-photo-gallery` (full-screen vertical scroll with photos at their natural aspect ratios on cream, 3px gutter, close chevron only).
+
+- refactor: Extracted `BookEdit.astro` as the single source of truth for every "edit a book surface" moment — one chrome (ScreenNav · display · folio · LAYOUT row · PHOTOS row · Done) parameterized by `subject="cover" | "page"`. `BookTitleCover` (Flow II · VI), `BookPageEdit` (Flow II · VII), and the new `BookPageEditPickHero` (Flow III sub-flow) now each wrap `BookEdit` in ~15 lines; ~700 lines of duplicated chrome/picker/photo-row code removed. Matches Ben's framing that "the cover is just a page being edited."
+
+- feat: Added `0-photo-a` page layout on `BookPage` — text-only, no photo well, centered chapter-opener rhythm. Surfaces in the `BookLayout` picker as a new "Pages · no photo" row above the one/two/three+ rows, so recipes the cook hasn't photographed yet have a typographic home in the book instead of falling through to a broken 1-photo layout.
+
+- feat: `AppHeader` gained a `tapBack` prop that halos the back chevron, used on the photo-gallery close step where the flow handoff exits via the back nav rather than a page CTA.
+
+- feat: Added Flow III (`/design/flows/03-photographs`) — the photographs arc, from long-pressing the hero on a one-photo recipe, through the iOS source sheet and photo picker, into the recomposed three-photo detail page, back to the library's "book in progress" invitation, into a book preview where the layout has auto-promoted from `1-photo-a` to `2-photos-b`, and finally through a per-page hero swap. Demonstrates the layout-adapts-to-your-photos moment that was previously only a note in README's TODOs.
 
 - feat: Added `recipe-detail-photo-tappable` and `recipe-photo-menu` screen components + `hero` tap target on `RecipeDetail`, so the hero long-press + lifted-photo context menu (sibling of Flow I's step-edit menu) renders as real interactive-looking mockups rather than placeholders. Added `recipePhotos` / `recipePhotosAfter` fixtures on `sampleRecipe` and seed photos under `web/public/design/photos/` so the "after" state has real imagery.
 

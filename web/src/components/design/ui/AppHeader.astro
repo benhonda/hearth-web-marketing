@@ -20,6 +20,9 @@ interface Props {
   rightAction?: RightAction;
   /** When true, halo the right action button. */
   tapAction?: boolean;
+  /** When true, halo the back chevron — used when the flow handoff
+   *  leaves the current page via the back nav. */
+  tapBack?: boolean;
 }
 
 const {
@@ -27,6 +30,7 @@ const {
   title,
   rightAction = "none",
   tapAction = false,
+  tapBack = false,
 } = Astro.props;
 ---
 
@@ -38,7 +42,11 @@ const {
 
 {variant === "title" && (
   <header class="app-header app-header--title">
-    <button class="app-header__back" type="button" aria-label="Back">
+    <button
+      class={tapBack ? "app-header__back app-header__back--tap" : "app-header__back"}
+      type="button"
+      aria-label="Back"
+    >
       <span aria-hidden="true">‹</span>
     </button>
     <h1 class="app-header__h1">{title}</h1>
@@ -91,6 +99,7 @@ const {
   }
 
   .app-header__back {
+    position: relative;
     justify-self: flex-start;
     display: inline-flex;
     align-items: center;
@@ -102,6 +111,18 @@ const {
     cursor: pointer;
     line-height: 1;
     padding-bottom: 2px;
+  }
+  .app-header__back--tap::after {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    border: 3px solid var(--annotation);
+    border-radius: 999px;
+    box-shadow: var(--annotation-glow);
+    pointer-events: none;
+    opacity: var(--halo-opacity);
+    transition: opacity 180ms ease;
+    z-index: 50;
   }
 
   .app-header__h1 {

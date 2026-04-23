@@ -1,0 +1,671 @@
+---
+/**
+ * Shared edit surface — one chrome, two subjects.
+ *
+ * The cover and a page inside the book aren't different surfaces;
+ * they're the same surface pointed at different objects. Ben's
+ * framing: "the cover is just a page being edited." So the same
+ * grammar holds for both:
+ *
+ *     ScreenNav · Editing
+ *     ──
+ *     [ subject display — a BookCover or a BookPage, large ]
+ *              — folio —
+ *     LAYOUT ──
+ *       (cover) flat row of cover variants
+ *       (page)  four count-grouped rows of page variants
+ *     PHOTOS ──  In this layout · N photos
+ *       Apple-grammar pool with numbered circle badges
+ *     Done (tap target)
+ *
+ * Used by three flow steps:
+ *   · Flow II · VI — `book-title-cover`      (subject="cover")
+ *   · Flow II · VII — `book-page-edit`       (subject="page", defaults)
+ *   · Flow III · IX — `book-page-edit-pick-hero` (subject="page", cornAfter)
+ *
+ * Each step is a ~15-line wrapper around this one component.
+ */
+import ScreenNav from "../ui/ScreenNav.astro";
+import BookPage, { type PageLayout } from "../ui/BookPage.astro";
+import BookCover, { type CoverLayout } from "../ui/BookCover.astro";
+import { sampleRecipe } from "~/lib/design/sample-recipe";
+import type { SampleRecipe } from "~/lib/design/sample-recipe";
+
+export type Subject = "cover" | "page";
+
+/** Photo candidate — url optional, tone-gradient fallback. Same shape
+ *  as library tiles so cover pickers can pass library photos in. */
+export type PhotoCandidate = {
+  photo?: string;
+  tone?: "corn" | "sage" | "ochre";
+};
+
+interface Props {
+  showTap?: boolean;
+  subject?: Subject;
+  folio?: string;
+  tapTarget?: "done" | "photo";
+  photoSwapIndex?: number;
+  // Page-specific
+  recipe?: SampleRecipe;
+  activeLayout?: PageLayout;
+  // Cover-specific
+  activeCover?: CoverLayout;
+  coverTitle?: string;
+  coverSubtitle?: string;
+  // Shared — explicit pool for cover; derived for page.
+  photos?: PhotoCandidate[];
+}
+
+const {
+  showTap = false,
+  subject = "page",
+  tapTarget = "done",
+  photoSwapIndex = 1,
+  recipe = sampleRecipe,
+  activeLayout = "1-photo-a" as PageLayout,
+  activeCover = "plate" as CoverLayout,
+  coverTitle = "For Us.",
+  coverSubtitle = "A year at the table.",
+  photos,
+  folio = subject === "cover" ? "— the cover —" : "— page 4 —",
+} = Astro.props;
+
+type Count = 0 | 1 | 2 | 3;
+
+const countForPage = (layout: PageLayout): Count =>
+  layout.startsWith("0-") ? 0 :
+  layout.startsWith("1-") ? 1 :
+  layout.startsWith("2-") ? 2 : 3;
+
+/* ── Layout vocabulary per subject ───────────────────────────────
+ * The cover surface shows one flat row (plate / bleed); the page
+ * surface shows four count-grouped rows (0/1/2/3+). We render both
+ * through the same layout-options markup; the only branch is which
+ * BookPage vs BookCover paints inside each thumb. */
+const pageLayoutGroups: {
+  label: string;
+  options: PageLayout[];
+}[] = [
+  { label: "No photo",      options: ["0-photo-a"] },
+  { label: "One photo",     options: ["1-photo-a", "1-photo-b"] },
+  { label: "Two photos",    options: ["2-photos-a", "2-photos-b"] },
+  { label: "Three or more", options: ["3-plus-a", "3-plus-b"] },
+];
+
+const coverLayoutGroups: {
+  label: string;
+  options: CoverLayout[];
+}[] = [
+  { label: "Cover", options: ["plate", "bleed"] },
+];
+
+const allPageLayouts: PageLayout[] = pageLayoutGroups.flatMap((g) => g.options);
+const allCoverLayouts: CoverLayout[] = coverLayoutGroups.flatMap((g) => g.options);
+
+/* ── Photo pool + active count per subject ───────────────────────
+ * Page: pool is the recipe's photos; active count follows the
+ *       layout's slot count (0/1/2/3).
+ * Cover: pool is the explicit candidates; active count is always 1
+ *       (a cover has one photo). */
+const activeCount: Count =
+  subject === "page" ? countForPage(activeLayout) : 1;
+
+const pool: PhotoCandidate[] = (() => {
+  if (photos) return photos;
+  if (subject === "cover") {
+    // Defaults: the current cover photo, then a few placeholder tones.
+    // Keeping the pool short so the Apple-grammar row + trailing add
+    // tile fits on-screen without forcing a horizontal scroll.
+    return [
+      { photo: recipe.photo },
+      { tone: "sage" },
+      { tone: "ochre" },
+      { tone: "corn" },
+    ];
+  }
+  // Page default — recipe's photos as URL candidates.
+  return (recipe.photos ?? [recipe.photo]).map((p) => ({ photo: p }));
+})();
+
+/* Stage dimensions stay the same across subjects: scale 0.55 of
+ * 320×400 = 176×220. One surface, one rhythm. */
+---
+
+<div
+  class="pe"
+  data-pe-root
+  data-subject={subject}
+  data-active-count={String(activeCount)}
+>
+  <ScreenNav eyebrow="Editing" />
+
+  <div class="pe__stage">
+    {subject === "page" ? (
+      allPageLayouts.map((layout) => (
+        <div
+          class="pe__page-display"
+          data-layout={layout}
+          hidden={layout !== activeLayout}
+        >
+          <div class="pe__page-scale">
+            <BookPage layout={layout} recipe={recipe} />
+          </div>
+        </div>
+      ))
+    ) : (
+      allCoverLayouts.map((layout) => (
+        <div
+          class="pe__page-display"
+          data-layout={layout}
+          hidden={layout !== activeCover}
+        >
+          <div class="pe__page-scale">
+            <BookCover
+              layout={layout}
+              title={coverTitle}
+              subtitle={coverSubtitle}
+              photo={recipe.photo}
+            />
+          </div>
+        </div>
+      ))
+    )}
+  </div>
+
+  <p class="pe__folio">{folio}</p>
+
+  <section class="pe__section" aria-label="Layout">
+    <span class="pe__section-label">Layout</span>
+    <hr class="pe__section-rule" aria-hidden="true" />
+
+    <div class="pe__layout-rows">
+      {subject === "page" ? pageLayoutGroups.map((group) => (
+        <div class="pe__layout-row">
+          <span class="pe__layout-row-label">{group.label}</span>
+          <div class="pe__layout-options">
+            {group.options.map((id) => {
+              const on = id === activeLayout;
+              return (
+                <button
+                  class:list={["pe__thumb", on && "pe__thumb--on"]}
+                  type="button"
+                  role="radio"
+                  aria-checked={on}
+                  aria-label={`Layout: ${id}`}
+                  data-layout-pick={id}
+                >
+                  <div class="pe__thumb-frame">
+                    <div class="pe__thumb-scale">
+                      <BookPage layout={id} recipe={recipe} />
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )) : coverLayoutGroups.map((group) => (
+        <div class="pe__layout-row">
+          <span class="pe__layout-row-label">{group.label}</span>
+          <div class="pe__layout-options">
+            {group.options.map((id) => {
+              const on = id === activeCover;
+              return (
+                <button
+                  class:list={["pe__thumb", on && "pe__thumb--on"]}
+                  type="button"
+                  role="radio"
+                  aria-checked={on}
+                  aria-label={`Cover: ${id}`}
+                  data-layout-pick={id}
+                >
+                  <div class="pe__thumb-frame">
+                    <div class="pe__thumb-scale">
+                      <BookCover
+                        layout={id}
+                        title={coverTitle}
+                        subtitle={coverSubtitle}
+                        photo={recipe.photo}
+                      />
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="pe__section pe__photos-section" aria-label="Photos">
+    <div class="pe__photos-head">
+      <span class="pe__section-label">Photos</span>
+      <hr class="pe__section-rule" aria-hidden="true" />
+      <span class="pe__photos-meta">
+        In this layout · <span data-count-display>{activeCount}</span>
+        {" "}
+        <span data-count-word>{activeCount === 1 ? "photo" : "photos"}</span>
+      </span>
+    </div>
+
+    <div class="pe__photos">
+      {pool.map((cand, i) => {
+        const selected = i < activeCount;
+        const isHalo = showTap && tapTarget === "photo" && i === photoSwapIndex;
+        const bgStyle = cand.photo ? `background-image: url(${cand.photo})` : "";
+        const tone = cand.tone ?? "corn";
+        return (
+          <div
+            class="pe__photo-cell"
+            data-photo-index={i}
+            data-selected={selected ? "true" : "false"}
+          >
+            <button
+              class:list={[
+                "pe__photo",
+                !cand.photo && `pe__photo--${tone}`,
+                isHalo && "pe__photo--tap",
+              ]}
+              type="button"
+              aria-label={`Photo ${i + 1}`}
+              aria-pressed={selected}
+              style={bgStyle}
+            />
+            <span class="pe__photo-badge" data-slot-badge>{i + 1}</span>
+          </div>
+        );
+      })}
+
+      {/* Add-photo affordance. Trails the pool — same tile footprint,
+          dashed ochre outline, plus-glyph center. Real UX opens the
+          source sheet (Take Photo · Choose from Library), the same
+          handoff used in Flow III's II → III. In the mock it stays
+          quiet; no halo unless a flow targets it. */}
+      <div class="pe__photo-cell pe__photo-cell--add">
+        <button class="pe__photo-add" type="button" aria-label="Add a photo">
+          <svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true">
+            <path d="M10 4.5v11M4.5 10h11" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <div class="pe__foot">
+    <button
+      class:list={["pe__done", showTap && tapTarget === "done" && "pe__done--tap"]}
+      type="button"
+    >
+      Done
+    </button>
+  </div>
+</div>
+
+<script>
+  // Scoped to each .pe root — picker updates subject display, count
+  // meta, and the photos pool selection in lockstep.
+  document.querySelectorAll<HTMLElement>("[data-pe-root]").forEach((root) => {
+    const subject = root.dataset.subject ?? "page";
+    const displays = Array.from(root.querySelectorAll<HTMLElement>("[data-layout]"));
+    const thumbs = Array.from(root.querySelectorAll<HTMLButtonElement>("[data-layout-pick]"));
+    const photosSection = root.querySelector<HTMLElement>(".pe__photos-section");
+    const photoCells = Array.from(root.querySelectorAll<HTMLElement>("[data-photo-index]"));
+    const countDisplay = root.querySelector<HTMLElement>("[data-count-display]");
+    const countWord = root.querySelector<HTMLElement>("[data-count-word]");
+
+    if (thumbs.length === 0) return;
+
+    const countOfPage = (id: string): 0 | 1 | 2 | 3 =>
+      id.startsWith("0-") ? 0 : id.startsWith("1-") ? 1 : id.startsWith("2-") ? 2 : 3;
+
+    const activate = (layout: string) => {
+      thumbs.forEach((t) => {
+        const on = t.dataset.layoutPick === layout;
+        t.classList.toggle("pe__thumb--on", on);
+        t.setAttribute("aria-checked", String(on));
+      });
+      displays.forEach((d) => {
+        d.hidden = d.dataset.layout !== layout;
+      });
+      // Cover always has one photo; page count follows the layout.
+      const count = subject === "cover" ? 1 : countOfPage(layout);
+      root.dataset.activeCount = String(count);
+      if (photosSection) photosSection.hidden = count === 0;
+      photoCells.forEach((cell, i) => {
+        const photo = cell.querySelector<HTMLButtonElement>(".pe__photo");
+        const selected = i < count;
+        cell.dataset.selected = String(selected);
+        photo?.setAttribute("aria-pressed", String(selected));
+      });
+      if (countDisplay) countDisplay.textContent = String(count);
+      if (countWord) countWord.textContent = count === 1 ? "photo" : "photos";
+    };
+
+    thumbs.forEach((t) => {
+      t.addEventListener("click", () => {
+        const id = t.dataset.layoutPick;
+        if (id) activate(id);
+      });
+    });
+
+    const currentThumb = thumbs.find((t) => t.classList.contains("pe__thumb--on"));
+    if (currentThumb?.dataset.layoutPick) activate(currentThumb.dataset.layoutPick);
+  });
+</script>
+
+<style>
+  .pe {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+  }
+
+  /* Stage — the thing-being-edited is the star. scale(0.85) of
+     320×400 = 272×340, big enough that title/photo/text read at
+     a glance. The picker below flows below the fold on purpose;
+     the phone scrolls to reach it. Identical rhythm across
+     cover/page so swapping subjects doesn't shift the eye. */
+  .pe__stage {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 18px 22px 0;
+  }
+  .pe__page-display {
+    position: relative;
+    width: 272px;
+    height: 340px;
+    margin: 0 auto;
+  }
+  .pe__page-display[hidden] { display: none; }
+  .pe__page-scale {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 320px;
+    height: 400px;
+    transform: scale(0.85);
+    transform-origin: top left;
+    pointer-events: none;
+  }
+
+  .pe__folio {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 12.5px;
+    line-height: 1.4;
+    color: var(--c-oat);
+    text-align: center;
+    margin: 12px 0 0;
+    letter-spacing: 0.01em;
+  }
+
+  /* Section — chapter mark + rule, then rows. */
+  .pe__section {
+    display: grid;
+    gap: 8px;
+    padding: 22px 24px 0;
+  }
+  .pe__section-label {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 10px;
+    line-height: 1;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--c-ochre);
+  }
+  .pe__section-rule {
+    border: 0;
+    width: 32px;
+    height: 1px;
+    background: var(--c-ochre);
+    margin: 2px 0 4px;
+    opacity: 0.85;
+  }
+
+  /* Layout rows — label left, thumbs right. Readable thumbs (68px)
+     since the page scrolls; no need to micro-compress. */
+  .pe__layout-rows {
+    display: grid;
+    gap: 10px;
+  }
+  .pe__layout-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 14px;
+  }
+  .pe__layout-row-label {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 14px;
+    color: var(--c-ash);
+    letter-spacing: 0.01em;
+  }
+  .pe__layout-options {
+    display: flex;
+    gap: 12px;
+  }
+
+  .pe__thumb {
+    position: relative;
+    width: 68px;
+    aspect-ratio: 4 / 5;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: var(--r-page);
+    cursor: pointer;
+    transition: box-shadow var(--motion-state) var(--ease-state);
+  }
+  .pe__thumb--on {
+    box-shadow:
+      0 0 0 1.5px var(--c-ochre),
+      0 0 0 3px var(--c-cream);
+  }
+  .pe__thumb-frame {
+    position: absolute;
+    inset: 0;
+    border-radius: var(--r-page);
+    overflow: hidden;
+    box-shadow: var(--shadow-paper);
+  }
+  .pe__thumb-scale {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 320px;
+    height: 400px;
+    transform: scale(0.2125);
+    transform-origin: top left;
+    pointer-events: none;
+  }
+
+  /* Photos section — adapts to active count. Hidden for 0-photo. */
+  .pe__photos-section[hidden] { display: none; }
+  .pe[data-active-count="0"] .pe__photos-section { display: none; }
+
+  .pe__photos-head {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 4px;
+  }
+  .pe__photos-head .pe__section-rule {
+    width: 24px;
+    margin: 0;
+    justify-self: start;
+  }
+  .pe__photos-meta {
+    justify-self: end;
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 11.5px;
+    color: var(--c-ash);
+    letter-spacing: 0.01em;
+  }
+
+  /* Horizontal scroll — iOS Camera Roll grammar. Pool can grow past
+     the visible width; the cook swipes right to reach the trailing
+     add-tile. Scrollbar hidden for chrome-quietness. */
+  .pe__photos {
+    display: flex;
+    gap: 14px;
+    padding: 4px 0;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    /* Negative-margin trick so the row extends to the edge and
+       scrolls under the section's 24px padding. */
+    margin-inline: -24px;
+    padding-inline: 24px;
+    scroll-padding-inline: 24px;
+  }
+  .pe__photos::-webkit-scrollbar { display: none; }
+  .pe__photo-cell {
+    flex: 0 0 auto;
+  }
+  .pe__photo-cell {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .pe__photo {
+    position: relative;
+    width: 56px;
+    aspect-ratio: 4 / 5;
+    padding: 0;
+    border: 0;
+    border-radius: var(--r-page);
+    background-color: var(--c-oat);
+    background-size: cover;
+    background-position: center;
+    cursor: pointer;
+    box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.15);
+  }
+  /* Tone fallbacks — used when a candidate has no photo url. Matches
+     library-tile convention so cover alternates can render as tonal
+     placeholders. */
+  .pe__photo--corn:not([style*="background-image"]) {
+    background: radial-gradient(ellipse at 30% 30%, #f5d990 0%, #d6a34e 45%, #8a5c1f 100%);
+  }
+  .pe__photo--sage:not([style*="background-image"]) {
+    background: radial-gradient(ellipse at 30% 30%, #6a8878 0%, #3f5a4a 55%, #223528 100%);
+  }
+  .pe__photo--ochre:not([style*="background-image"]) {
+    background: radial-gradient(ellipse at 30% 30%, #d4b062 0%, #7a5a26 55%, #3b2910 100%);
+  }
+
+  /* Numbered circle — Apple photo-picker grammar. Ochre fill instead
+     of Apple blue so it sits inside Hearth's palette without shouting
+     platform. */
+  .pe__photo-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    background: var(--c-ochre);
+    color: var(--c-linen);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--f-body);
+    font-weight: 600;
+    font-size: 10.5px;
+    line-height: 1;
+    letter-spacing: 0;
+    box-shadow:
+      0 0 0 1.5px var(--c-cream),
+      0 1px 2px rgba(0, 0, 0, 0.18);
+    pointer-events: none;
+    z-index: 2;
+  }
+  .pe__photo-cell[data-selected="true"] .pe__photo-badge {
+    display: flex;
+  }
+
+  /* Add-photo tile — dashed ochre outline, plus glyph. Same footprint
+     as the photos so the row rhythm stays even. No fill, no badge —
+     quiet affordance, not a selection target. */
+  .pe__photo-add {
+    width: 56px;
+    aspect-ratio: 4 / 5;
+    padding: 0;
+    background: transparent;
+    border: 1.5px dashed var(--c-ochre);
+    border-radius: var(--r-page);
+    color: var(--c-ochre);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    opacity: 0.85;
+    transition: opacity var(--motion-state) var(--ease-state),
+                background-color var(--motion-state) var(--ease-state);
+  }
+  .pe__photo-add:hover {
+    opacity: 1;
+    background-color: rgba(122, 90, 38, 0.06);
+  }
+
+  .pe__photo--tap::after {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    border: 3px solid var(--annotation);
+    border-radius: 4px;
+    box-shadow: var(--annotation-glow);
+    pointer-events: none;
+    opacity: var(--halo-opacity);
+    transition: opacity 180ms ease;
+    z-index: 50;
+  }
+
+  .pe__foot {
+    margin-top: auto;
+    position: sticky;
+    bottom: 0;
+    padding: 14px 24px 34px;
+    background: var(--c-cream);
+    z-index: 5;
+    box-shadow: 0 -8px 16px -8px rgba(31, 27, 23, 0.08);
+  }
+  .pe__done {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 46px;
+    padding: 0;
+    border-radius: 999px;
+    border: 1px solid var(--c-conifer);
+    background: transparent;
+    color: var(--c-conifer);
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 14.5px;
+    line-height: 1;
+    letter-spacing: 0.01em;
+    text-align: center;
+    cursor: pointer;
+  }
+  .pe__done--tap::after {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    border-radius: 999px;
+    border: 3px solid var(--annotation);
+    box-shadow: var(--annotation-glow);
+    pointer-events: none;
+    opacity: var(--halo-opacity);
+    transition: opacity 180ms ease;
+    z-index: 50;
+  }
+</style>

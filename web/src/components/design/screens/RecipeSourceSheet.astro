@@ -1,0 +1,142 @@
+---
+/**
+ * Flow III · III · Source sheet.
+ *
+ * After the user tapped "Add photo" in the long-press menu, the menu
+ * dismisses and iOS surfaces its standard action sheet over the now-
+ * still recipe detail. Two rows — Take Photo · Choose from Library —
+ * over a separated Cancel.
+ *
+ * Hearth voice steps back here: platform chrome in iOS system type.
+ * The cookbook voice returns on screen V, after the OS work is done.
+ *
+ * Backdrop is the plain recipe detail (NOT blurred) — unlike II, which
+ * is the long-press menu moment. iOS only blurs under context menus,
+ * not action sheets, and getting that grammar right matters.
+ */
+import RecipeDetail from "./RecipeDetail.astro";
+
+interface Props { showTap?: boolean; }
+const { showTap = false } = Astro.props;
+---
+
+<div class="sheet-host">
+  <div class="sheet-host__back" aria-hidden="true">
+    <RecipeDetail />
+  </div>
+  <div class="sheet-host__dim" aria-hidden="true" />
+
+  <section class="action" role="dialog" aria-label="Add photo">
+    <div class="action__group">
+      <div class="action__title">Add photo</div>
+      <button class="action__row" type="button">
+        <span class="action__label">Take Photo</span>
+      </button>
+      <button
+        class={showTap ? "action__row action__row--tap" : "action__row"}
+        type="button"
+      >
+        <span class="action__label">Choose from Library</span>
+      </button>
+    </div>
+
+    <button class="action__cancel" type="button">Cancel</button>
+  </section>
+</div>
+
+<style>
+  .sheet-host {
+    position: relative;
+    width: 100%;
+    min-height: 100%;
+    overflow: hidden;
+  }
+
+  .sheet-host__back {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .sheet-host__dim {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.36);
+  }
+
+  /* iOS action sheet — two stacked cards (group + cancel). */
+  .action {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    bottom: 14px;
+    display: grid;
+    gap: 8px;
+  }
+
+  .action__group,
+  .action__cancel {
+    background: rgba(250, 250, 252, 0.92);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset;
+  }
+
+  .action__title {
+    text-align: center;
+    font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-size: 12.5px;
+    color: rgba(60, 60, 67, 0.6);
+    padding: 14px 16px 10px;
+    letter-spacing: -0.005em;
+    border-bottom: 0.5px solid rgba(60, 60, 67, 0.16);
+  }
+
+  .action__row {
+    position: relative;
+    display: block;
+    width: 100%;
+    background: transparent;
+    border: 0;
+    padding: 16px 16px;
+    text-align: center;
+    font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-size: 17px;
+    color: #1f5fc1;
+    cursor: pointer;
+    letter-spacing: -0.01em;
+  }
+  .action__row + .action__row {
+    border-top: 0.5px solid rgba(60, 60, 67, 0.16);
+  }
+
+  .action__cancel {
+    border: 0;
+    display: block;
+    width: 100%;
+    padding: 16px 16px;
+    text-align: center;
+    font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-weight: 600;
+    font-size: 17px;
+    color: #1f5fc1;
+    cursor: pointer;
+    letter-spacing: -0.01em;
+  }
+
+  /* Storyboard halo on "Choose from Library". */
+  .action__row--tap::after {
+    content: "";
+    position: absolute;
+    inset: 2px;
+    border: 3px solid var(--annotation);
+    border-radius: 10px;
+    box-shadow: var(--annotation-glow);
+    pointer-events: none;
+    opacity: var(--halo-opacity);
+    transition: opacity 180ms ease;
+    z-index: 50;
+  }
+</style>

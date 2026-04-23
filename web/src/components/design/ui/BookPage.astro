@@ -20,7 +20,7 @@
  */
 import type { SampleRecipe } from "~/lib/design/sample-recipe";
 
-export type PageLayout = "1-photo-a" | "1-photo-b" | "2-photos-a" | "2-photos-b" | "3-plus-a" | "3-plus-b";
+export type PageLayout = "0-photo-a" | "1-photo-a" | "1-photo-b" | "2-photos-a" | "2-photos-b" | "3-plus-a" | "3-plus-b";
 
 interface Props {
   layout: PageLayout;
@@ -30,6 +30,7 @@ interface Props {
 const { layout, recipe } = Astro.props;
 
 const slotCount =
+  layout.startsWith("0-") ? 0 :
   layout.startsWith("1-") ? 1 :
   layout.startsWith("2-") ? 2 :
   layout === "3-plus-a" ? 4 : 3;
@@ -216,6 +217,20 @@ const method = recipe.method.slice(0, 4);
      Layout-specific grids. Each defines where the photos and text
      block land; the text block structure stays identical.
      ────────────────────────────────────────────────────────────── */
+
+  /* 0-photo-a — text only, no photo well. Chapter-opener rhythm: the
+     text block is centered vertically with top padding matching the
+     paper margin on other pages. Useful for pantry recipes, notes, or
+     fresh saves the cook hasn't photographed yet. */
+  .bp--0-photo-a {
+    grid-template-rows: 1fr;
+    grid-template-areas: "text";
+  }
+  .bp--0-photo-a .bp__text {
+    grid-area: text;
+    padding: 32px 24px 16px;
+    gap: 12px;
+  }
 
   /* 1-photo-a — photo top (45%), text below */
   .bp--1-photo-a {

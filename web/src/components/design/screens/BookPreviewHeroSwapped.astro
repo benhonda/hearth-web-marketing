@@ -1,0 +1,168 @@
+---
+/**
+ * Flow III · X · Book preview · hero swapped.
+ *
+ * The close of the flow. The cook came back from the page-edit with
+ * the process shot promoted into the top hero slot; the original
+ * Mia Aquilina shot now sits in the bottom photo well. Same layout
+ * (2-photos-b), different hero.
+ *
+ * No aside, no halo. The book simply is — the cook can keep going
+ * (Settings, Review, send to Hearth Press) or close the app and come
+ * back later. The flow's last state.
+ */
+import ScreenNav from "../ui/ScreenNav.astro";
+import BookSpread from "../ui/BookSpread.astro";
+import { sampleRecipe, recipePhotosAfter } from "~/lib/design/sample-recipe";
+import type { SampleRecipe } from "~/lib/design/sample-recipe";
+
+interface Props { showTap?: boolean; }
+void Astro.props;
+
+// Flow III's last state: process shot promoted to hero, original hero
+// moved to the second well. Third photo stays in the pool.
+const [hero, process, mise] = recipePhotosAfter;
+const cornSwapped: SampleRecipe = {
+  ...sampleRecipe,
+  photo: process,
+  photos: [process, hero, mise],
+};
+
+const tomato: SampleRecipe = {
+  ...sampleRecipe,
+  title: "Slow-roast tomato pasta",
+  minutes: 90,
+  serves: 4,
+};
+---
+
+<div class="prev">
+  <ScreenNav eyebrow="Preview & Edit" showSettings={true} />
+
+  <div class="prev__stage-band">
+    <div class="prev__stage">
+      <div class="prev__spread-wrap">
+        <div class="prev__spread-scale">
+          <BookSpread
+            left={{ recipe: cornSwapped, layout: "2-photos-b" }}
+            right={{ recipe: tomato, layout: "2-photos-b" }}
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="prev__pager" aria-hidden="true">
+      <span class="prev__pager-btn prev__pager-btn--off">‹</span>
+      <span class="prev__pager-label">spread i</span>
+      <span class="prev__pager-btn prev__pager-btn--off">›</span>
+    </div>
+  </div>
+
+  <p class="prev__hint">Tap either page to edit.</p>
+
+  <div class="prev__foot">
+    <button class="prev__finalize" type="button">Review &amp; finalize</button>
+  </div>
+</div>
+
+<style>
+  .prev {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+  }
+
+  .prev__stage-band {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 32px;
+    padding: 14px 22px;
+    min-height: 0;
+  }
+
+  .prev__stage {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 0;
+  }
+
+  .prev__spread-wrap {
+    position: relative;
+    width: 307px;
+    height: 192px;
+    margin: 0 auto;
+  }
+  .prev__spread-scale {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 640px;
+    height: 400px;
+    transform: scale(0.48);
+    transform-origin: top left;
+    pointer-events: none;
+  }
+
+  .prev__pager {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 28px;
+  }
+  .prev__pager-btn {
+    font-family: var(--f-display);
+    font-size: 34px;
+    line-height: 1;
+    color: var(--c-ochre);
+    padding: 6px 10px;
+  }
+  .prev__pager-btn--off { opacity: 0.35; }
+  .prev__pager-label {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 19px;
+    color: var(--c-ash);
+    letter-spacing: 0.02em;
+    min-width: 9ch;
+    text-align: center;
+  }
+
+  .prev__hint {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 12.5px;
+    color: var(--c-ash);
+    text-align: center;
+    margin: 8px 0 0;
+  }
+
+  .prev__foot {
+    margin-top: auto;
+    position: sticky;
+    bottom: 0;
+    padding: 14px 24px 34px;
+    background: var(--c-cream);
+    z-index: 5;
+  }
+  .prev__finalize {
+    display: block;
+    width: 100%;
+    height: 48px;
+    padding: 0;
+    border-radius: 999px;
+    border: 1px solid var(--c-conifer);
+    background: transparent;
+    color: var(--c-conifer);
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 14.5px;
+    line-height: 1;
+    letter-spacing: 0.01em;
+    text-align: center;
+    cursor: pointer;
+  }
+</style>

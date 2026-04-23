@@ -1,0 +1,209 @@
+---
+/**
+ * Flow III · VIII · Book preview · layout promoted.
+ *
+ * The cook returned to the book from the library. The preview opens on
+ * the corn-ragu spread — but the layout has quietly adapted. What was
+ * a 1-photo-a page (single photo up top) is now a 2-photos-b page
+ * (photo, text, photo — the bookend rhythm). The facing page is
+ * unchanged.
+ *
+ * Above the spread floats a single italic-Ochre line — "— Layout
+ * adapted to your photos. —" — one moment of editorial acknowledgement
+ * before the user edits. The line earns one beat; the next tap removes
+ * it (that's what the static mock implies).
+ *
+ * Sibling of Flow II's BookPreview, but stripped of the pager +
+ * cover-slide + interactivity. This surface shows one state.
+ */
+import ScreenNav from "../ui/ScreenNav.astro";
+import BookSpread from "../ui/BookSpread.astro";
+import { sampleRecipe, recipePhotosAfter } from "~/lib/design/sample-recipe";
+import type { SampleRecipe } from "~/lib/design/sample-recipe";
+
+interface Props { showTap?: boolean; }
+const { showTap = false } = Astro.props;
+
+// Corn ragu with the new photos attached. In 2-photos-b, the first two
+// slots fill the top + bottom photo wells; the third photo sits in the
+// recipe's pool but isn't shown in this layout.
+const cornAfter: SampleRecipe = {
+  ...sampleRecipe,
+  photo: recipePhotosAfter[0],
+  photos: recipePhotosAfter,
+};
+
+const tomato: SampleRecipe = {
+  ...sampleRecipe,
+  title: "Slow-roast tomato pasta",
+  minutes: 90,
+  serves: 4,
+};
+---
+
+<div class="prev">
+  <ScreenNav eyebrow="Preview & Edit" showSettings={true} />
+
+  <div class="prev__stage-band">
+    <p class="prev__aside">— Layout adapted to your photos. —</p>
+
+    <div class="prev__stage">
+      <div class={showTap ? "prev__spread-wrap prev__spread-wrap--tap" : "prev__spread-wrap"}>
+        <div class="prev__spread-scale">
+          <BookSpread
+            left={{ recipe: cornAfter, layout: "2-photos-b" }}
+            right={{ recipe: tomato, layout: "2-photos-b" }}
+          />
+        </div>
+        <div class="prev__page-halo prev__page-halo--left" aria-hidden="true"></div>
+      </div>
+    </div>
+
+    <div class="prev__pager" aria-hidden="true">
+      <span class="prev__pager-btn prev__pager-btn--off">‹</span>
+      <span class="prev__pager-label">spread i</span>
+      <span class="prev__pager-btn prev__pager-btn--off">›</span>
+    </div>
+  </div>
+
+  <p class="prev__hint">Tap either page to edit.</p>
+
+  <div class="prev__foot">
+    <button class="prev__finalize" type="button">Review &amp; finalize</button>
+  </div>
+</div>
+
+<style>
+  .prev {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+  }
+
+  .prev__stage-band {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+    padding: 14px 22px;
+    min-height: 0;
+  }
+
+  /* Editorial aside — italic Ochre, em-dash bracketed, low-contrast.
+     Not a status message; a margin note. Sits above the spread so it
+     doesn't compete for the page's attention. */
+  .prev__aside {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 1.3;
+    color: var(--c-ochre);
+    text-align: center;
+    margin: 0;
+    letter-spacing: 0.01em;
+  }
+
+  .prev__stage {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 0;
+  }
+
+  .prev__spread-wrap {
+    position: relative;
+    width: 307px;
+    height: 192px;
+    margin: 0 auto;
+  }
+  .prev__spread-scale {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 640px;
+    height: 400px;
+    transform: scale(0.48);
+    transform-origin: top left;
+    pointer-events: none;
+  }
+
+  /* Single halo on the left page only — the corn recipe we're about
+     to edit. Spine gutter keeps the halo off the right page. */
+  .prev__page-halo {
+    display: none;
+    position: absolute;
+    top: -10px;
+    bottom: -10px;
+    border: 3px solid var(--annotation);
+    border-radius: 6px;
+    box-shadow: var(--annotation-glow);
+    pointer-events: none;
+    opacity: var(--halo-opacity);
+    transition: opacity 180ms ease;
+    z-index: 50;
+  }
+  .prev__spread-wrap--tap .prev__page-halo { display: block; }
+  .prev__page-halo--left { left: -10px; right: calc(50% + 2px); }
+
+  .prev__pager {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 28px;
+  }
+  .prev__pager-btn {
+    font-family: var(--f-display);
+    font-size: 34px;
+    line-height: 1;
+    color: var(--c-ochre);
+    padding: 6px 10px;
+  }
+  .prev__pager-btn--off { opacity: 0.35; }
+  .prev__pager-label {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 19px;
+    color: var(--c-ash);
+    letter-spacing: 0.02em;
+    min-width: 9ch;
+    text-align: center;
+  }
+
+  .prev__hint {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 12.5px;
+    color: var(--c-ash);
+    text-align: center;
+    margin: 8px 0 0;
+  }
+
+  .prev__foot {
+    margin-top: auto;
+    position: sticky;
+    bottom: 0;
+    padding: 14px 24px 34px;
+    background: var(--c-cream);
+    z-index: 5;
+  }
+  .prev__finalize {
+    display: block;
+    width: 100%;
+    height: 48px;
+    padding: 0;
+    border-radius: 999px;
+    border: 1px solid var(--c-conifer);
+    background: transparent;
+    color: var(--c-conifer);
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 14.5px;
+    line-height: 1;
+    letter-spacing: 0.01em;
+    text-align: center;
+    cursor: pointer;
+  }
+</style>

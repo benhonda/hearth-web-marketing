@@ -1,0 +1,32 @@
+---
+/**
+ * Flow III · IX · Page edit · pick a hero.
+ *
+ * Thin wrapper around `BookEdit` — the shared surface that also backs
+ * Flow II · VI (cover) and Flow II · VII (page edit). This file only
+ * supplies the flow-specific props: the post-upload corn recipe, the
+ * 2-photos-b layout, and the photo-swap halo anchored at index 1.
+ */
+import BookEdit from "./BookEdit.astro";
+import { sampleRecipe, recipePhotosAfter } from "~/lib/design/sample-recipe";
+import type { SampleRecipe } from "~/lib/design/sample-recipe";
+
+interface Props { showTap?: boolean; }
+const { showTap = false } = Astro.props;
+
+const cornAfter: SampleRecipe = {
+  ...sampleRecipe,
+  photo: recipePhotosAfter[0],
+  photos: recipePhotosAfter,
+};
+---
+
+<BookEdit
+  subject="page"
+  showTap={showTap}
+  recipe={cornAfter}
+  activeLayout="2-photos-b"
+  folio="— page 1 · version iii —"
+  tapTarget="photo"
+  photoSwapIndex={1}
+/>

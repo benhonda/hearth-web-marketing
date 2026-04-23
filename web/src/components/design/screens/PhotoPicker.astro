@@ -1,0 +1,218 @@
+---
+/**
+ * Flow III · IV · Photo picker.
+ *
+ * Native iOS Photos grid — full-screen takeover after the action sheet.
+ * Cancel / title / Add (2) at the top; 3-column square grid below.
+ * Two tiles are selected, numbered 1 and 2 in the top-right badge
+ * (iOS 14+ PHPicker grammar — selection order, not checkmarks).
+ *
+ * The selected tiles are the two real photos that will appear on the
+ * mosaic in screen V (the process shot + the mise shot). Other tiles
+ * are muted gradient placeholders so the eye lands on the selection
+ * without reading specific camera-roll content.
+ *
+ * No Hearth typography here — this is the OS doing its job.
+ */
+import { recipePhotosAfter } from "~/lib/design/sample-recipe";
+
+interface Props { showTap?: boolean; }
+const { showTap = false } = Astro.props;
+
+// The two photos the cook adds in the flow, in selection order.
+const processPhoto = recipePhotosAfter[1];
+const misePhoto = recipePhotosAfter[2];
+
+// 15 tiles in a 3×5 grid. Index 4 → process (first pick). Index 8 → mise
+// (second pick). Other tiles render as muted gradient placeholders, which
+// read as "other photos in the roll" without requiring more fixtures.
+const tiles: Array<
+  | { kind: "photo"; src: string; selected: 1 | 2 }
+  | { kind: "placeholder"; hue: number }
+> = [
+  { kind: "placeholder", hue: 28 },
+  { kind: "placeholder", hue: 200 },
+  { kind: "placeholder", hue: 48 },
+  { kind: "placeholder", hue: 12 },
+  { kind: "photo", src: processPhoto, selected: 1 },
+  { kind: "placeholder", hue: 185 },
+  { kind: "placeholder", hue: 36 },
+  { kind: "placeholder", hue: 140 },
+  { kind: "photo", src: misePhoto, selected: 2 },
+  { kind: "placeholder", hue: 20 },
+  { kind: "placeholder", hue: 220 },
+  { kind: "placeholder", hue: 58 },
+  { kind: "placeholder", hue: 8 },
+  { kind: "placeholder", hue: 170 },
+  { kind: "placeholder", hue: 42 },
+];
+---
+
+<div class="picker">
+  <header class="picker__nav">
+    <button class="picker__btn picker__btn--text" type="button">Cancel</button>
+    <div class="picker__title">
+      <span class="picker__title-main">Photos</span>
+      <span class="picker__title-sub">2 Selected</span>
+    </div>
+    <button
+      class={showTap ? "picker__btn picker__btn--done picker__btn--tap" : "picker__btn picker__btn--done"}
+      type="button"
+    >
+      Add (2)
+    </button>
+  </header>
+
+  <div class="picker__grid" role="list">
+    {tiles.map((tile) => (
+      tile.kind === "photo" ? (
+        <div class="tile tile--selected" role="listitem">
+          <div
+            class="tile__img"
+            style={`background-image: url(${tile.src})`}
+          />
+          <span class="tile__dim" aria-hidden="true" />
+          <span class="tile__badge" aria-hidden="true">{tile.selected}</span>
+        </div>
+      ) : (
+        <div class="tile" role="listitem">
+          <div
+            class="tile__placeholder"
+            style={`background: linear-gradient(155deg, hsl(${tile.hue} 34% 78%) 0%, hsl(${tile.hue} 28% 62%) 100%)`}
+          />
+        </div>
+      )
+    ))}
+  </div>
+</div>
+
+<style>
+  .picker {
+    position: relative;
+    width: 100%;
+    min-height: 100%;
+    background: #ffffff;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    padding-top: 62px; /* status bar space */
+  }
+
+  /* Nav bar ─────────────────────────────────────────────── */
+
+  .picker__nav {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    padding: 10px 14px 12px;
+    border-bottom: 0.5px solid rgba(60, 60, 67, 0.14);
+    font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  }
+
+  .picker__btn {
+    background: transparent;
+    border: 0;
+    padding: 4px 2px;
+    font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-size: 16px;
+    color: #1f5fc1;
+    cursor: pointer;
+    letter-spacing: -0.01em;
+  }
+  .picker__btn--text { justify-self: start; }
+  .picker__btn--done {
+    justify-self: end;
+    position: relative;
+    font-weight: 600;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(31, 95, 193, 0.09);
+  }
+
+  .picker__title {
+    display: grid;
+    justify-items: center;
+    gap: 1px;
+  }
+  .picker__title-main {
+    font-size: 16px;
+    font-weight: 600;
+    color: #111;
+    letter-spacing: -0.01em;
+  }
+  .picker__title-sub {
+    font-size: 11px;
+    color: rgba(60, 60, 67, 0.6);
+  }
+
+  /* Halo on Add (2). */
+  .picker__btn--tap::after {
+    content: "";
+    position: absolute;
+    inset: -5px;
+    border: 3px solid var(--annotation);
+    border-radius: 999px;
+    box-shadow: var(--annotation-glow);
+    pointer-events: none;
+    opacity: var(--halo-opacity);
+    transition: opacity 180ms ease;
+    z-index: 50;
+  }
+
+  /* Grid ────────────────────────────────────────────────── */
+
+  .picker__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    padding: 2px 0 0;
+    align-content: start;
+  }
+
+  .tile {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+  }
+
+  .tile__img {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+  }
+
+  .tile__placeholder {
+    position: absolute;
+    inset: 0;
+  }
+
+  /* Selected state: subtle blue dim + numbered badge in top-right,
+     matching iOS 14+ PHPicker. */
+  .tile--selected .tile__img {
+    transform: scale(0.94);
+    border-radius: 2px;
+    transition: transform 140ms ease;
+  }
+  .tile__dim {
+    position: absolute;
+    inset: 0;
+    background: rgba(31, 95, 193, 0.14);
+    pointer-events: none;
+  }
+  .tile__badge {
+    position: absolute;
+    top: 7px;
+    right: 7px;
+    width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    background: #1f5fc1;
+    color: #fff;
+    display: grid;
+    place-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.9);
+  }
+</style>
