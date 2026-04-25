@@ -2,15 +2,11 @@
 /**
  * Screen X · Recipe · saved.
  *
- * After save. Visually almost identical to Screen VII — a beautiful
- * cookbook page — but:
- *   · method step iv is the edited wording ("10–12 minutes")
- *   · the meta line carries a small italic "edited just now" marker
- *   · a quiet tertiary link at the foot offers "Compare with the original"
- *     (that view ships in a later flow)
- *
- * The point of this screen is that a save feels like nothing loud —
- * the page just IS, and the book-spine test is still intact.
+ * After save. Visually identical to Screen VII — a beautiful cookbook
+ * page — except method step iv now reads the edited wording
+ * ("10–12 minutes"). No banner, no toast, no badge. The point of this
+ * screen is that a save feels like nothing loud — the page just IS,
+ * and the book-spine test is still intact.
  */
 import AppHeader from "../ui/AppHeader.astro";
 import IngredientsList from "../ui/IngredientsList.astro";
@@ -37,8 +33,6 @@ void Astro.props;
       <em>Serves {sampleRecipe.serves}</em>
       <span aria-hidden="true"> · </span>
       <em>{sampleRecipe.minutes} minutes</em>
-      <span aria-hidden="true"> · </span>
-      <em class="saved__edit-mark">edited just now</em>
     </p>
 
     <hr class="saved__rule" />
@@ -48,11 +42,6 @@ void Astro.props;
     <hr class="saved__rule" />
 
     <MethodList items={sampleRecipe.editedMethod} highlightIndex={3} />
-
-    <a class="saved__compare" href="#" role="button">
-      <span>Compare with the original</span>
-      <span class="saved__compare-chev" aria-hidden="true">→</span>
-    </a>
   </div>
 </div>
 
@@ -134,7 +123,6 @@ void Astro.props;
     margin-top: 4px;
   }
   .saved__meta em { font-style: italic; color: var(--c-ink); }
-  .saved__edit-mark { color: var(--c-ochre); }
 
   .saved__rule {
     border: 0;
@@ -142,23 +130,4 @@ void Astro.props;
     background: rgba(31, 27, 23, 0.1);
     margin: 12px 0;
   }
-
-  .saved__compare {
-    display: inline-flex;
-    align-items: baseline;
-    gap: 0.35em;
-    margin-top: 18px;
-    font-family: var(--f-display);
-    font-style: italic;
-    font-size: 14px;
-    color: var(--c-ochre);
-    text-decoration: none;
-    justify-self: flex-start;
-  }
-  .saved__compare-chev {
-    font-style: normal;
-    display: inline-block;
-    transition: transform var(--motion-state) var(--ease-state);
-  }
-  .saved__compare:hover .saved__compare-chev { transform: translateX(3px); }
 </style>

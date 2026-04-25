@@ -40,9 +40,11 @@ start a session on this skill:
    principles, what Hearth is NOT, and the validation ladder. Reach here
    for anything about audience, voice, or copy — not just positioning.
 
-3. **`/workspace/MVP.md`** — V1 scope, shelved features, build order.
-   Read this to know what's in and what's deferred before proposing
-   screens for a flow.
+3. **`/workspace/README.md`** — V1 scope, shelved features (with
+   triggers), build order, open follow-ups, and the "deferred
+   book-layout work" note. Read this to know what's in V1, what's
+   shelved, and what's deferred before proposing screens for a flow.
+   Replaces the old `MVP.md` — there is no `MVP.md` anymore.
 
 Then read `flows.ts` (the binder's data registry) and at least one
 existing screen component as a template.
@@ -121,7 +123,7 @@ The scope and review steps are what keep the work aligned with the brand.
 
 - What does the user want? New flow, additional screens on an existing
   flow, iteration on existing mockups, or a new type of binder surface?
-- Read `tokens.css`, `PRODUCT.md`, `MVP.md` (if not this session).
+- Read `tokens.css`, `PRODUCT.md`, `README.md` (if not this session).
 - Read `flows.ts` to see what's already drawn.
 - Read one comparable existing screen to calibrate voice.
 
@@ -176,21 +178,21 @@ against an unvetted phone.
 **Pause after 2–3 screens for user review.** Don't silently build nine
 screens and hand back a wall.
 
-### 6. Wire each screen in — the 5 mechanical steps
+### 6. Wire each screen in — the 4 mechanical steps
 
 Per screen:
 
 1. Add the render key to the `ScreenRender` union in `flows.ts`.
 2. Add/update the step entry in the flow's `steps` array — fill
    `render`, `screenSlug`, `tap`, optionally `tapExternal`, `surface`.
-3. Import + register the component in `FlowStoryboard.astro`'s
-   `screenComponents` map.
-4. Create `web/src/pages/design/screens/[slug].astro` — the 1× stage
-   page wrapping `ScreenStage > PhoneFrame > [Screen]`.
-5. **Alias the import in the 1× page** — e.g.
-   `import LibraryEmptyScreen from "~/components/design/screens/LibraryEmpty.astro"`.
-   Astro throws "import conflicts with local declaration" if you use the
-   bare component name.
+3. Import + register the component in
+   `web/src/components/design/screens/registry.ts` — the shared map
+   consumed by both `FlowStoryboard` (canvas) and `ScreenDetail` (1×).
+4. Create `web/src/pages/design/screens/[slug].astro` — a one-liner:
+   `<ScreenDetail slug="[slug]" />`. ScreenDetail pulls eyebrow, title,
+   note, surface, tone from `flows.ts` via `getScreen(slug)` and wraps
+   the component in `ScreenStage > PhoneFrame`, so the stage page
+   itself carries zero design logic.
 
 ### 7. Design voice — apply every time
 
@@ -250,30 +252,26 @@ The topbar toggle flips `html.no-tap-halos`, retargeting
 
 ---
 
-## The 5 mechanical traps
+## The 4 mechanical traps
 
-1. **Import-name collision.** Astro treats the page file's name as a
-   local identifier. A page at `pages/design/screens/library-empty.astro`
-   can't `import LibraryEmpty from ...` because the route name conflicts
-   with the import. Always alias:
-   `import LibraryEmptyScreen from "~/components/design/screens/LibraryEmpty.astro"`.
-
-2. **Missing `showTap` prop.** FlowStoryboard passes `showTap={true}`
+1. **Missing `showTap` prop.** FlowStoryboard passes `showTap={true}`
    to every registered component. TypeScript errors if the component
    doesn't declare the prop. Even screens with no halo target MUST
    declare `interface Props { showTap?: boolean }` (use `void Astro.props`
    to acknowledge intent).
 
-3. **Forgotten `ScreenRender` union update.** Adding a new screen
+2. **Forgotten `ScreenRender` union update.** Adding a new screen
    without extending the `ScreenRender` union in `flows.ts` makes the
    registry type-unsafe. The registry is typed `Record<ScreenRender, any>`.
+   Keep the union and the registry map in lockstep — if you add a key
+   to one, add it to both, or typecheck fails.
 
-4. **Annotation color drift.** Any halo that doesn't use
+3. **Annotation color drift.** Any halo that doesn't use
    `var(--annotation)` breaks the visual contract. Any halo missing
    `opacity: var(--halo-opacity)` doesn't respond to the toggle. Any
    halo missing `z-index: 50` can get covered by later siblings.
 
-5. **Scoped CSS specificity.** Astro `<style>` blocks are scoped via
+4. **Scoped CSS specificity.** Astro `<style>` blocks are scoped via
    `data-astro-cid-xxx` attributes — slightly higher specificity than
    unscoped global rules. Don't try to override scoped rules from a
    parent stylesheet without matching specificity. Expose a CSS
@@ -325,7 +323,7 @@ silently and hand back a PR.
 ## Quick reference — add one new screen
 
 ```
-1. Read tokens.css, PRODUCT.md, MVP.md (if not read this session).
+1. Read tokens.css, PRODUCT.md, README.md (if not read this session).
 2. Read flows.ts + one existing screen as template.
 3. Propose: numeral, name, surface, note, tap, tapExternal, render-key.
    Wait for approval.
@@ -337,12 +335,13 @@ silently and hand back a PR.
 5. Update web/src/lib/design/flows.ts
    · Add render-key to ScreenRender union
    · Add step entry in the flow (numeral, name, note, render, screenSlug, tap)
-6. Update web/src/components/design/FlowStoryboard.astro
+6. Update web/src/components/design/screens/registry.ts
    · Import the component
-   · Register in screenComponents map
+   · Register in screenComponents map (shared by FlowStoryboard + ScreenDetail)
 7. Create web/src/pages/design/screens/[slug].astro
-   · ALIAS the import (e.g. WelcomeScreenPage, not Welcome)
-   · Wrap in DesignLayout > ScreenStage > PhoneFrame > [Screen]
+   · One-liner: <ScreenDetail slug="[slug]" />
+   · ScreenDetail pulls eyebrow / title / note / surface / tone from flows.ts
+     and wraps in ScreenStage > PhoneFrame automatically.
 8. bun run typecheck → clean
 9. Review visually at 0.58× on /design and at 1× on /design/screens/[slug]
 10. Hand back; pause for user review before next screen.

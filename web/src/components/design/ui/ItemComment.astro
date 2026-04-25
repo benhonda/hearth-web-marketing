@@ -1,0 +1,165 @@
+---
+/**
+ * Line-item comment. A smaller sibling of `RecipeNotes` — same
+ * typographic grammar (Lora italic Ash), sized for the margin
+ * beneath an ingredient line or a method step. Rendered INSIDE
+ * `IngredientsList` / `MethodList` so it's anchored to the item
+ * it annotates; never a standalone component on the page.
+ *
+ * Two voices live in one shape across Hearth's comment surfaces:
+ *   · RecipeNotes → whole-recipe scope, Lora italic 14.5px Ink
+ *   · ItemComment → line-item scope, Lora italic 13px Ash
+ *
+ * The size + color step-down is the visual hierarchy signaling
+ * "this is commentary on the thing above, not the thing itself."
+ * Same editor surface for both — the compose/edit textarea uses
+ * the exact same hairline-underline grammar.
+ */
+
+interface Props {
+  /** The comment's current text. Empty = render nothing. */
+  text?: string;
+  /** Render as editable textarea instead of inline paragraph. */
+  editing?: boolean;
+  /** Halo the populated block (tap-to-edit). */
+  blockTap?: boolean;
+  /** Halo the Save button under the textarea. */
+  saveTap?: boolean;
+}
+
+const {
+  text = "",
+  editing = false,
+  blockTap = false,
+  saveTap = false,
+} = Astro.props;
+
+const hasText = text.trim().length > 0;
+---
+
+{editing ? (
+  <div class="item-comment item-comment--editing">
+    <textarea class="item-comment__textarea" rows={2}>{text}</textarea>
+    <div class="item-comment__actions">
+      <button class="item-comment__cancel" type="button">Cancel</button>
+      <button class={saveTap ? "item-comment__save item-comment__save--tap" : "item-comment__save"} type="button">Save</button>
+    </div>
+  </div>
+) : hasText ? (
+  <p class={blockTap ? "item-comment item-comment--tap" : "item-comment"}>
+    {text}
+  </p>
+) : null}
+
+<style>
+  /* Inline annotation. Indented so it visually anchors under the
+     item's text column, not the numeral/dash gutter. Lora italic
+     Ash at 13px — a step quieter than the recipe body (13.5px Ink)
+     and two quieter than the method text itself (13.5px Ink). */
+  .item-comment {
+    position: relative;
+    margin: 6px 0 0;
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--c-ash);
+    text-wrap: pretty;
+    white-space: pre-wrap;
+  }
+
+  .item-comment--tap::after {
+    content: "";
+    position: absolute;
+    inset: -6px -8px;
+    border: 3px solid var(--annotation);
+    border-radius: 8px;
+    box-shadow: var(--annotation-glow);
+    pointer-events: none;
+    opacity: var(--halo-opacity);
+    transition: opacity 180ms ease;
+    z-index: 50;
+  }
+
+  /* Editor — quieter than MethodList's, matches RecipeNotes's hairline
+     underline voice. */
+  .item-comment--editing {
+    position: relative;
+    margin-top: 6px;
+  }
+
+  .item-comment__textarea {
+    width: 100%;
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--c-ink);
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid rgba(31, 27, 23, 0.18);
+    border-radius: 0;
+    padding: 2px 0 6px;
+    resize: none;
+    box-shadow: none;
+    min-height: 2.4em;
+  }
+  .item-comment__textarea:focus {
+    outline: none;
+    border-bottom-color: var(--c-ochre);
+  }
+  .item-comment__textarea::placeholder {
+    color: var(--c-oat);
+    font-style: italic;
+  }
+
+  .item-comment__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 6px;
+  }
+
+  /* Explicit height (not min-height) — DM Sans 500 has a larger
+     intrinsic block size than 400 in the flex algorithm, so
+     `min-height: 26px` was letting Save grow to 31px while Cancel
+     stayed at 26px. `line-height: 1` keeps the glyph line-box tight
+     (12.5px) so the centered text sits high in the button, matching
+     Cancel exactly. Both get position: relative for cascade symmetry. */
+  .item-comment__cancel,
+  .item-comment__save {
+    appearance: none;
+    -webkit-appearance: none;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    height: 26px;
+    padding: 0 8px;
+    border: 0;
+    border-radius: 5px;
+    background: transparent;
+    font-family: var(--f-body);
+    font-size: 12.5px;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .item-comment__cancel { color: var(--c-ash); font-weight: 400; }
+  .item-comment__save { color: var(--c-ochre); font-weight: 500; }
+
+  .item-comment__save--tap::after {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    border-radius: 999px;
+    border: 3px solid var(--annotation);
+    box-shadow: var(--annotation-glow);
+    pointer-events: none;
+    opacity: var(--halo-opacity);
+    transition: opacity 180ms ease;
+    z-index: 50;
+  }
+</style>

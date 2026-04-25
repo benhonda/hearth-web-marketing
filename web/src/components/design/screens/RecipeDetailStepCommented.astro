@@ -1,0 +1,37 @@
+---
+/**
+ * Flow V · IV — Recipe · step commented.
+ *
+ * The page quietly updated. Step iv now carries an inline comment
+ * beneath it — "10–12 minutes — thickens better." — in Lora italic
+ * Ash, indented under the step's text column. No chrome, no date,
+ * no ceremony. The recipe body reads exactly as before; the comment
+ * is a voice beside it, not a replacement for it.
+ *
+ * The cook is moving on to the ingredients. The halo lands on the
+ * butter line — same long-press gesture will repeat at ingredient
+ * scope, handing off into V.
+ */
+import RecipeDetail from "./RecipeDetail.astro";
+import RecipeNotes from "../ui/RecipeNotes.astro";
+import {
+  sampleIngredientCommentIndex,
+  sampleNoteExpanded,
+  sampleStepCommentIndex,
+  sampleStepCommentText,
+} from "~/lib/design/sample-recipe";
+
+interface Props { showTap?: boolean; }
+const { showTap = false } = Astro.props;
+---
+
+<RecipeDetail
+  folio="page 1"
+  methodComments={{ [sampleStepCommentIndex]: { text: sampleStepCommentText } }}
+  ingredientTapIndex={showTap ? sampleIngredientCommentIndex : undefined}
+>
+  <RecipeNotes
+    slot="notes"
+    text={sampleNoteExpanded}
+  />
+</RecipeDetail>

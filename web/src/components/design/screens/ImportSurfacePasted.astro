@@ -1,0 +1,16 @@
+---
+/**
+ * Screen IV · Import · surface, URL pasted.
+ *
+ * Sibling state of ImportSurface — same composition, with the URL
+ * filled in and the halo moved from the input to the "Import"
+ * right-action in the bar. Delegates to ImportSurface with pasted=true
+ * so the two states stay locked in step.
+ */
+import ImportSurface from "./ImportSurface.astro";
+
+interface Props { showTap?: boolean; }
+const { showTap } = Astro.props;
+---
+
+<ImportSurface showTap={showTap} pasted />

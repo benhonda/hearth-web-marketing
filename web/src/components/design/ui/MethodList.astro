@@ -8,6 +8,19 @@
  * Prune are actually typeset.
  */
 import type { MethodStep } from "~/lib/design/sample-recipe";
+import ItemComment from "./ItemComment.astro";
+
+/**
+ * Per-step comment config. Mirrors IngredientComment; see
+ * IngredientsList for the shared pattern. Used by Flow V to
+ * annotate specific method steps.
+ */
+export type StepComment = {
+  text?: string;
+  editing?: boolean;
+  blockTap?: boolean;
+  saveTap?: boolean;
+};
 
 interface Props {
   items: MethodStep[];
@@ -16,6 +29,7 @@ interface Props {
   tapIndex?: number;       // optional — wrap a step in the storyboard tap halo
   editIndex?: number;      // optional — render this step as an active textarea
   saveTap?: boolean;       // optional — halo the Save button under the textarea
+  comments?: Record<number, StepComment>; // optional per-step annotations
 }
 
 const {
@@ -25,6 +39,7 @@ const {
   tapIndex,
   editIndex,
   saveTap = false,
+  comments = {},
 } = Astro.props;
 
 function toRoman(n: number): string {
@@ -70,12 +85,17 @@ function toRoman(n: number): string {
           {isEditing && (
             <div class="method__edit-actions">
               <button class="method__cancel" type="button">Cancel</button>
-              <button
-                class={saveTap ? "method__save method__save--tap" : "method__save"}
-                type="button"
-              >
-                Save
-              </button>
+              <button class={saveTap ? "method__save method__save--tap" : "method__save"} type="button">Save</button>
+            </div>
+          )}
+          {comments[i] && (
+            <div class="method__comment">
+              <ItemComment
+                text={comments[i]!.text}
+                editing={comments[i]!.editing}
+                blockTap={comments[i]!.blockTap}
+                saveTap={comments[i]!.saveTap}
+              />
             </div>
           )}
         </li>
@@ -163,6 +183,13 @@ function toRoman(n: number): string {
     color: var(--c-ink);
   }
 
+  /* Per-step comment sits in the text column (skip the numeral
+     gutter) so it reads as annotation ON the step, not a parallel
+     step. ItemComment owns its own typographic grammar. */
+  .method__comment {
+    padding-left: 32px;
+  }
+
   /* Edit state — one step live in a textarea ─────────────── */
 
   .method__li--editing .method__num {
@@ -196,14 +223,20 @@ function toRoman(n: number): string {
     padding-left: 32px;   /* align with text column, skip numeral gutter */
   }
 
+  /* Explicit height (not min-height) — see ItemComment for the
+     reasoning. DM Sans 500 has a larger intrinsic block size than
+     400 in the flex algorithm, so min-height was letting Save grow
+     while Cancel stayed compact. `line-height: 1` + flex-centering
+     keeps the glyphs aligned with no baseline drift. */
   .method__cancel,
   .method__save {
     appearance: none;
     -webkit-appearance: none;
+    position: relative;
     display: inline-flex;
     align-items: center;
-    min-height: 30px;
-    padding: 4px 10px;
+    height: 30px;
+    padding: 0 10px;
     border: 0;
     border-radius: 6px;
     background: transparent;
@@ -213,16 +246,8 @@ function toRoman(n: number): string {
     cursor: pointer;
   }
 
-  .method__cancel {
-    color: var(--c-ash);
-    font-weight: 400;
-  }
-
-  .method__save {
-    position: relative;
-    color: var(--c-ochre);
-    font-weight: 500;
-  }
+  .method__cancel { color: var(--c-ash); font-weight: 400; }
+  .method__save { color: var(--c-ochre); font-weight: 500; }
 
   .method__save--tap::after {
     content: "";

@@ -1,0 +1,226 @@
+---
+/**
+ * Recipe · notes section. A peer section to Ingredients and Method,
+ * rendered BETWEEN meta and ingredients in RecipeDetail's body — the
+ * cook's voice reads right after the author's, before the functional
+ * cards.
+ *
+ * Apple Notes grammar: ONE free-text block per recipe, not a list of
+ * entries. The cook types whatever they want in one body; two voices
+ * (cook-note, memory-note) coexist inside the same block as the cook
+ * writes more over time. No indices, no per-note long-press — tap
+ * the block to edit, that's it.
+ *
+ * Three mutually exclusive render states:
+ *
+ *   · editing = true            empty or populated textarea with
+ *                                Cancel/Save below (II + IV).
+ *   · text (non-empty)          the block shown as a Lora-italic
+ *                                paragraph, optionally tap-to-edit
+ *                                halo'd on the block (I + III + V).
+ *   · invitation = true         "— add a note —" in italic Ochre when
+ *                                the block is empty and the cook hasn't
+ *                                opened the editor yet (empty state).
+ */
+
+interface Props {
+  /** The note's current text. Empty/undefined = empty state. */
+  text?: string;
+  /** Show "— add a note —" when the block is empty and not editing. */
+  invitation?: boolean;
+  /** Halo the invitation as the tap target. */
+  invitationTap?: boolean;
+  /** Halo the populated block (tap anywhere to open the editor). */
+  blockTap?: boolean;
+  /** Render a textarea instead of the block, populated with `text`. */
+  editing?: boolean;
+  /** Halo the Save button under the textarea. */
+  saveTap?: boolean;
+}
+
+const {
+  text = "",
+  invitation = false,
+  invitationTap = false,
+  blockTap = false,
+  editing = false,
+  saveTap = false,
+} = Astro.props;
+
+const hasText = text.trim().length > 0;
+---
+
+<section class="notes">
+  <span class="notes__eyebrow">Notes</span>
+
+  {editing ? (
+    <div class="notes__editor">
+      <textarea class="notes__textarea" rows={4}>{text}</textarea>
+      <div class="notes__edit-actions">
+        <button class="notes__cancel" type="button">Cancel</button>
+        <button class={saveTap ? "notes__save notes__save--tap" : "notes__save"} type="button">Save</button>
+      </div>
+    </div>
+  ) : hasText ? (
+    <div class={blockTap ? "notes__block notes__block--tap" : "notes__block"}>
+      <p class="notes__text">{text}</p>
+    </div>
+  ) : invitation ? (
+    <p class={invitationTap ? "notes__invite notes__invite--tap" : "notes__invite"}>
+      — add a note —
+    </p>
+  ) : null}
+</section>
+
+<style>
+  .notes {
+    /* No top margin — RecipeDetail renders a rule above us when the
+       slot is populated, matching the Ingredients/Method rhythm. */
+  }
+
+  .notes__eyebrow {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--c-ochre);
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  /* The populated block — one continuous paragraph in Lora italic.
+     Tap-the-block halo wraps the whole thing. */
+  .notes__block {
+    position: relative;
+  }
+
+  .notes__text {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--c-ink);
+    margin: 0;
+    text-wrap: pretty;
+    /* Preserve any newlines the cook chose to type; flowing by default. */
+    white-space: pre-wrap;
+  }
+
+  .notes__block--tap::after {
+    content: "";
+    position: absolute;
+    inset: -8px -10px;
+    border: 3px solid var(--annotation);
+    border-radius: 10px;
+    box-shadow: var(--annotation-glow);
+    pointer-events: none;
+    opacity: var(--halo-opacity);
+    transition: opacity 180ms ease;
+    z-index: 50;
+  }
+
+  /* Empty-state invitation. Italic Ochre, em-dashes — mirrors
+     LibraryPopulated's "When you're ready to make these into a book
+     —" grammar. */
+  .notes__invite {
+    position: relative;
+    margin: 0;
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 14.5px;
+    line-height: 1.4;
+    color: var(--c-ochre);
+    text-align: left;
+  }
+
+  .notes__invite--tap::after {
+    content: "";
+    position: absolute;
+    inset: -6px -10px;
+    border: 3px solid var(--annotation);
+    border-radius: 10px;
+    box-shadow: var(--annotation-glow);
+    pointer-events: none;
+    opacity: var(--halo-opacity);
+    transition: opacity 180ms ease;
+    z-index: 50;
+  }
+
+  /* Editor — quieter than MethodList's. Hairline underline only,
+     transparent bg; the voice is a cookbook margin, not a form. */
+  .notes__editor {
+    position: relative;
+  }
+
+  .notes__textarea {
+    width: 100%;
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--c-ink);
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid rgba(31, 27, 23, 0.18);
+    border-radius: 0;
+    padding: 2px 0 8px;
+    resize: none;
+    box-shadow: none;
+    min-height: 4.6em;
+  }
+  .notes__textarea:focus { outline: none; border-bottom-color: var(--c-ochre); }
+  .notes__textarea::placeholder { color: var(--c-oat); font-style: italic; }
+
+  /* Edit actions — shared shape with MethodList so the Cancel/Save
+     grammar reads as one voice across the edit arc. */
+  .notes__edit-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 14px;
+    margin-top: 8px;
+  }
+
+  /* Explicit height (not min-height) — see ItemComment for the
+     reasoning. DM Sans 500 has a larger intrinsic block size than
+     400 in the flex algorithm, so min-height was letting Save grow
+     while Cancel stayed compact. `line-height: 1` + flex-centering
+     keeps the glyphs aligned with no baseline drift. */
+  .notes__cancel,
+  .notes__save {
+    appearance: none;
+    -webkit-appearance: none;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    height: 30px;
+    padding: 0 10px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    font-family: var(--f-body);
+    font-size: 13.5px;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .notes__cancel { color: var(--c-ash); font-weight: 400; }
+  .notes__save { color: var(--c-ochre); font-weight: 500; }
+
+  .notes__save--tap::after {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    border-radius: 999px;
+    border: 3px solid var(--annotation);
+    box-shadow: var(--annotation-glow);
+    pointer-events: none;
+    opacity: var(--halo-opacity);
+    transition: opacity 180ms ease;
+    z-index: 50;
+  }
+</style>

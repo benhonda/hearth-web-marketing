@@ -1,0 +1,271 @@
+---
+/**
+ * Library — the home of the app.
+ *
+ * One screen, three data-driven states (matches how the actual app would
+ * render this surface):
+ *
+ *   empty             — no recipes yet. Chapter-opener centered, italic-
+ *                       Ochre "— import a recipe →" foot invitation.
+ *                       Used in Flow I · II.
+ *   populated         — saved recipes; Hearth Press invitation reads
+ *                       "When you're ready to make these into a book —".
+ *                       Used in Flow II · I.
+ *   book-in-progress  — saved recipes + a book mid-build; invitation
+ *                       reads "Your book in progress" with a recipe-count
+ *                       cross-reference. Used in Flow III · branch.
+ *
+ * The three render keys (library-empty, library-populated,
+ * library-book-in-progress) point at thin wrappers that pass the state
+ * in. Editing this file is the single point for every Library tweak —
+ * wordmark spacing, count rhythm, invitation grammar, halo geometry.
+ */
+import AppHeader from "../ui/AppHeader.astro";
+import LibraryGrid from "../ui/LibraryGrid.astro";
+import { sampleLibraryTiles } from "~/lib/design/sample-library";
+
+export type LibraryState = "empty" | "populated" | "book-in-progress";
+
+interface Props {
+  state: LibraryState;
+  showTap?: boolean;
+}
+const { state, showTap = false } = Astro.props;
+
+const tiles = state === "empty" ? [] : sampleLibraryTiles;
+const inBook = 24; // book-in-progress: how many of the library's recipes are in the book
+---
+
+<div class:list={["lib", `lib--${state}`]}>
+  <AppHeader variant="wordmark" />
+
+  {state === "empty" && (
+    <div class="lib__body">
+      <div class="opener">
+        <hr class="opener__rule" aria-hidden="true" />
+        <span class="opener__eyebrow">I · Beginning</span>
+        <p class="opener__title">The beginning<br />of a library.</p>
+      </div>
+    </div>
+  )}
+
+  {state !== "empty" && (
+    <Fragment>
+      <div class="lib__count">
+        <span class="lib__n">{tiles.length}</span>
+        <span class="lib__label">recipes</span>
+      </div>
+
+      <LibraryGrid tiles={tiles} />
+    </Fragment>
+  )}
+
+  {state === "empty" ? (
+    <div class={showTap ? "lib__invite-min lib__invite-min--tap" : "lib__invite-min"}>
+      <p class="lib__invite-min-line">
+        <span aria-hidden="true">—&nbsp;</span>import a recipe<span class="lib__invite-min-chev" aria-hidden="true">&nbsp;→</span>
+      </p>
+    </div>
+  ) : (
+    <div class={showTap ? "lib__invite lib__invite--tap" : "lib__invite"}>
+      <span class="lib__eyebrow">Hearth Press</span>
+      <hr class="lib__rule" aria-hidden="true" />
+      {state === "populated" && (
+        <p class="lib__line">When you're ready to make these<br />into a book —</p>
+      )}
+      {state === "book-in-progress" && (
+        <p class="lib__line">Your book in progress</p>
+      )}
+      <p class="lib__cta">
+        <span>{state === "populated" ? "Begin your book" : `${inBook} recipes`}</span>
+        <span class="lib__chev" aria-hidden="true">→</span>
+      </p>
+    </div>
+  )}
+</div>
+
+<style>
+  /* Base — three-region grid (header, body, foot). The middle row is
+     1fr in the empty state so the chapter-opener centers; auto in the
+     populated states so the waterfall sits at its natural height with
+     the invitation immediately beneath. */
+  .lib {
+    position: relative;
+    display: grid;
+    min-height: 100%;
+    padding-bottom: 44px; /* clear home indicator */
+  }
+  .lib--empty {
+    grid-template-rows: auto 1fr auto;
+  }
+  .lib--populated,
+  .lib--book-in-progress {
+    grid-template-rows: auto auto auto auto;
+  }
+
+  /* Empty state — chapter-opener centered in the 1fr middle row. */
+  .lib__body {
+    display: grid;
+    place-items: center;
+    padding: 0 32px;
+  }
+  .opener {
+    display: grid;
+    justify-items: center;
+    gap: 14px;
+    text-align: center;
+    max-width: 30ch;
+  }
+  .opener__rule {
+    width: 44px;
+    height: 1.5px;
+    background: var(--c-ochre);
+    border: 0;
+    margin: 0;
+  }
+  .opener__eyebrow {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--c-ochre);
+  }
+  .opener__title {
+    margin-top: 6px;
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 30px;
+    line-height: 1.15;
+    letter-spacing: -0.006em;
+    color: var(--c-ink);
+    text-wrap: balance;
+  }
+
+  /* Populated states — count line above the waterfall. */
+  .lib__count {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    padding: 0 22px;
+    margin: 4px 0 18px;
+  }
+  .lib__n {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 15px;
+    color: var(--c-ochre);
+  }
+  .lib__label {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 9.5px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--c-oat);
+  }
+
+  /* Empty-state foot invitation — italic-Lora line in Ochre. Quieter
+     than the Hearth Press grammar because the chapter-opener above
+     already carries the editorial weight. */
+  .lib__invite-min {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    padding: 28px 22px 22px;
+  }
+  .lib__invite-min-line {
+    margin: 0;
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--c-ochre);
+  }
+  .lib__invite-min-chev {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 16px;
+  }
+  .lib__invite-min--tap::after {
+    content: "";
+    position: absolute;
+    inset: 12px 36px 8px;
+    border: 3px solid var(--annotation);
+    border-radius: 4px;
+    box-shadow: var(--annotation-glow);
+    pointer-events: none;
+    opacity: var(--halo-opacity);
+    transition: opacity 180ms ease;
+    z-index: 50;
+  }
+
+  /* Populated / book-in-progress foot invitation — Hearth Press
+     grammar (eyebrow + chapter rule + italic line + Ochre cta). The
+     whole block is the tap target. */
+  .lib__invite {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 12px;
+    padding: 56px 22px 28px;
+    text-align: center;
+  }
+  .lib__eyebrow {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--c-ochre);
+  }
+  .lib__rule {
+    border: 0;
+    width: var(--rule-chapter);
+    height: var(--rule-weight-chapter);
+    background: var(--c-ochre);
+    margin: 4px 0 6px;
+  }
+  .lib__line {
+    margin: 0;
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 17px;
+    line-height: 1.4;
+    color: var(--c-ink);
+    text-wrap: balance;
+  }
+  .lib__cta {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 8px;
+    margin: 4px 0 0;
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 12.5px;
+    letter-spacing: 0.04em;
+    color: var(--c-ochre);
+  }
+  .lib__chev {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 14px;
+    line-height: 1;
+  }
+  .lib__invite--tap::after {
+    content: "";
+    position: absolute;
+    inset: 36px 12px 14px;
+    border: 3px solid var(--annotation);
+    border-radius: 4px;
+    box-shadow: var(--annotation-glow);
+    pointer-events: none;
+    opacity: var(--halo-opacity);
+    transition: opacity 180ms ease;
+    z-index: 50;
+  }
+</style>

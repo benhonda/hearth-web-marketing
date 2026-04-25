@@ -1,0 +1,93 @@
+---
+/**
+ * Flow IV · II — Notes · compose.
+ *
+ * The cook tapped "— add a note —". In place of the invitation, an
+ * empty textarea opens inside the notes section; Save sits under it,
+ * halo'd as the next handoff. The recipe body above stays put so
+ * the cook keeps their bearings — the page scrolls the textarea
+ * into the visible band above the keyboard.
+ *
+ * The textarea is deliberately quieter than MethodList's — no
+ * surrounding border, hairline underline only; the voice is "writing
+ * in a cookbook margin," not filling a form.
+ */
+import RecipeDetail from "./RecipeDetail.astro";
+import RecipeNotes from "../ui/RecipeNotes.astro";
+import IosKeyboard from "../ui/IosKeyboard.astro";
+
+interface Props { showTap?: boolean; }
+const { showTap = false } = Astro.props;
+---
+
+<div class="note-compose">
+  <header class="note-compose__bar">
+    <span class="note-compose__eyebrow">Adding a note</span>
+  </header>
+
+  <RecipeDetail hideHeader>
+    <RecipeNotes
+      slot="notes"
+      editing
+      saveTap={showTap}
+    />
+  </RecipeDetail>
+
+  <div class="note-compose__keyboard-dock">
+    <IosKeyboard suggestions={["Halved", "salt", "the"] as [string, string, string]} />
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    function run() {
+      document.querySelectorAll(".note-compose").forEach(function (surface) {
+        var scroller = surface.closest(".phone__scroll");
+        var ta = surface.querySelector(".notes__textarea");
+        if (!scroller || !ta) return;
+        var offsetTop = 0;
+        var el = ta;
+        while (el && el !== scroller) {
+          offsetTop += el.offsetTop;
+          el = el.offsetParent;
+        }
+        scroller.scrollTop = Math.max(0, offsetTop - 120);
+      });
+    }
+    if (document.readyState === "complete") run();
+    else window.addEventListener("load", run);
+  })();
+</script>
+
+<style>
+  .note-compose {
+    position: relative;
+    min-height: 100%;
+  }
+
+  .note-compose__bar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    padding: 62px 22px 12px;
+    display: grid;
+    place-items: center;
+    background: var(--c-cream);
+    border-bottom: 1px solid rgba(31, 27, 23, 0.08);
+  }
+  .note-compose__eyebrow {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--c-ochre);
+    white-space: nowrap;
+  }
+
+  .note-compose__keyboard-dock {
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+  }
+</style>

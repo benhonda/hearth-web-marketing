@@ -1,0 +1,246 @@
+---
+/**
+ * Screen III · Import · surface (and its pasted sibling).
+ *
+ * The new first-class-action surface in Flow I: paste a web URL inside
+ * Hearth, get a recipe. Quiet top bar (Cancel · BRING IN A RECIPE),
+ * chapter-opener, paste field below.
+ *
+ * Two states share one component:
+ *   pasted = false  → empty paste box, halo on the input
+ *   pasted = true   → URL filled in, full-width Primary pill ("Import")
+ *                     appears below the field, halo'd as the next tap.
+ *                     Same Primary grammar as BookReview's "Send to
+ *                     Hearth Press" — the moment of commitment gets
+ *                     the chunky Foil-Light pill.
+ */
+import { sampleRecipe } from "~/lib/design/sample-recipe";
+
+interface Props {
+  showTap?: boolean;
+  /** False shows the empty paste box; true fills the URL in and moves
+   *  the halo to the right-action button. */
+  pasted?: boolean;
+}
+const { showTap = false, pasted = false } = Astro.props;
+
+const url = sampleRecipe.url;
+---
+
+<div class="imp">
+  <header class="imp-bar">
+    <button class="imp-bar__cancel" type="button">Cancel</button>
+    <span class="imp-bar__eyebrow">Bring in a recipe</span>
+    <span class="imp-bar__spacer" aria-hidden="true"></span>
+  </header>
+
+  <div class="imp__body">
+    <div class="opener">
+      <hr class="opener__rule" aria-hidden="true" />
+      <span class="opener__eyebrow">From anywhere</span>
+      <p class="opener__title">Bring a recipe<br />home.</p>
+    </div>
+
+    <label
+      class={showTap && !pasted ? "field field--tap" : "field"}
+      for="imp-url"
+    >
+      <span class="field__label">Paste a link</span>
+      <span class="field__input" id="imp-url">
+        {pasted ? (
+          <span class="field__url">{url}</span>
+        ) : (
+          <span class="field__placeholder">Paste a recipe link</span>
+        )}
+        <span class="field__caret" aria-hidden="true"></span>
+      </span>
+    </label>
+
+    {pasted && (
+      <button
+        class={showTap ? "imp__primary imp__primary--tap" : "imp__primary"}
+        type="button"
+      >Import</button>
+    )}
+  </div>
+</div>
+
+<style>
+  .imp {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    min-height: 100%;
+    padding-bottom: 44px; /* home indicator clearance */
+  }
+
+  /* Top bar — same grammar as ImportPreview so the two screens read as
+     a continuous import arc. */
+  .imp-bar {
+    padding: 62px 22px 14px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid rgba(31, 27, 23, 0.08);
+  }
+  .imp-bar__cancel {
+    justify-self: flex-start;
+    font-family: var(--f-body);
+    font-size: 14px;
+    color: var(--c-ash);
+  }
+  .imp-bar__eyebrow {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--c-ochre);
+    white-space: nowrap;
+  }
+  .imp-bar__spacer { display: block; }
+
+  /* Primary CTA — full-width Foil Light pill below the paste field,
+     same grammar as BookReview's "Send to Hearth Press" Primary
+     (tokens.css COMPONENT TREATMENTS · BUTTONS · Primary). 52px tall
+     pill, Warm Charcoal text, --shadow-button, halo wraps with -6px
+     inset. Only renders in the pasted state. */
+  .imp__primary {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 52px;
+    border-radius: 999px;
+    background: var(--c-foil-light);
+    color: var(--c-ink);
+    border: 0;
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 15px;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    box-shadow: var(--shadow-button);
+    transition: background-color var(--motion-state) var(--ease-state);
+  }
+  .imp__primary:hover { background: var(--c-foil-hover); }
+  .imp__primary--tap::after {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    border-radius: 999px;
+    border: 3px solid var(--annotation);
+    box-shadow: var(--annotation-glow);
+    pointer-events: none;
+    opacity: var(--halo-opacity);
+    transition: opacity 180ms ease;
+    z-index: 50;
+  }
+
+  /* Body — chapter-opener, paste field, coda. Vertical rhythm tuned so
+     the field sits in the upper half of the visible area, leaving the
+     coda comfortably at the foot without crowding. */
+  .imp__body {
+    padding: 36px 22px 0;
+    display: grid;
+    gap: 36px;
+    align-content: start;
+  }
+
+  /* Chapter-opener — eyebrow + rule + italic Lora display. Short
+     measure (28ch) so the title balances cleanly across two lines. */
+  .opener {
+    display: grid;
+    justify-items: center;
+    gap: 12px;
+    text-align: center;
+    max-width: 28ch;
+    justify-self: center;
+  }
+  .opener__rule {
+    width: 44px;
+    height: 1.5px;
+    background: var(--c-ochre);
+    border: 0;
+    margin: 0;
+  }
+  .opener__eyebrow {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--c-ochre);
+  }
+  .opener__title {
+    margin: 4px 0 0;
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 30px;
+    line-height: 1.12;
+    letter-spacing: -0.006em;
+    color: var(--c-ink);
+    text-wrap: balance;
+  }
+
+  /* Paste field — square corners (--r-page = 2px), label small-caps
+     Ochre. The "input" is mocked as a static row containing either a
+     placeholder or the pasted URL plus a slim caret to suggest the
+     focus state. */
+  .field {
+    position: relative;
+    display: grid;
+    gap: 6px;
+  }
+  .field__label {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--c-ochre);
+  }
+  .field__input {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 14px;
+    border: 1px solid rgba(31, 27, 23, 0.18);
+    background: var(--c-input);
+    border-radius: 2px;
+    min-height: 22px;
+  }
+  .field__placeholder {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 16px;
+    color: var(--c-oat);
+  }
+  .field__url {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 16px;
+    color: var(--c-ink);
+  }
+  /* A 1×16 caret in Ochre — present in both states so the field reads
+     as focused (the user has just tapped in / just pasted). */
+  .field__caret {
+    width: 1px;
+    height: 18px;
+    background: var(--c-ochre);
+    margin-left: 2px;
+  }
+
+  .field--tap::after {
+    content: "";
+    position: absolute;
+    inset: 22px -4px -4px -4px;
+    border: 3px solid var(--annotation);
+    border-radius: 4px;
+    box-shadow: var(--annotation-glow);
+    pointer-events: none;
+    opacity: var(--halo-opacity);
+    transition: opacity 180ms ease;
+    z-index: 50;
+  }
+</style>

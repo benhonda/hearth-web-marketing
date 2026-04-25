@@ -1,0 +1,29 @@
+---
+/**
+ * Flow V · I — Recipe · pre-comment.
+ *
+ * The starting state. Picks up where Flow IV left off: the recipe
+ * has a populated global Notes block ("Halved the salt — nicer
+ * balance. — Sam's 30th. Doubled it. Everyone wanted seconds. —").
+ * No line-item comments yet. Halo lands on step iv — the long-press
+ * entry into the comment menu (II).
+ *
+ * Reuses the step-iv halo RecipeDetail already owns for Flow I's
+ * edit entry; only the downstream menu changes (III's menu is
+ * Comment-primary, Flow I's is Edit-primary — same component, prop
+ * picks the halo target).
+ */
+import RecipeDetail from "./RecipeDetail.astro";
+import RecipeNotes from "../ui/RecipeNotes.astro";
+import { sampleNoteExpanded } from "~/lib/design/sample-recipe";
+
+interface Props { showTap?: boolean; }
+const { showTap = false } = Astro.props;
+---
+
+<RecipeDetail showTap={showTap} folio="page 1">
+  <RecipeNotes
+    slot="notes"
+    text={sampleNoteExpanded}
+  />
+</RecipeDetail>

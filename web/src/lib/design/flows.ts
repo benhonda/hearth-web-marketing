@@ -16,6 +16,8 @@ export type Surface = "cream" | "sage" | "neutral";
 export type ScreenRender =
   | "welcome"
   | "library-empty"
+  | "import-surface"
+  | "import-surface-pasted"
   | "mobile-safari-recipe"
   | "share-sheet"
   | "import-preview"
@@ -50,7 +52,18 @@ export type ScreenRender =
   | "book-subtitle"
   | "book-recipes-edit"
   | "book-review"
-  | "book-on-its-way";
+  | "book-on-its-way"
+  | "recipe-detail-empty-note"
+  | "recipe-note-compose"
+  | "recipe-detail-with-note"
+  | "recipe-note-edit"
+  | "recipe-detail-expanded-note"
+  | "recipe-detail-pre-comment"
+  | "recipe-step-comment-menu"
+  | "recipe-step-comment-compose"
+  | "recipe-detail-step-commented"
+  | "recipe-ingredient-comment-compose"
+  | "recipe-detail-fully-annotated";
 
 export type FlowStep = {
   numeral: string;            // Roman numeral label — "I", "II", "III"; "" for branch steps
@@ -85,7 +98,7 @@ export const flows: Flow[] = [
     numeral: "I",
     title: "The first recipe.",
     lede:
-      "Sign in, share a web recipe into Hearth, read it, scale it for tonight's table, edit a step, save. From the sage cover to a library of one — end to end.",
+      "Sign in, paste a recipe into Hearth, read it, scale it for tonight's table, edit a step, save. From the sage cover to a library of one — end to end.",
     steps: [
       {
         numeral: "I",
@@ -102,40 +115,66 @@ export const flows: Flow[] = [
         numeral: "II",
         name: "Library · empty",
         detailTitle: "A library, waiting.",
-        note: "Designed empty state, not a to-do. Typography-only chapter opener.",
+        note:
+          "Designed empty state, not a to-do — typography-only chapter opener with an italic-Ochre invitation at the foot. Tap is internal now: the invitation opens the Import surface inside the app. Rhymes with Flow II's 'When you're ready —' but stays one line so the chapter-opener above carries the editorial weight.",
         render: "library-empty",
         screenSlug: "library-empty",
-        tap: "User leaves the app to Safari",
-        tapExternal: true,
+        tap: "Tap — import a recipe →",
       },
       {
         numeral: "III",
-        name: "Mobile Safari · article",
-        detailTitle: "The open internet.",
+        name: "Import · surface",
+        detailTitle: "Bring a recipe home.",
         note:
-          "User is reading a recipe on the web. The ochre halo marks where the share tap happens.",
-        surface: "neutral",
-        tone: "ink",
-        render: "mobile-safari-recipe",
-        screenSlug: "mobile-safari-recipe",
-        tap: "Safari share button",
+          "The new first-class action: paste a web URL inside Hearth. Quiet bar at the top (Cancel · BRING IN A RECIPE), chapter-opener mid-page, single paste field beneath. The halo lands on the field. The share-sheet path off Safari (the original III + IV of this flow) lives below as a sub-flow — another way to land in the same Import preview.",
+        render: "import-surface",
+        screenSlug: "import-surface",
+        tap: "Paste a recipe link",
+        branch: {
+          label: "Share sheet · sub-flow",
+          steps: [
+            {
+              numeral: "",
+              name: "Mobile Safari · article",
+              detailTitle: "The open internet.",
+              note:
+                "Alternate entrance — the cook is reading a recipe on the web. The ochre halo marks where the share tap happens; the iOS share sheet (next) leads back to the Import preview on the main line.",
+              surface: "neutral",
+              tone: "ink",
+              render: "mobile-safari-recipe",
+              screenSlug: "mobile-safari-recipe",
+              tap: "Safari share button",
+            },
+            {
+              numeral: "",
+              name: "Share sheet",
+              detailTitle: "The handoff.",
+              note:
+                "iOS share sheet over the dimmed article. Hearth halo'd as the destination. The handoff lands the cook back at the Import preview on the main line — same screen, different doorway.",
+              tone: "ink",
+              render: "share-sheet",
+              screenSlug: "share-sheet",
+              tap: "Hearth app",
+            },
+          ],
+        },
       },
       {
         numeral: "IV",
-        name: "Share sheet",
-        detailTitle: "The handoff.",
-        note: "iOS share sheet over the dimmed article. Hearth halo'd as the destination.",
-        tone: "ink",
-        render: "share-sheet",
-        screenSlug: "share-sheet",
-        tap: "Hearth app",
+        name: "Import · surface, pasted",
+        detailTitle: "A link, just pasted.",
+        note:
+          "Same composition as III with the URL filled in (table.kitchen/summer-corn-ragu). A full-width Foil-Light Primary pill — the same grammar as Flow II's 'Send to Hearth Press' — appears below the field, halo'd as the next tap. The next tap lands in the Import preview where Hearth has already extracted the recipe in its own voice.",
+        render: "import-surface-pasted",
+        screenSlug: "import-surface-pasted",
+        tap: "Tap Import",
       },
       {
         numeral: "V",
         name: "Import · preview",
         detailTitle: "Extracted, in Hearth's voice.",
         note:
-          "Hearth's share extension — extracted recipe in Hearth type, Save as the primary.",
+          "Hearth's import preview — the same screen whether the cook arrived by pasting a URL on the main line or via the share sheet from Safari (sub-flow under III). The extracted recipe is rendered in Hearth's own type — From card carrying the source URL, hero photo, Lora title field, ingredients and method laid out as the cookbook-page they'll become. Save is the primary; tap any section to edit before saving.",
         render: "import-preview",
         screenSlug: "import-preview",
         tap: "Save",
@@ -162,7 +201,7 @@ export const flows: Flow[] = [
         numeral: "VIII",
         name: "Portion · overlay",
         detailTitle: "A theatrical dim-down.",
-        note: "The dreamy moment. The page lightens under a cream wash and blurs behind, and the scale strip floats centered in the viewport — '— 2 · 4 · 6 · 8 · 12 —'. The current yield (4) sits currently-selected and larger, carrying the chapter-rule hairline beneath. The ochre halo lands on 8 as the next tap. No card, no border, no pill — the blur is the container. Scale is a lens over a fixed recipe; no Save, no version bump.",
+        note: "The dreamy moment. The page lightens under a cream wash and blurs behind, and the scale strip floats centered in the viewport — '— 2 · 4 · 6 · 8 · 12 —'. The current yield (4) sits currently-selected and larger, carrying the chapter-rule hairline beneath. The ochre halo lands on 8 as the next tap. No card, no border, no pill — the blur is the container. Scale is a lens over a fixed recipe; no Save.",
         render: "recipe-detail-overlay",
         screenSlug: "recipe-detail-overlay",
         tap: "Tap 8",
@@ -189,7 +228,7 @@ export const flows: Flow[] = [
         numeral: "XI",
         name: "Recipe · editing step iv",
         detailTitle: "Editing step iv.",
-        note: "Inline edit — step iv is swapped for a live textarea inside the recipe page, '8 minutes' updated to '10–12 minutes.' The page stays put so the cook keeps their bearings; the iOS keyboard is docked at the foot. Save creates a new version; Cancel discards.",
+        note: "Inline edit — step iv is swapped for a live textarea inside the recipe page, '8 minutes' updated to '10–12 minutes.' The page stays put so the cook keeps their bearings; the iOS keyboard is docked at the foot. Save commits the change; Cancel discards.",
         render: "recipe-edit",
         screenSlug: "recipe-edit",
         tap: "Save",
@@ -198,7 +237,7 @@ export const flows: Flow[] = [
         numeral: "XII",
         name: "Recipe · saved",
         detailTitle: "The book, quietly changed.",
-        note: "Same page, quietly updated. Folio now reads 'page 1 · version ii.' No celebration — the book-spine test holds.",
+        note: "Same page, quietly updated. Step iv now reads '10–12 minutes.' No celebration, no banner — the book-spine test holds.",
         render: "recipe-saved",
         screenSlug: "recipe-saved",
       },
@@ -411,7 +450,7 @@ export const flows: Flow[] = [
         name: "Recipe · detail, carousel",
         detailTitle: "Realtor-grammar.",
         note:
-          "The hero band is the same real estate as the one-photo detail — full-bleed, 5:4 — but now snap-scrollable. A small '1 / 3' pill sits bottom-right on the image; the count tells the cook there's more, the tap opens the full-screen gallery. Title, lede, ingredients, method untouched; the only signal the page changed is the folio at the foot — 'page 1 · version iii.'",
+          "The hero band is the same real estate as the one-photo detail — full-bleed, 5:4 — but now snap-scrollable. A small '1 / 3' pill sits bottom-right on the image; the count tells the cook there's more, the tap opens the full-screen gallery. Title, lede, ingredients, method untouched — the new photos are the signal, no folio ceremony required.",
         render: "recipe-detail-carousel",
         screenSlug: "recipe-detail-carousel",
         tap: "Tap the 1 / 3 counter",
@@ -469,6 +508,132 @@ export const flows: Flow[] = [
             },
           ],
         },
+      },
+    ],
+  },
+  {
+    slug: "04-notes",
+    numeral: "IV",
+    title: "Notes.",
+    lede:
+      "A cookbook lives because it's cooked in. From an empty margin to a first note to a later one, gathered into one flowing block — the annotation layer that grows as the cook returns.",
+    steps: [
+      {
+        numeral: "I",
+        name: "Recipe · empty block",
+        detailTitle: "The margin, waiting.",
+        note:
+          "The onboarding moment. Notes live as a peer section to Ingredients and Method, placed BETWEEN meta and ingredients — reading order is author's voice → cook's voice → what you need → how to make it. The block is empty, so the section carries only the eyebrow and the typographic invitation '— add a note —' in italic Ochre, mirroring Flow II's 'When you're ready to make these into a book —' grammar. The halo lands on the invitation.",
+        render: "recipe-detail-empty-note",
+        screenSlug: "recipe-detail-empty-note",
+        tap: "Tap — add a note —",
+      },
+      {
+        numeral: "II",
+        name: "Notes · compose",
+        detailTitle: "Writing in the margin.",
+        note:
+          "The invitation is replaced in place by an empty textarea, high in the body between meta and ingredients. No field border, hairline underline only — the voice is a cookbook margin, not a form. Cancel (tertiary Ash) · Save (Ochre) floats to the right under the textarea. iOS keyboard docks at the foot; the page auto-scrolls the textarea into the visible band above it. Save is halo'd as the handoff. Apple Notes grammar — the cook types whatever they want, no metadata imposed.",
+        render: "recipe-note-compose",
+        screenSlug: "recipe-note-compose",
+        tap: "Tap Save",
+      },
+      {
+        numeral: "III",
+        name: "Recipe · with note",
+        detailTitle: "One voice in the margin.",
+        note:
+          "The page quietly updated. The block now shows the cook's first voice — 'Halved the salt — nicer balance.' — as one Lora italic paragraph. No chrome, no date, no per-note affordance. Tap anywhere on the block to reopen the editor; the whole block is halo'd as the handoff into IV. Weeks later, the cook returns to add more.",
+        render: "recipe-detail-with-note",
+        screenSlug: "recipe-detail-with-note",
+        tap: "Tap the note",
+      },
+      {
+        numeral: "IV",
+        name: "Notes · edit",
+        detailTitle: "Coming back to the margin.",
+        note:
+          "The same editor surface from II, now populated with the note's current text. Cook is about to add the memory-note — '— Sam's 30th. Doubled it. Everyone wanted seconds. —' — into the same block, flowing after the first voice. Same hairline underline, same Cancel/Save grammar. Save halo'd as the handoff into V. The block is one note that grows, not a list of notes.",
+        render: "recipe-note-edit",
+        screenSlug: "recipe-note-edit",
+        tap: "Tap Save",
+      },
+      {
+        numeral: "V",
+        name: "Recipe · expanded note",
+        detailTitle: "Two voices in one block.",
+        note:
+          "The close of the flow. The block carries both voices in one continuous Lora italic body — the cook-note and the memory-note running together, no separation, no metadata between them. Apple Notes honest: one block, everything the cook wanted to remember. No halo — the flow is done. The book-spine test holds.",
+        render: "recipe-detail-expanded-note",
+        screenSlug: "recipe-detail-expanded-note",
+      },
+    ],
+  },
+  {
+    slug: "05-line-comments",
+    numeral: "V",
+    title: "A line in the margin.",
+    lede:
+      "Comments at the scope they belong to — a note on a step, a mark beside an ingredient. Same quiet annotation grammar as the page-level notes, closer to the thing it annotates. The layer that makes someone else's recipe yours.",
+    steps: [
+      {
+        numeral: "I",
+        name: "Recipe · pre-comment",
+        detailTitle: "The recipe, already yours.",
+        note:
+          "Starting state. Picks up where Flow IV left off — the global Notes block already carries both voices ('Halved the salt — nicer balance. — Sam's 30th. Doubled it. Everyone wanted seconds. —'). No line-item comments yet. The halo lands on step iv — long-press opens the step menu.",
+        render: "recipe-detail-pre-comment",
+        screenSlug: "recipe-detail-pre-comment",
+        tap: "Long-press step iv",
+      },
+      {
+        numeral: "II",
+        name: "Step · long-press menu",
+        detailTitle: "Comment, primary.",
+        note:
+          "The same three-row context menu Flow I · X uses, now with Comment as the first row and halo'd as the tap target. Edit is secondary (rare — it changes the recipe body); Delete tertiary. Flow I still halos Edit via the same shared component; the halo is the storyboard's overlay, not a UI state. Discoverability through gesture, not chrome.",
+        render: "recipe-step-comment-menu",
+        screenSlug: "recipe-step-comment-menu",
+        tap: "Tap Comment",
+      },
+      {
+        numeral: "III",
+        name: "Step · comment compose",
+        detailTitle: "Writing beside the step.",
+        note:
+          "A textarea opens beneath step iv, indented under the step's text column so it's visually anchored to what it annotates. Cancel · Save in the now-familiar grammar. Save halo'd. iOS keyboard docked; page auto-scrolls the textarea into the visible band above it. Same editor voice as Notes, smaller register — a pencil in the margin, not a form field.",
+        render: "recipe-step-comment-compose",
+        screenSlug: "recipe-step-comment-compose",
+        tap: "Tap Save",
+      },
+      {
+        numeral: "IV",
+        name: "Recipe · step commented",
+        detailTitle: "A voice next to step iv.",
+        note:
+          "Step iv now carries an inline comment — '10–12 minutes — thickens better.' — in Lora italic Ash, indented under the step text. No chrome, no date, no ceremony. The cook moves on to the ingredients: the halo lands on the butter line, where the same long-press gesture repeats at ingredient scope.",
+        render: "recipe-detail-step-commented",
+        screenSlug: "recipe-detail-step-commented",
+        tap: "Long-press butter",
+      },
+      {
+        numeral: "V",
+        name: "Ingredient · comment compose",
+        detailTitle: "Same grammar, smaller scope.",
+        note:
+          "Same compose surface, this time beneath the butter line. Menu screen skipped — the long-press menu from II is the same menu for ingredients, and the binder doesn't need to teach it twice. Save halo'd.",
+        render: "recipe-ingredient-comment-compose",
+        screenSlug: "recipe-ingredient-comment-compose",
+        tap: "Tap Save",
+      },
+      {
+        numeral: "VI",
+        name: "Recipe · fully annotated",
+        detailTitle: "Megan's version.",
+        note:
+          "The close of the flow. Global note at the top carries both voices. Step iv carries its own. The butter line carries a comment beneath it — 'Cultured if I have it.' Nothing destroyed — the recipe body still reads as it was imported. What's on the page now is the personalization layer: the comments are what make a recipe that came from somewhere else into hers. This is the content the printed book will carry beyond the bare recipe — the proof-of-authorship that a library of saved URLs can't give you.",
+        render: "recipe-detail-fully-annotated",
+        screenSlug: "recipe-detail-fully-annotated",
       },
     ],
   },

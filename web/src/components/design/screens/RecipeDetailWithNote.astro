@@ -1,0 +1,25 @@
+---
+/**
+ * Flow IV · III — Recipe · with note.
+ *
+ * The cook saved their first note. The block now shows one voice —
+ * the cook-note, "Halved the salt — nicer balance." — in Lora
+ * italic Ink, as one flowing paragraph. No per-note chrome, no date,
+ * no invitation beneath. Tap anywhere on the block to open the
+ * editor again; the whole block is halo'd as the handoff into IV.
+ */
+import RecipeDetail from "./RecipeDetail.astro";
+import RecipeNotes from "../ui/RecipeNotes.astro";
+import { sampleNoteWritten } from "~/lib/design/sample-recipe";
+
+interface Props { showTap?: boolean; }
+const { showTap = false } = Astro.props;
+---
+
+<RecipeDetail folio="page 1">
+  <RecipeNotes
+    slot="notes"
+    text={sampleNoteWritten}
+    blockTap={showTap}
+  />
+</RecipeDetail>

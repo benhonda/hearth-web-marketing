@@ -1,0 +1,95 @@
+---
+/**
+ * Flow V · III — Step · comment compose.
+ *
+ * The cook tapped Comment on the step long-press menu. A textarea
+ * opens beneath step iv, indented under the step's text column so
+ * it's visually anchored to what it annotates (not the step's
+ * numeral gutter, not the recipe's edge). Cancel · Save grammar,
+ * same hairline-underline editor voice as RecipeNotes. Save halo'd.
+ *
+ * Page auto-scrolls the textarea into the visible band above the
+ * iOS keyboard, same offset-walk pattern RecipeNoteCompose uses.
+ */
+import RecipeDetail from "./RecipeDetail.astro";
+import RecipeNotes from "../ui/RecipeNotes.astro";
+import IosKeyboard from "../ui/IosKeyboard.astro";
+import { sampleNoteExpanded, sampleStepCommentIndex } from "~/lib/design/sample-recipe";
+
+interface Props { showTap?: boolean; }
+const { showTap = false } = Astro.props;
+---
+
+<div class="step-comment">
+  <header class="step-comment__bar">
+    <span class="step-comment__eyebrow">Commenting on step iv</span>
+  </header>
+
+  <RecipeDetail
+    hideHeader
+    methodComments={{ [sampleStepCommentIndex]: { editing: true, saveTap: showTap } }}
+  >
+    <RecipeNotes
+      slot="notes"
+      text={sampleNoteExpanded}
+    />
+  </RecipeDetail>
+
+  <div class="step-comment__keyboard-dock">
+    <IosKeyboard suggestions={["minutes", "thickens", "the"] as [string, string, string]} />
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    function run() {
+      document.querySelectorAll(".step-comment").forEach(function (surface) {
+        var scroller = surface.closest(".phone__scroll");
+        var ta = surface.querySelector(".item-comment__textarea");
+        if (!scroller || !ta) return;
+        var offsetTop = 0;
+        var el = ta;
+        while (el && el !== scroller) {
+          offsetTop += el.offsetTop;
+          el = el.offsetParent;
+        }
+        scroller.scrollTop = Math.max(0, offsetTop - 120);
+      });
+    }
+    if (document.readyState === "complete") run();
+    else window.addEventListener("load", run);
+  })();
+</script>
+
+<style>
+  .step-comment {
+    position: relative;
+    min-height: 100%;
+  }
+
+  .step-comment__bar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    padding: 62px 22px 12px;
+    display: grid;
+    place-items: center;
+    background: var(--c-cream);
+    border-bottom: 1px solid rgba(31, 27, 23, 0.08);
+  }
+  .step-comment__eyebrow {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--c-ochre);
+    white-space: nowrap;
+  }
+
+  .step-comment__keyboard-dock {
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+  }
+</style>

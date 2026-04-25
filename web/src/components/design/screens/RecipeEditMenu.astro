@@ -1,24 +1,32 @@
 ---
 /**
- * Screen VIII · Recipe · long-press menu.
+ * Recipe · step long-press menu.
  *
- * The user long-pressed step iv on the detail page (VII). iOS-style
- * context menu: the page blurs and dims, the pressed step is lifted
- * ("plucked") above the dim layer with a soft shadow, and a quiet
- * two-row menu floats beneath — Edit · Delete, nothing else. Edit is
- * halo'd as the next tap target; tapping it lands on IX (editing step iv).
+ * The user long-pressed step iv on the detail page. iOS-style context
+ * menu: the page blurs and dims, the pressed step is lifted ("plucked")
+ * above the dim layer with a soft shadow, and a three-row menu floats
+ * beneath — **Comment · Edit · Delete**. Comment sits primary because
+ * commenting is the 90% case (annotate this cook's adjustment); Edit
+ * is secondary (actually change the recipe body, rare); Delete is
+ * tertiary.
  *
- * This is the discoverability answer to "how do I edit a step": there's
- * no Edit button in the chrome; long-press is the single entry point
- * and the surfaced card + menu is the visible feedback.
+ * The halo is a storyboard overlay, not a UI state — Flow I's edit
+ * arc halos Edit (`haloTarget="edit"`, default), Flow V's comment arc
+ * halos Comment (`haloTarget="comment"`). The menu itself is one
+ * component rendering all three affordances in both contexts.
  */
 import RecipeDetail from "./RecipeDetail.astro";
 import { sampleRecipe } from "~/lib/design/sample-recipe";
 
-interface Props { showTap?: boolean; }
-const { showTap = false } = Astro.props;
+interface Props {
+  showTap?: boolean;
+  haloTarget?: "comment" | "edit";
+}
+const { showTap = false, haloTarget = "edit" } = Astro.props;
 
 const stepIv = sampleRecipe.method[3];
+const haloComment = showTap && haloTarget === "comment";
+const haloEdit = showTap && haloTarget === "edit";
 ---
 
 <div class="menu">
@@ -41,7 +49,23 @@ const stepIv = sampleRecipe.method[3];
     </article>
 
     <div class="ctx" role="menu">
-      <button class={showTap ? "ctx__row ctx__row--edit ctx__row--tap" : "ctx__row ctx__row--edit"} type="button" role="menuitem">
+      <button
+        class={haloComment ? "ctx__row ctx__row--comment ctx__row--tap" : "ctx__row ctx__row--comment"}
+        type="button"
+        role="menuitem"
+      >
+        <span class="ctx__label">Comment</span>
+        <span class="ctx__icon" aria-hidden="true">
+          <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H9l-4 3v-3H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z" />
+          </svg>
+        </span>
+      </button>
+      <button
+        class={haloEdit ? "ctx__row ctx__row--edit ctx__row--tap" : "ctx__row ctx__row--edit"}
+        type="button"
+        role="menuitem"
+      >
         <span class="ctx__label">Edit</span>
         <span class="ctx__icon" aria-hidden="true">
           <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
@@ -185,6 +209,13 @@ const stepIv = sampleRecipe.method[3];
   }
   .ctx__row + .ctx__row {
     border-top: 1px solid rgba(31, 27, 23, 0.1);
+  }
+
+  .ctx__row--comment {
+    /* Comment is the 90% case and sits primary. Typography parity with
+       Edit — both are Ink; hierarchy is driven by row order and the
+       halo, not a color/weight split. */
+    color: var(--c-ink);
   }
 
   .ctx__row--delete {

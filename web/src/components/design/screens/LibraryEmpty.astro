@@ -1,100 +1,12 @@
 ---
 /**
- * Screen II · Library · empty.
- *
- * Empty state as a chapter-opener — typographic, confident, no CTA button.
- * Design principle #4: "empty state is a designed object, not a to-do."
- *
- * No in-screen tap target — the user leaves to Safari. The flow caption
- * conveys the handoff.
+ * Flow I · II — Library, empty state.
+ * Thin wrapper around Library.astro; see that file for the full screen.
  */
-import AppHeader from "../ui/AppHeader.astro";
+import Library from "./Library.astro";
 
 interface Props { showTap?: boolean; }
-// Prop declared for registry consistency; this screen has no halo target.
-void Astro.props;
+const { showTap } = Astro.props;
 ---
 
-<div class="lib-empty">
-  <AppHeader variant="wordmark" />
-
-  <div class="lib-empty__body">
-    <div class="opener">
-      <hr class="opener__rule" aria-hidden="true" />
-      <span class="opener__eyebrow">I · Beginning</span>
-
-      <p class="opener__title">The beginning<br />of a library.</p>
-
-      <p class="opener__teach">
-        Every recipe you save becomes a page.<br />
-        Share from Safari, TikTok or Instagram<br />
-        to set the first one.
-      </p>
-    </div>
-  </div>
-</div>
-
-<style>
-  .lib-empty {
-    position: relative;
-    min-height: 100%;
-  }
-
-  /* Body is absolutely positioned over the full phone so the opener
-     centers on the true viewport midpoint — not on the midpoint of
-     the space below the wordmark. */
-  .lib-empty__body {
-    position: absolute;
-    inset: 0;
-    display: grid;
-    place-items: center;
-    padding: 0 32px 44px; /* clear home indicator */
-  }
-
-  .opener {
-    display: grid;
-    justify-items: center;
-    gap: 14px;
-    text-align: center;
-    max-width: 30ch;
-  }
-
-  .opener__rule {
-    width: 44px;
-    height: 1.5px;
-    background: var(--c-ochre);
-    border: 0;
-    margin: 0;
-  }
-
-  .opener__eyebrow {
-    font-family: var(--f-body);
-    font-weight: 500;
-    font-size: 10px;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--c-ochre);
-  }
-
-  .opener__title {
-    margin-top: 6px;
-    font-family: var(--f-display);
-    font-style: italic;
-    font-weight: 400;
-    font-size: 30px;
-    line-height: 1.15;
-    letter-spacing: -0.006em;
-    color: var(--c-ink);
-    text-wrap: balance;
-  }
-
-  .opener__teach {
-    margin-top: 6px;
-    font-family: var(--f-body);
-    font-size: 13.5px;
-    line-height: 1.6;
-    color: var(--c-ash);
-    max-width: 28ch;
-  }
-
-</style>
+<Library state="empty" showTap={showTap} />

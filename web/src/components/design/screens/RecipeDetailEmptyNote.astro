@@ -1,0 +1,27 @@
+---
+/**
+ * Flow IV · I — Recipe · empty note block.
+ *
+ * The empty state. Notes section sits as a peer to Ingredients and
+ * Method, between meta and the first rule. The block is empty — no
+ * content to render — so the section carries only the eyebrow and
+ * the typographic invitation "— add a note —" in italic Ochre. The
+ * invitation is the tap target.
+ *
+ * This is the onboarding moment. Reading order: author's voice →
+ * the invitation to join → what you need → how to make it.
+ */
+import RecipeDetail from "./RecipeDetail.astro";
+import RecipeNotes from "../ui/RecipeNotes.astro";
+
+interface Props { showTap?: boolean; }
+const { showTap = false } = Astro.props;
+---
+
+<RecipeDetail folio="page 1">
+  <RecipeNotes
+    slot="notes"
+    invitation
+    invitationTap={showTap}
+  />
+</RecipeDetail>

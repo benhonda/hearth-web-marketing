@@ -1,6 +1,8 @@
 import type { ScreenRender } from "~/lib/design/flows";
 import WelcomeScreen from "./WelcomeScreen.astro";
 import LibraryEmpty from "./LibraryEmpty.astro";
+import ImportSurface from "./ImportSurface.astro";
+import ImportSurfacePasted from "./ImportSurfacePasted.astro";
 import MobileSafariRecipe from "./MobileSafariRecipe.astro";
 import ShareSheet from "./ShareSheet.astro";
 import ImportPreview from "./ImportPreview.astro";
@@ -36,6 +38,17 @@ import BookSubtitle from "./BookSubtitle.astro";
 import BookRecipesEdit from "./BookRecipesEdit.astro";
 import BookReview from "./BookReview.astro";
 import BookOnItsWay from "./BookOnItsWay.astro";
+import RecipeDetailEmptyNote from "./RecipeDetailEmptyNote.astro";
+import RecipeNoteCompose from "./RecipeNoteCompose.astro";
+import RecipeDetailWithNote from "./RecipeDetailWithNote.astro";
+import RecipeNoteEdit from "./RecipeNoteEdit.astro";
+import RecipeDetailExpandedNote from "./RecipeDetailExpandedNote.astro";
+import RecipeDetailPreComment from "./RecipeDetailPreComment.astro";
+import RecipeStepCommentMenu from "./RecipeStepCommentMenu.astro";
+import RecipeStepCommentCompose from "./RecipeStepCommentCompose.astro";
+import RecipeDetailStepCommented from "./RecipeDetailStepCommented.astro";
+import RecipeIngredientCommentCompose from "./RecipeIngredientCommentCompose.astro";
+import RecipeDetailFullyAnnotated from "./RecipeDetailFullyAnnotated.astro";
 
 /**
  * Maps a FlowStep's `render` key to its Astro component. Shared by
@@ -45,6 +58,8 @@ import BookOnItsWay from "./BookOnItsWay.astro";
 export const screenComponents: Record<ScreenRender, any> = {
   welcome: WelcomeScreen,
   "library-empty": LibraryEmpty,
+  "import-surface": ImportSurface,
+  "import-surface-pasted": ImportSurfacePasted,
   "mobile-safari-recipe": MobileSafariRecipe,
   "share-sheet": ShareSheet,
   "import-preview": ImportPreview,
@@ -80,4 +95,15 @@ export const screenComponents: Record<ScreenRender, any> = {
   "book-recipes-edit": BookRecipesEdit,
   "book-review": BookReview,
   "book-on-its-way": BookOnItsWay,
+  "recipe-detail-empty-note": RecipeDetailEmptyNote,
+  "recipe-note-compose": RecipeNoteCompose,
+  "recipe-detail-with-note": RecipeDetailWithNote,
+  "recipe-note-edit": RecipeNoteEdit,
+  "recipe-detail-expanded-note": RecipeDetailExpandedNote,
+  "recipe-detail-pre-comment": RecipeDetailPreComment,
+  "recipe-step-comment-menu": RecipeStepCommentMenu,
+  "recipe-step-comment-compose": RecipeStepCommentCompose,
+  "recipe-detail-step-commented": RecipeDetailStepCommented,
+  "recipe-ingredient-comment-compose": RecipeIngredientCommentCompose,
+  "recipe-detail-fully-annotated": RecipeDetailFullyAnnotated,
 };

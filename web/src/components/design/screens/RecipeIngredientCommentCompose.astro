@@ -1,0 +1,108 @@
+---
+/**
+ * Flow V · V — Ingredient · comment compose.
+ *
+ * The cook long-pressed the butter line and tapped Comment (menu
+ * screen skipped in the binder — same three-row menu from II, same
+ * gesture, no need to teach it twice). The textarea opens beneath
+ * the butter line, indented under the ingredient's text column.
+ * Step iv keeps its committed comment above. Save halo'd.
+ *
+ * Same compose surface Flow V · III uses, just anchored to a
+ * different line-item. Proves the grammar travels — one editor, one
+ * voice, wherever a comment belongs.
+ */
+import RecipeDetail from "./RecipeDetail.astro";
+import RecipeNotes from "../ui/RecipeNotes.astro";
+import IosKeyboard from "../ui/IosKeyboard.astro";
+import {
+  sampleIngredientCommentIndex,
+  sampleNoteExpanded,
+  sampleStepCommentIndex,
+  sampleStepCommentText,
+} from "~/lib/design/sample-recipe";
+
+interface Props { showTap?: boolean; }
+const { showTap = false } = Astro.props;
+---
+
+<div class="ing-comment">
+  <header class="ing-comment__bar">
+    <span class="ing-comment__eyebrow">Commenting on butter</span>
+  </header>
+
+  <RecipeDetail
+    hideHeader
+    methodComments={{ [sampleStepCommentIndex]: { text: sampleStepCommentText } }}
+    ingredientComments={{
+      [sampleIngredientCommentIndex]: { editing: true, saveTap: showTap },
+    }}
+  >
+    <RecipeNotes
+      slot="notes"
+      text={sampleNoteExpanded}
+    />
+  </RecipeDetail>
+
+  <div class="ing-comment__keyboard-dock">
+    <IosKeyboard suggestions={["cultured", "butter", "have"] as [string, string, string]} />
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    function run() {
+      document.querySelectorAll(".ing-comment").forEach(function (surface) {
+        var scroller = surface.closest(".phone__scroll");
+        /* There are two .item-comment__textarea on the page once step
+         * iv carries a committed comment above; target the editable
+         * one (only one has focus-receiving textarea open). */
+        var tas = surface.querySelectorAll(".item-comment__textarea");
+        var ta = tas[tas.length - 1];
+        if (!scroller || !ta) return;
+        var offsetTop = 0;
+        var el = ta;
+        while (el && el !== scroller) {
+          offsetTop += el.offsetTop;
+          el = el.offsetParent;
+        }
+        scroller.scrollTop = Math.max(0, offsetTop - 120);
+      });
+    }
+    if (document.readyState === "complete") run();
+    else window.addEventListener("load", run);
+  })();
+</script>
+
+<style>
+  .ing-comment {
+    position: relative;
+    min-height: 100%;
+  }
+
+  .ing-comment__bar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    padding: 62px 22px 12px;
+    display: grid;
+    place-items: center;
+    background: var(--c-cream);
+    border-bottom: 1px solid rgba(31, 27, 23, 0.08);
+  }
+  .ing-comment__eyebrow {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--c-ochre);
+    white-space: nowrap;
+  }
+
+  .ing-comment__keyboard-dock {
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+  }
+</style>

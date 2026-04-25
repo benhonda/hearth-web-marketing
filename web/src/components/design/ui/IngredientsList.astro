@@ -14,14 +14,39 @@
  * halo so the binder marks it as the next tap target.
  */
 
+/**
+ * Optional per-item comments. Each entry maps an item index to a
+ * comment config; an `ItemComment` renders beneath that item, sized
+ * for line-item context. Indices are 0-based; missing indices render
+ * with no comment. Used by Flow V to annotate specific ingredients.
+ */
+export type IngredientComment = {
+  text?: string;
+  editing?: boolean;
+  blockTap?: boolean;
+  saveTap?: boolean;
+};
+
 interface Props {
   items: string[];
   label?: string;
   servesTap?: number;
   haloServesTap?: boolean;
+  comments?: Record<number, IngredientComment>;
+  /** Halo a single ingredient line as a long-press tap target. */
+  tapIndex?: number;
 }
 
-const { items, label = "Ingredients", servesTap, haloServesTap = false } = Astro.props;
+const {
+  items,
+  label = "Ingredients",
+  servesTap,
+  haloServesTap = false,
+  comments = {},
+  tapIndex,
+} = Astro.props;
+
+import ItemComment from "./ItemComment.astro";
 ---
 
 <section class="ing">
@@ -41,7 +66,23 @@ const { items, label = "Ingredients", servesTap, haloServesTap = false } = Astro
     </span>
   </div>
   <ul class="ing__list">
-    {items.map((item) => <li>{item}</li>)}
+    {items.map((item, i) => {
+      const comment = comments[i];
+      const hasTap = tapIndex === i;
+      return (
+        <li class={hasTap ? "ing__li ing__li--tap" : "ing__li"}>
+          <span class="ing__text">{item}</span>
+          {comment && (
+            <ItemComment
+              text={comment.text}
+              editing={comment.editing}
+              blockTap={comment.blockTap}
+              saveTap={comment.saveTap}
+            />
+          )}
+        </li>
+      );
+    })}
   </ul>
 </section>
 
@@ -132,11 +173,11 @@ const { items, label = "Ingredients", servesTap, haloServesTap = false } = Astro
     line-height: 1.55;
     color: var(--c-ink);
   }
-  .ing__list li {
+  .ing__li {
     padding-left: 14px;
     position: relative;
   }
-  .ing__list li::before {
+  .ing__li::before {
     content: "";
     position: absolute;
     left: 0;
@@ -145,5 +186,23 @@ const { items, label = "Ingredients", servesTap, haloServesTap = false } = Astro
     height: 1px;
     background: var(--c-ochre);
     opacity: 0.85;
+  }
+  .ing__text {
+    display: block;
+  }
+
+  /* Storyboard halo on a single ingredient line — long-press entry
+     into the ingredient comment menu (Flow V). */
+  .ing__li--tap::after {
+    content: "";
+    position: absolute;
+    inset: -6px -10px;
+    border: 3px solid var(--annotation);
+    border-radius: 8px;
+    box-shadow: var(--annotation-glow);
+    pointer-events: none;
+    opacity: var(--halo-opacity);
+    transition: opacity 180ms ease;
+    z-index: 50;
   }
 </style>

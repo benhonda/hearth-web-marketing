@@ -22,8 +22,8 @@
  *                                  "overlay-8".
  */
 import AppHeader from "../ui/AppHeader.astro";
-import IngredientsList from "../ui/IngredientsList.astro";
-import MethodList from "../ui/MethodList.astro";
+import IngredientsList, { type IngredientComment } from "../ui/IngredientsList.astro";
+import MethodList, { type StepComment } from "../ui/MethodList.astro";
 import { sampleRecipe } from "~/lib/design/sample-recipe";
 
 interface Props {
@@ -47,6 +47,16 @@ interface Props {
    *  which preserves the canonical long-press handoff. "hero" marks
    *  the long-press entry into Flow III's photo arc. */
   tapTarget?: "step-iv" | "serves" | "overlay-8" | "hero";
+  /** Optional folio line rendered at the foot of the body — cookbook
+   *  folio grammar, e.g. "— page 1 —". */
+  folio?: string;
+  /** Per-step comment configs, keyed by index. Rendered beneath the
+   *  matching method step as an `ItemComment`. Used by Flow V. */
+  methodComments?: Record<number, StepComment>;
+  /** Per-ingredient comment configs, keyed by index. */
+  ingredientComments?: Record<number, IngredientComment>;
+  /** Halo a single ingredient row as a long-press target. */
+  ingredientTapIndex?: number;
 }
 const {
   showTap = false,
@@ -57,6 +67,10 @@ const {
   portionOverlay = false,
   doubled = false,
   tapTarget = "step-iv",
+  folio,
+  methodComments,
+  ingredientComments,
+  ingredientTapIndex,
 } = Astro.props;
 
 const methodItems = doubled
@@ -105,12 +119,17 @@ const haloHero = showTap && tapTarget === "hero";
       <em>One pan</em>
     </p>
 
+    {Astro.slots.has("notes") && <hr class="detail__rule" />}
+    <slot name="notes" />
+
     <hr class="detail__rule" />
 
     <IngredientsList
       items={ingredientItems}
       servesTap={portionAffordance ? servesValue : undefined}
       haloServesTap={haloServes}
+      comments={ingredientComments}
+      tapIndex={ingredientTapIndex}
     />
 
     <hr class="detail__rule" />
@@ -120,7 +139,10 @@ const haloHero = showTap && tapTarget === "hero";
       tapIndex={haloStepIv ? 3 : undefined}
       editIndex={editingIndex}
       saveTap={editSaveTap}
+      comments={methodComments}
     />
+
+    {folio && <p class="detail__folio">— {folio} —</p>}
   </div>
 
   {portionOverlay && (
@@ -255,6 +277,17 @@ const haloHero = showTap && tapTarget === "hero";
     height: 1px;
     background: rgba(31, 27, 23, 0.1);
     margin: 12px 0;
+  }
+
+  .detail__folio {
+    margin: 28px 0 0;
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--c-oat);
+    text-align: center;
   }
 
   /* Portion-scale overlay ──────────────────────────────────

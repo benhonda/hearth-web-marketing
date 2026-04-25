@@ -57,6 +57,36 @@ export const recipePhotosAfter = [
   "/design/photos/corn-pasta-mise.jpg",
 ];
 
+/**
+ * Note fixtures used by Flow IV (Notes). Apple Notes grammar — a
+ * single free-text block per recipe, no structured metadata, no
+ * list-of-entries model. The cook writes whatever they want in one
+ * flowing body; two voices (cook-note and memory-note) can coexist
+ * inside the same block as they type more over time.
+ *
+ *   sampleNoteWritten   — one voice (the cook-note, first write); I + IV
+ *   sampleNoteExpanded  — both voices flowing into a single block; V
+ */
+export const sampleNoteWritten =
+  "Halved the salt — nicer balance.";
+
+export const sampleNoteExpanded =
+  "Halved the salt — nicer balance. — Sam's 30th. Doubled it. Everyone wanted seconds. —";
+
+/**
+ * Line-item comment fixtures used by Flow V. One on step iv (method
+ * index 3) — the cook's cooking-time adjustment — and one on the
+ * butter line (ingredient index 6) — a quality preference. The two
+ * voices cover different territory than the global note: the global
+ * note is about the recipe as a whole; line-item comments annotate
+ * specifics.
+ */
+export const sampleStepCommentIndex = 3;
+export const sampleStepCommentText = "10–12 minutes — thickens better.";
+
+export const sampleIngredientCommentIndex = 6;
+export const sampleIngredientCommentText = "Cultured if I have it.";
+
 export const sampleRecipe: SampleRecipe = {
   title: "Summer Corn & Basil Ragù",
   source: "table.kitchen",

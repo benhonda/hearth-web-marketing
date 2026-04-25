@@ -1,0 +1,93 @@
+---
+/**
+ * Flow IV · IV — Notes · edit.
+ *
+ * The cook tapped the populated block. Same editor surface from II,
+ * now populated with the note's current text ("Halved the salt —
+ * nicer balance."). Cook is about to add the memory-note into the
+ * same block. Save is halo'd as the handoff into V.
+ *
+ * iOS keyboard docked, textarea scrolled into the visible band above
+ * it — same pattern as RecipeNoteCompose.
+ */
+import RecipeDetail from "./RecipeDetail.astro";
+import RecipeNotes from "../ui/RecipeNotes.astro";
+import IosKeyboard from "../ui/IosKeyboard.astro";
+import { sampleNoteWritten } from "~/lib/design/sample-recipe";
+
+interface Props { showTap?: boolean; }
+const { showTap = false } = Astro.props;
+---
+
+<div class="note-edit">
+  <header class="note-edit__bar">
+    <span class="note-edit__eyebrow">Editing the note</span>
+  </header>
+
+  <RecipeDetail hideHeader>
+    <RecipeNotes
+      slot="notes"
+      text={sampleNoteWritten}
+      editing
+      saveTap={showTap}
+    />
+  </RecipeDetail>
+
+  <div class="note-edit__keyboard-dock">
+    <IosKeyboard suggestions={["Sam's", "seconds", "everyone"] as [string, string, string]} />
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    function run() {
+      document.querySelectorAll(".note-edit").forEach(function (surface) {
+        var scroller = surface.closest(".phone__scroll");
+        var ta = surface.querySelector(".notes__textarea");
+        if (!scroller || !ta) return;
+        var offsetTop = 0;
+        var el = ta;
+        while (el && el !== scroller) {
+          offsetTop += el.offsetTop;
+          el = el.offsetParent;
+        }
+        scroller.scrollTop = Math.max(0, offsetTop - 120);
+      });
+    }
+    if (document.readyState === "complete") run();
+    else window.addEventListener("load", run);
+  })();
+</script>
+
+<style>
+  .note-edit {
+    position: relative;
+    min-height: 100%;
+  }
+
+  .note-edit__bar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    padding: 62px 22px 12px;
+    display: grid;
+    place-items: center;
+    background: var(--c-cream);
+    border-bottom: 1px solid rgba(31, 27, 23, 0.08);
+  }
+  .note-edit__eyebrow {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--c-ochre);
+    white-space: nowrap;
+  }
+
+  .note-edit__keyboard-dock {
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+  }
+</style>

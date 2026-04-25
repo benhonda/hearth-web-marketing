@@ -1,0 +1,18 @@
+---
+/**
+ * Flow V · II — Step · long-press menu (Comment-primary).
+ *
+ * The cook long-pressed step iv. Same three-row context menu Flow I
+ * uses for its edit arc — Comment · Edit · Delete — rendered by the
+ * shared `RecipeEditMenu` component. The only difference vs Flow I
+ * · X is the halo target: this flow halos Comment, Flow I halos
+ * Edit. Both affordances exist in both flows; the halo is the
+ * storyboard overlay saying "this is the tap."
+ */
+import RecipeEditMenu from "./RecipeEditMenu.astro";
+
+interface Props { showTap?: boolean; }
+const { showTap = false } = Astro.props;
+---
+
+<RecipeEditMenu showTap={showTap} haloTarget="comment" />

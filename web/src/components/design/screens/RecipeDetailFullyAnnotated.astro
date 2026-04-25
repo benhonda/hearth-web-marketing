@@ -1,0 +1,44 @@
+---
+/**
+ * Flow V · VI — Recipe · fully annotated.
+ *
+ * The close of the flow. The recipe now carries three voices:
+ *   · the global note block at the top of the body (Flow IV),
+ *   · the step-iv comment beneath step iv in Lora italic Ash,
+ *   · the butter-line comment beneath ingredient 6.
+ *
+ * Nothing destroyed. The recipe body still reads as it was imported
+ * — the line-item comments are annotation, not revision. What's on
+ * the page now is the personalization layer: the comments are what
+ * make a recipe that came from somewhere else into hers.
+ * This is the content the printed book will carry beyond the bare
+ * recipe — the proof-of-authorship that a library of saved URLs
+ * can't give you.
+ */
+import RecipeDetail from "./RecipeDetail.astro";
+import RecipeNotes from "../ui/RecipeNotes.astro";
+import {
+  sampleIngredientCommentIndex,
+  sampleIngredientCommentText,
+  sampleNoteExpanded,
+  sampleStepCommentIndex,
+  sampleStepCommentText,
+} from "~/lib/design/sample-recipe";
+
+interface Props { showTap?: boolean; }
+// Last screen in the flow — no tap target. Prop accepted for registry consistency.
+void Astro.props;
+---
+
+<RecipeDetail
+  folio="page 1"
+  methodComments={{ [sampleStepCommentIndex]: { text: sampleStepCommentText } }}
+  ingredientComments={{
+    [sampleIngredientCommentIndex]: { text: sampleIngredientCommentText },
+  }}
+>
+  <RecipeNotes
+    slot="notes"
+    text={sampleNoteExpanded}
+  />
+</RecipeDetail>

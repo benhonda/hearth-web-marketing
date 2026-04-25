@@ -12,7 +12,7 @@ Home cooks. Archetype: my girlfriend — not chefs, not food creators, not profe
 
 Context of use: phone in hand, kitchen or couch, unhurried. Not under time pressure. Not tracking macros. Not meal-planning.
 
-Job to be done: *"Save every recipe I love, let it live beautifully, and — when the moment calls for it — turn it into a real book."*
+Job to be done: *"Save every recipe I love, make it mine as I cook, and — when the moment calls for it — turn it into a real book."*
 
 Emotional goals: **confidence, calm, quiet pride in the object.** Never urgency, never gamified delight, never FOMO.
 
@@ -91,6 +91,7 @@ Every recipe saved is already book-worthy. Competitors are either utilitarian re
 4. **Craft moments over features.** Premium feeling = small unexpected touches.
 5. **First import is the hero flow.** Screenshot-worthy.
 6. **Book spine test.** Every design decision must look right on a hardcover spine.
+7. **Annotations are the personalization layer.** Comments and notes at both recipe and line-item scope are what make someone else's recipe into yours. The printed book renders them alongside the recipe body — the marginalia are the proof-of-authorship, not ornament. A library of saved URLs can't give you this; a library of saved-and-annotated URLs can.
 
 ## What Hearth is NOT
 
