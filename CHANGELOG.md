@@ -16,6 +16,8 @@
 
 - chore: Added `ui-ux-pro-max` skill via `bit-cli` — registered in `skills-lock.json` and pulled into `.agents/skills/ui-ux-pro-max/` (`.claude/skills/ui-ux-pro-max` symlink follows the existing pattern). Brings UI/UX intelligence (style libraries, color palettes, font pairings, product types, UX guidelines, chart types) into the skill set alongside the existing Stitch/impeccable/shadcn surfaces.
 
+- docs: README gained two reference shelves — **Similar apps** (Mobbin screen archives for Crème, Tasty, SideChef, Kitchen Stories, HelloFresh, VSCO; VSCO included for the aesthetic + bilateral-friends shape, not as a recipe peer) and **Printing options** (Blurb as the current planned printer, Pixory as the premium-finish reference). Pulls design/printing reference links out of chat and into the source-of-truth doc so they're discoverable when the relevant design pass starts.
+
 ## 2026-04-26
 
 - feat: Added Flow II (`/design/flows/02-recipe-actions`) — *The page, lived in.* One canonical recipe page at rest, with five sub-flows fanning beneath it: Scale (yield strip), Edit (long-press → inline textarea), Notes (margin block), Line comments (per-step / per-ingredient annotation), and Measures (cups · grams · oz). The page is the springboard; every halo lives on the first cell of each sub-flow where the cook's specific gesture is taught in context. Replaces the prior linear Flow I tail (steps VII–XII) which conflated the resting page with one specific gesture sequence.

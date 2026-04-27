@@ -113,6 +113,24 @@ Context. While drawing the `03-make-a-book` flow in the design binder, we reache
 
 **Not lost work.** The `BookPage` / `BookCover` component contracts (props, slot semantics, natural size) are the right shape; only the *internals* of each layout need the real design pass. The wiring into `BookLayout.astro` (scale transform + frame pattern) is the right pattern and will remain when we upgrade the layouts.
 
+## Similar apps
+
+Reference shelf — Mobbin screen archives for the apps worth studying.
+
+- **[Crème](https://mobbin.com/apps/creme-ios-2437b570-6f06-4b2a-a683-834d6a6ee2de/4a0811fc-60ad-4cf3-a876-7a550dfbf85d/screens)** — social recipe library; modern, design-forward.
+- **[Tasty](https://mobbin.com/apps/tasty-ios-9a3515a6-4ea1-459b-a3f1-e649eba1b889/9515c942-0181-419c-aa31-46a2a25e4056/screens)** — BuzzFeed's video-first recipe app.
+- **[SideChef](https://mobbin.com/apps/side-chef-ios-1a1b9aa5-dbb0-422c-b49d-c89c2e737827/0259cd1c-c091-40c7-b3b6-9ab54f69f06e/screens)** — step-by-step guided cooking.
+- **[Kitchen Stories](https://mobbin.com/apps/kitchen-stories-ios-7af43913-9fe1-4d5b-b9b0-d63144f38367/86d88cd3-7b6f-43b9-a58d-aa4030725e2e/screens)** — editorial recipes, magazine aesthetic.
+- **[HelloFresh](https://mobbin.com/apps/hello-fresh-ios-c5986722-b660-4905-94c4-d95aa1c63983/31a0f1a4-6514-49a7-b60c-de11d17efb4d/screens)** — meal-kit subscription companion.
+- **[VSCO](https://mobbin.com/apps/vsco-ios-9b26fa69-06b8-42e8-82ac-2282a0c39019/57b135fb-07c7-4a08-8d6f-f87b56f791b1/screens)** — photo app; reference for aesthetic + bilateral-friends shape.
+
+## Printing options
+
+Print-on-demand partners under consideration for the hardcover.
+
+- **[Blurb](https://www.blurb.com/)** — current planned printer; broad trim/paper range, established API.
+- **[Pixory](https://www.pixoryofficial.com/travel-photobooks/)** — premium photo books; reference for the travel-book aesthetic and finish.
+
 ## Documents
 
 - [`PRODUCT.md`](./PRODUCT.md) — north-star brief, positioning, principles, validation plan
