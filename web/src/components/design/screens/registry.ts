@@ -58,6 +58,8 @@ import RecipeWithCreditChain from "./RecipeWithCreditChain.astro";
 import LibraryAfterFriendSave from "./LibraryAfterFriendSave.astro";
 import ImportTranscription from "./ImportTranscription.astro";
 import ImportPreviewPhoto from "./ImportPreviewPhoto.astro";
+import ImportProcessing from "./ImportProcessing.astro";
+import ImportPreviewUnitPicker from "./ImportPreviewUnitPicker.astro";
 
 /**
  * Maps a FlowStep's `render` key to its Astro component. Shared by
@@ -129,4 +131,6 @@ export const screenComponents: Partial<Record<ScreenRender, any>> = {
   "library-after-friend-save": LibraryAfterFriendSave,
   "import-transcription": ImportTranscription,
   "import-preview-photo": ImportPreviewPhoto,
+  "import-processing": ImportProcessing,
+  "import-preview-unit-picker": ImportPreviewUnitPicker,
 };

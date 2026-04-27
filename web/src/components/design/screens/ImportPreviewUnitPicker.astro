@@ -1,0 +1,18 @@
+---
+/**
+ * Edit-interaction demo — Import · structured edit with the unit
+ * combobox open on the white-miso line. Same screen as the URL-path
+ * structured edit, just in its mid-edit state. Demonstrates the
+ * type-aware editor's most distinctive affordance: the unit combobox
+ * that accepts standard units AND free-text long-tail measures.
+ *
+ * Delegates to ImportPreview with editing="unit-picker" so the open
+ * and resting states stay locked in step.
+ */
+import ImportPreview from "./ImportPreview.astro";
+
+interface Props { showTap?: boolean; }
+const { showTap = false } = Astro.props;
+---
+
+<ImportPreview showTap={showTap} source="url" editing="unit-picker" />

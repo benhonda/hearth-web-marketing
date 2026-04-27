@@ -73,7 +73,9 @@ export type ScreenRender =
   | "shared-collection"
   | "recipe-with-credit-chain"
   | "library-after-friend-save"
-  | "import-preview-photo";
+  | "import-preview-photo"
+  | "import-processing"
+  | "import-preview-unit-picker";
 
 export type FlowStep = {
   numeral: string;            // Roman numeral label — "I", "II", "III"; "" for branch steps
@@ -154,6 +156,16 @@ export const flows: Flow[] = [
             },
             {
               numeral: "",
+              name: "Photo · processing",
+              detailTitle: "Reading the page.",
+              note:
+                "The wait. After the cook picks a photo, AI vision does the slow work — reading cursive on grandma's pink paper, transcribing the recipe verbatim. Centered on cream: a small typographic 'page' — five Ochre hairlines at varying widths that draw left-to-right and fade in sequence (each animation-delay offset so the wave never empties), suggesting the AI reading line by line down the page. Italic Lora '— reading the page —' beneath, in the system's own voice. No spinner, no progress bar, no percentage — those are SaaS chrome. No fake-photo graphic either — a paper-warmth placeholder where the cook's actual photo isn't would read as cosplay. Honors prefers-reduced-motion (lines settle into their drawn state, no animation). No tap target — the screen auto-advances to the transcription gate when vision completes. Cancel is the only out.",
+              render: "import-processing",
+              screenSlug: "import-processing",
+              tap: "(auto)",
+            },
+            {
+              numeral: "",
               name: "Photo · transcription gate",
               detailTitle: "Word for word, first.",
               note:
@@ -165,9 +177,9 @@ export const flows: Flow[] = [
             {
               numeral: "",
               name: "Structured edit · from photograph",
-              detailTitle: "The artifact kept, structured.",
+              detailTitle: "Extracted, no dish photo yet.",
               note:
-                "Same structured-edit grammar as the main-line V, but the page leads with the source artifact — paper-warmth gradient with subtle ruling, standing in for the cook's photograph of the handwritten card. Italic Lora caption beneath: 'from your photograph.' The From-URL chip falls away (the hero IS the source attribution). Recipe content matches the transcription gate — Grandma's Corn Ragu, serves 4, no minutes (handwritten cards rarely carry one). The Notes block arrives populated with what the AI extracted from the card ('From Grandma Ruth's recipe box.'); the cook adds her voice underneath as she returns over time. The basil line uses the combobox's free-text mode ('small handful'), and an AI-extracted margin note rides under it ('grandma was heavier-handed'). Save commits the recipe to the library; the original photo stays attached forever as the source of truth the cook can always return to.",
+                "Same structured-edit layout as the main-line V — same top bar ('Cancel · EDITING · Save'), same affordances, same inline-edit grammar. The deltas: the From-URL chip falls away (no URL), and the hero slot renders an empty placeholder (dashed-border cream box with italic-Ochre '— add a photo —' invitation) since the cook hasn't taken a dish photo yet — they only photographed the source card, which Hearth keeps in data but doesn't re-render here. Recipe content matches the transcription gate — Grandma's Corn Ragu, serves 4, no minutes (handwritten cards rarely carry one). Notes block arrives populated with what the AI extracted from the card ('From Grandma Ruth's recipe box.'); the cook adds her voice underneath as she returns over time. The basil line uses the combobox's free-text mode ('small handful'), and an AI-extracted margin note rides under it ('grandma was heavier-handed'). Save commits the recipe to the library; the source photograph stays attached in data forever.",
               render: "import-preview-photo",
               screenSlug: "import-preview-photo",
               tap: "Save",
@@ -217,10 +229,25 @@ export const flows: Flow[] = [
         name: "Import · structured edit",
         detailTitle: "Extracted, made yours.",
         note:
-          "The shared destination for all three import doorways. Looks like the cookbook page it'll become; every field is inline-editable. Title in Lora display (no form-field box). Serves N and minutes carry quiet dotted-Ochre underlines that signal editability without form chrome. Notes block sits between meta and ingredients — empty here as an invitation; it arrives populated on the photo path. Ingredients render as a type-aware trio per line: qty (dotted underline) · unit (dotted underline + ▾ — combobox grammar accepting standard units AND 'pinch', 'small handful', 'to taste') · name (plain text). The 'Olive oil, salt, black pepper' line shows the no-quantity case. Method steps render in the existing italic-Roman grammar with mise lines; AI-extracted inline comments arrive populated where the source carried marginalia (here: 'Cultured if I have it.' on the miso line). Save commits the recipe to the library.",
+          "The shared destination for all three import doorways. An unsaved import is, by definition, an editing surface — top bar reads 'Cancel · EDITING · Save' so the cook never doubts what kind of screen they're on. Every field is inline-editable, every affordance visible at all times: title in Lora display (no form-field box); serves N and minutes carry dotted-Ochre underlines; ingredients render as a type-aware trio per line (qty · unit ▾ · name) where the unit combobox accepts standard units AND 'pinch', 'small handful', 'to taste'; method steps in the italic-Roman grammar with mise lines; notes block sits between meta and ingredients (empty invitation here, populated on the photo path). AI-extracted inline comments arrive pre-populated where the source carried marginalia (here: 'Cultured if I have it.' on the miso line). Save commits the recipe to the library. The Editing sub-flow below shows the unit-combobox in its open state — the most distinctive of the inline-edit affordances.",
         render: "import-preview",
         screenSlug: "import-preview",
         tap: "Save",
+        branches: [{
+          label: "Editing · sub-flow",
+          steps: [
+            {
+              numeral: "",
+              name: "Unit picker · open",
+              detailTitle: "The combobox blooms.",
+              note:
+                "The cook taps the unit on the white-wine line; the closed '[cup ▾]' token is replaced in place by a typographic radio strip — '— tsp · Tbsp · cup · g · other —'. Same vocabulary as Flow VI's measure picker (cups/grams/oz on the eyebrow row): em-dash bookends, middot separators, italic Lora Ochre, current selection (cup) larger and Ink with the chapter-rule hairline beneath. The line wraps so 'dry white wine' flows beneath the strip — the picker gets the full row, the name still reads. The halo lands on 'g' as the cook's next tap (the volume→weight switch is the most common reason a cook reaches for this picker). 'Other' is the escape hatch for free-text long-tail measures (knob, small handful, to taste). The other inline affordances — qty number, name text, title display, notes block, method-step text — work the same way: tap the field, it opens in place. This screen demonstrates the pattern; the others follow.",
+              render: "import-preview-unit-picker",
+              screenSlug: "import-preview-unit-picker",
+              tap: "cup",
+            },
+          ],
+        }],
       },
       {
         numeral: "VI",

@@ -2,10 +2,12 @@
 /**
  * Screen V · Import preview — really the structured edit.
  *
- * The shared destination for all three import doorways. Looks like the
- * cookbook page it'll become; every field is inline-editable. No form
- * chrome, no "tap any section to edit" hints — the cook treats this
- * as the page itself, the affordances are quiet and earned.
+ * The shared destination for all three import doorways. An unsaved
+ * import is, by definition, an editing surface — the cook is reviewing
+ * AI-extracted content before committing it to the library. So the
+ * page is ALWAYS in edit mode: top bar reads "Cancel · EDITING · Save"
+ * and every editable field carries its affordance at all times. Save
+ * commits to the library.
  *
  * Per-field editability:
  *   · Title           → Lora display, plain text, caret on tap
@@ -27,13 +29,16 @@
  *                       comments arrive pre-populated where the
  *                       source carried marginalia
  *
- * Source variants:
- *   · url   — food hero with photographer credit; "From [url]" chip
- *   · text  — food hero (sample fallback); no chip
- *   · photo — paper-warmth artifact hero standing in for the cook's
- *             actual photograph; no chip — the hero IS the source
- *             attribution. Recipe content matches the transcription
- *             gate (Grandma's Corn Ragu, serves 4, no minutes).
+ * Source variants share one layout — the only delta is the hero slot
+ * and the from-card chip:
+ *   · url   — food hero (extracted from the source page) with
+ *             photographer credit; "From [url]" chip above
+ *   · photo — empty hero placeholder ("— add a photo —"); no chip.
+ *             The cook's actual photograph of the source is preserved
+ *             in data, not re-rendered here. Content matches the
+ *             transcription gate (Grandma's Corn Ragu, serves 4, no
+ *             minutes).
+ *   · text  — empty hero placeholder; no chip
  */
 import RecipeNotes from "../ui/RecipeNotes.astro";
 import MethodList from "../ui/MethodList.astro";
@@ -53,19 +58,43 @@ interface Props {
    *  text  → food hero (fallback) + no chip + sample recipe
    */
   source?: "url" | "photo" | "text";
+  /** Optional active inline editor — when set, that specific field
+   *  renders in its open editing state (the rest of the page is
+   *  already always editing — there's no view-mode for an unsaved
+   *  import; it's an editing surface by definition).
+   *
+   *  unit-picker → the unit combobox on the white-wine line is open,
+   *                replacing the closed [cup ▾] token with a radio
+   *                strip ("— tsp · Tbsp · cup · g · other —"). Current
+   *                selection (cup) larger + Ink with the chapter-rule
+   *                hairline beneath. "g" carries the storyboard tap
+   *                halo — the cook is converting volume to weight.
+   */
+  editing?: "unit-picker";
 }
 
-const { showTap = false, source = "url" } = Astro.props;
+const { showTap = false, source = "url", editing } = Astro.props;
 const isPhoto = source === "photo";
+// URL path inherits the food photo extracted from the source page.
+// Photo/text paths show an empty hero slot inviting an upload — the
+// cook adds a dish photo after they've actually cooked it (the
+// "imperfect, true-to-phone" photography rule, tokens.css).
+const heroPhoto = !isPhoto && source !== "text" ? sampleRecipe.photo : null;
+// Index of the white-wine line in the URL ingredient list — the
+// line we open the unit picker on for the edit-demo screen. Picked
+// because it sits high enough in the list to render in the visible
+// phone viewport, AND its unit ("cup") is a standard volume measure
+// that demonstrates the volume→weight switch the combobox supports.
+const PICKER_INDEX = 3;
 
 /* Per-source recipe content. ----------------------------------- */
 
 type ParsedIngredient = {
-  /** undefined = no quantity slot rendered (the "to taste" case). */
+  /** undefined = no quantity slot (the "to taste" case). */
   qty?: string;
-  /** undefined = no unit slot rendered. Empty string = unit slot
-   *  rendered but empty (the bare-count case: "1 shallot"). Any other
-   *  string = combobox value, free text accepted. */
+  /** undefined = no unit slot (bare-count case: "1 shallot"). Any
+   *  string value renders the combobox affordance — free text accepted
+   *  for the long tail (knob, pinch, "small handful", "to taste"). */
   unit?: string;
   name: string;
   comment?: string;
@@ -78,7 +107,7 @@ const recipeMinutes: number | undefined = isPhoto ? undefined : sampleRecipe.min
 const recipeIngredients: ParsedIngredient[] = isPhoto
   ? [
       { qty: "4", unit: "ears", name: "corn, kernels cut off the cob" },
-      { qty: "1", unit: "", name: "large shallot, finely diced" },
+      { qty: "1", name: "large shallot, finely diced" },
       { qty: "2", unit: "Tbsp", name: "olive oil" },
       { qty: "1", unit: "cup", name: "dry white wine" },
       { qty: "3", unit: "Tbsp", name: "unsalted butter" },
@@ -90,7 +119,7 @@ const recipeIngredients: ParsedIngredient[] = isPhoto
     ]
   : [
       { qty: "6", unit: "ears", name: "sweet corn, kernels scraped (cobs reserved)" },
-      { qty: "1", unit: "", name: "shallot, minced" },
+      { qty: "1", name: "shallot, minced" },
       { qty: "3", unit: "cloves", name: "garlic, thinly sliced" },
       { qty: "1", unit: "cup", name: "dry white wine" },
       {
@@ -127,9 +156,9 @@ const recipeNote = isPhoto ? "From Grandma Ruth's recipe box." : "";
 <div class="ip">
   <header class="ip-bar">
     <button class="ip-bar__cancel" type="button">Cancel</button>
-    <span class="ip-bar__eyebrow">Import recipe</span>
+    <span class="ip-bar__eyebrow">Editing</span>
     <button
-      class={showTap ? "ip-bar__save ip-bar__save--tap" : "ip-bar__save"}
+      class={showTap && !editing ? "ip-bar__action ip-bar__action--tap" : "ip-bar__action"}
       type="button"
     >Save</button>
   </header>
@@ -142,19 +171,18 @@ const recipeNote = isPhoto ? "From Grandma Ruth's recipe box." : "";
       </div>
     )}
 
-    {isPhoto ? (
-      <>
-        <div class="hero hero--artifact" aria-hidden="true"></div>
-        <p class="ip__source-caption">from your photograph</p>
-      </>
-    ) : (
+    {heroPhoto ? (
       <div
         class="hero"
         aria-hidden="true"
-        style={`background-image: url(${sampleRecipe.photo})`}
+        style={`background-image: url(${heroPhoto})`}
       >
         <span class="hero__credit">photograph · Mia Aquilina</span>
       </div>
+    ) : (
+      <button class="hero hero--empty" type="button">
+        <span class="hero__invite">— add a photo —</span>
+      </button>
     )}
 
     <h1 class="ip__title">{recipeTitle}</h1>
@@ -183,25 +211,52 @@ const recipeNote = isPhoto ? "From Grandma Ruth's recipe box." : "";
       </span>
 
       <ul class="ing__list">
-        {recipeIngredients.map((it) => (
-          <li class="ing__li">
-            <span class="ing__row">
-              <span class="ing__inputs">
-                {it.qty !== undefined && (
-                  <button class="ing__qty" type="button">{it.qty || "·"}</button>
-                )}
-                {it.unit !== undefined && (
-                  <button class="ing__unit" type="button">
-                    <span class="ing__unit-text">{it.unit || "—"}</span>
-                    <span class="ing__unit-chev" aria-hidden="true">▾</span>
-                  </button>
-                )}
-              </span>
-              <span class="ing__name">{it.name}</span>
-            </span>
-            {it.comment && <ItemComment text={it.comment} />}
-          </li>
-        ))}
+        {recipeIngredients.map((it, i) => {
+          const isPickerOpen =
+            editing === "unit-picker" && !isPhoto && i === PICKER_INDEX;
+          return (
+            <li class="ing__li">
+              {!isPickerOpen && (
+                <span class="ing__row">
+                  <span class="ing__inputs">
+                    {it.qty !== undefined && (
+                      <button class="ing__qty" type="button">{it.qty || "·"}</button>
+                    )}
+                    {it.unit !== undefined && (
+                      <button class="ing__unit" type="button">
+                        <span class="ing__unit-text">{it.unit || "—"}</span>
+                        <span class="ing__unit-chev" aria-hidden="true">▾</span>
+                      </button>
+                    )}
+                  </span>
+                  <span class="ing__name">{it.name}</span>
+                </span>
+              )}
+              {isPickerOpen && (
+                <>
+                  <span class="ing__row ing__row--editing">
+                    <span class="ing__qty-static">{it.qty}</span>
+                    <span class="ing__unit-picker" role="radiogroup" aria-label="Unit">
+                      <span class="ing__unit-dash" aria-hidden="true">—</span>
+                      <button type="button" class="ing__unit-opt">tsp</button>
+                      <span class="ing__unit-mid" aria-hidden="true">·</span>
+                      <button type="button" class="ing__unit-opt">Tbsp</button>
+                      <span class="ing__unit-mid" aria-hidden="true">·</span>
+                      <button type="button" class="ing__unit-opt is-on" aria-pressed="true">cup</button>
+                      <span class="ing__unit-mid" aria-hidden="true">·</span>
+                      <button type="button" class={showTap ? "ing__unit-opt ing__unit-opt--halo" : "ing__unit-opt"}>g</button>
+                      <span class="ing__unit-mid" aria-hidden="true">·</span>
+                      <button type="button" class="ing__unit-opt">other</button>
+                      <span class="ing__unit-dash" aria-hidden="true">—</span>
+                    </span>
+                  </span>
+                  <span class="ing__name ing__name--wrapped">{it.name}</span>
+                </>
+              )}
+              {it.comment && <ItemComment text={it.comment} />}
+            </li>
+          );
+        })}
       </ul>
     </section>
 
@@ -243,7 +298,7 @@ const recipeNote = isPhoto ? "From Grandma Ruth's recipe box." : "";
     text-transform: uppercase;
     color: var(--c-ochre);
   }
-  .ip-bar__save {
+  .ip-bar__action {
     position: relative;
     justify-self: flex-end;
     font-family: var(--f-body);
@@ -252,7 +307,10 @@ const recipeNote = isPhoto ? "From Grandma Ruth's recipe box." : "";
     color: var(--c-ochre);
     padding: 4px 8px;
   }
-  .ip-bar__save--tap::after {
+
+  /* Save halo — sits on the top-bar Save action when the binder is
+     marking it as the next tap target. */
+  .ip-bar__action--tap::after {
     content: "";
     position: absolute;
     inset: -4px;
@@ -328,41 +386,32 @@ const recipeNote = isPhoto ? "From Grandma Ruth's recipe box." : "";
     z-index: 1;
   }
 
-  /* Source-artifact hero — paper-warmth gradient with subtle ruling.
-     Same visual vocabulary as ImportTranscription's photo placeholder
-     so the artifact reads as the same image at hero scale. No scrim
-     (no text overlay), no credit (the artifact IS the source). */
-  .hero--artifact {
-    background-color: transparent;
-    background-image:
-      radial-gradient(circle at 28% 18%, rgba(255, 255, 255, 0.55) 0%, transparent 55%),
-      linear-gradient(160deg, #efe6d4 0%, #e3d8c2 100%);
-    box-shadow: var(--shadow-paper);
+  /* Empty hero — when the recipe arrived without a dish photo (photo
+     and text paths). Same 4:3 footprint as the food hero so the page
+     layout doesn't shift when a photo is added. Quiet --c-input
+     background (slightly lighter than the page) with an italic-Ochre
+     "— add a photo —" invitation centered. Same em-dash bookend
+     grammar as Hearth's other invitations ("— add a note —"). Tap
+     opens the OS source sheet (Take Photo / Choose from Library). */
+  .hero--empty {
+    appearance: none;
+    -webkit-appearance: none;
+    background: var(--c-input);
+    background-image: none;
+    border: 1px dashed rgba(122, 90, 38, 0.22);
+    cursor: pointer;
+    display: grid;
+    place-content: center;
+    padding: 0;
   }
-  .hero--artifact::after {
-    /* Override the food-hero scrim — replace with horizontal ruling. */
-    background: none;
-    inset: 12% 14% 12% 14%;
-    background-image: repeating-linear-gradient(
-      to bottom,
-      transparent 0,
-      transparent 20px,
-      rgba(31, 27, 23, 0.07) 20px,
-      rgba(31, 27, 23, 0.07) 21px
-    );
-  }
-
-  /* Caption beneath the artifact hero — italic Lora Oat, mirrors the
-     "From card" voice but lives below the hero (the hero has already
-     done the visual attribution). */
-  .ip__source-caption {
-    text-align: center;
-    margin: -8px 0 0;
+  .hero--empty::after { display: none; }
+  .hero__invite {
     font-family: var(--f-display);
     font-style: italic;
-    font-size: 12.5px;
-    color: var(--c-oat);
-    letter-spacing: 0.04em;
+    font-weight: 400;
+    font-size: 16px;
+    color: var(--c-ochre);
+    letter-spacing: 0.005em;
   }
 
   /* Title ───────────────────────────────────────────────────── */
@@ -586,5 +635,98 @@ const recipeNote = isPhoto ? "From Grandma Ruth's recipe box." : "";
   .ing__name {
     flex: 1 1 auto;
     min-width: 0;
+  }
+
+
+  /* Edit state — the unit combobox blooms in place. The closed
+     "[Tbsp ▾]" token is replaced by a typographic radio strip with
+     em-dash bookends and middot separators, in the same vocabulary
+     as Flow VI's measure picker (cups/grams/oz on the eyebrow row).
+     Italic Lora Ochre; current selection larger and Ink with the
+     chapter-rule hairline beneath, exactly like the units picker.
+     The name flows beneath the strip on its own line so the picker
+     gets the full row's width and the name still reads. */
+  .ing__row--editing {
+    flex-wrap: nowrap;
+    align-items: baseline;
+    gap: 6px;
+  }
+  .ing__qty-static {
+    font-family: var(--f-body);
+    font-size: 13.5px;
+    color: var(--c-ink);
+  }
+  .ing__name--wrapped {
+    display: block;
+    margin-top: 4px;
+    font-family: var(--f-body);
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--c-ink);
+  }
+
+  .ing__unit-picker {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 5px;
+    font-family: var(--f-display);
+    font-style: italic;
+    color: var(--c-ochre);
+    line-height: 1.2;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .ing__unit-dash {
+    font-size: 13px;
+    color: var(--c-ochre);
+    opacity: 0.55;
+    line-height: 1;
+  }
+  .ing__unit-mid {
+    font-size: 12px;
+    color: var(--c-ochre);
+    opacity: 0.45;
+    line-height: 1;
+  }
+  .ing__unit-opt {
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    border: 0;
+    padding: 2px 1px 4px;
+    margin: 0;
+    font: inherit;
+    font-size: 13px;
+    color: var(--c-ash);
+    cursor: pointer;
+    position: relative;
+    line-height: 1;
+    transition: color var(--motion-state) var(--ease-state);
+  }
+  .ing__unit-opt:hover { color: var(--c-ink); }
+  .ing__unit-opt.is-on {
+    color: var(--c-ink);
+    font-size: 16px;
+  }
+  .ing__unit-opt.is-on::after {
+    content: "";
+    position: absolute;
+    left: 1px;
+    right: 1px;
+    bottom: 0;
+    height: 1.5px;
+    background: var(--c-ochre);
+  }
+  .ing__unit-opt--halo::before {
+    content: "";
+    position: absolute;
+    inset: -5px -4px;
+    border: 3px solid var(--annotation);
+    border-radius: 6px;
+    box-shadow: var(--annotation-glow);
+    pointer-events: none;
+    opacity: var(--halo-opacity);
+    transition: opacity 180ms ease;
+    z-index: 50;
   }
 </style>

@@ -23,19 +23,19 @@ One list, top to bottom. "Drawn" = a flow exists in the binder.
 - **Recipe edit** — long-press a step; save commits the change. (Flow II · Edit sub-flow)
 - **Global notes** — Apple Notes block between meta and ingredients. (Flow II · Notes sub-flow)
 - **Line-item comments** — beside a step or ingredient. (Flow II · Line comments sub-flow)
+- **Unit conversion** — cups ↔ grams ↔ ounces; quiet typographic picker on the Ingredients eyebrow, no overlay. Lens over the recipe, doesn't change it. (Flow II · Measures sub-flow)
 - **Make-a-book** — occasion → recipes → layout → preview → settings → review → on-its-way. (Flow III)
 - **Photos** — long-press the hero, add from camera roll; layout adapts in the book. (Flow IV)
 - **Friends** — bilateral mutual graph; library stays private, **collections** are the social atom (user-named, opt-in friends-shareable, Apple-Music-playlist analog). Saving from a friend's shared collection threads a two-line credit chain into your library — *FROM table.kitchen · VIA Sarah Chen* — preserved on the printed cookbook page. Notes never travel; recipe edits travel as part of the recipe-body. (Flow V)
 
 ### To draw next
-1. **Unit conversion** — volume → weight (cups/tbsp → grams/oz) as a quiet on-page mechanic. Needs an ingredient-density source.
-2. Failed import state.
-3. Settings — name on cover, sign-out, account deletion.
-4. Dedication / front matter — single text page. (Personalized upsell version is shelved.)
-5. Table of contents.
-6. **Your collections** — the destination behind the Collections row in the library options list (currently a tappable placeholder).
-7. **Friend invite / accept** — the gesture that creates a bilateral mutual; never visualized.
-8. **Friends-list edge states** — empty list, inbound invite at the top, friend with nothing shared yet.
+1. Failed import state.
+2. Settings — name on cover, sign-out, account deletion.
+3. Dedication / front matter — single text page. (Personalized upsell version is shelved.)
+4. Table of contents.
+5. **Your collections** — the destination behind the Collections row in the library options list (currently a tappable placeholder).
+6. **Friend invite / accept** — the gesture that creates a bilateral mutual; never visualized.
+7. **Friends-list edge states** — empty list, inbound invite at the top, friend with nothing shared yet.
 
 ### V1-scoped, lower binder priority
 - Stripe checkout.

@@ -26,28 +26,47 @@ import { screenComponents } from "./screens/registry";
 type Props = { flow: Flow; showHeader?: boolean };
 const { flow, showHeader = true } = Astro.props;
 
-// Grid placements. Main cells walk columns 1..N. Each branch on step k
-// places its label at (row 2 + b*2, col k, span = branch length) and
-// each branch child at (row 3 + b*2, col k + j), where b is the
-// branch's index in the step's `branches` array. Columns match the
-// main line so branch child j sits directly under main step k+j;
-// multiple branches stack vertically beneath the main row.
+// Grid placements. Main cells walk columns 1..N. Each branch's row
+// pair (label + children) is placed BELOW whatever's already occupying
+// the columns the branch covers — that way branches from different
+// parent steps that share a column range never collide. Concretely:
+// for a branch at columns col..col+span-1, baseRow = max(occupied row)
+// across that range; the branch's label goes at baseRow+1 and its
+// children at baseRow+2. Without this skyline-style packing, a step
+// like V whose branch sits at column 5 would place its rows 2/3 right
+// on top of a sibling branch (e.g. III's photo sub-flow) that already
+// extended through column 5.
 type Placement =
   | { kind: "main"; step: FlowStep; row: number; col: number }
   | { kind: "branch-label"; label: string; id: string; row: number; col: number; span: number }
   | { kind: "branch"; step: FlowStep; row: number; col: number };
 
 const placements: Placement[] = [];
+const occupiedRow = new Map<number, number>();
+const occupy = (c: number, r: number) => {
+  const cur = occupiedRow.get(c) ?? 0;
+  if (r > cur) occupiedRow.set(c, r);
+};
+
 let col = 1;
 let maxCol = 1;
 flow.steps.forEach((step, i) => {
   placements.push({ kind: "main", step, row: 1, col });
+  occupy(col, 1);
+
   if (step.branches) {
     step.branches.forEach((branch, b) => {
       if (branch.steps.length === 0) return;
       const span = branch.steps.length;
-      const labelRow = 2 + b * 2;
-      const childRow = 3 + b * 2;
+
+      // Find the deepest row already used across the branch's columns.
+      let baseRow = 1;
+      for (let c = col; c < col + span; c++) {
+        baseRow = Math.max(baseRow, occupiedRow.get(c) ?? 1);
+      }
+      const labelRow = baseRow + 1;
+      const childRow = baseRow + 2;
+
       placements.push({
         kind: "branch-label",
         label: branch.label,
@@ -57,8 +76,10 @@ flow.steps.forEach((step, i) => {
         span,
       });
       branch.steps.forEach((sub, j) => {
-        placements.push({ kind: "branch", step: sub, row: childRow, col: col + j });
-        maxCol = Math.max(maxCol, col + j);
+        const childCol = col + j;
+        placements.push({ kind: "branch", step: sub, row: childRow, col: childCol });
+        occupy(childCol, childRow);
+        maxCol = Math.max(maxCol, childCol);
       });
     });
   }

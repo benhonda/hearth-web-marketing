@@ -1,0 +1,880 @@
+---
+/**
+ * Landing V2 — marketing page for hearth.press.
+ *
+ * The page is built around what the *customer* ends up with: their
+ * book, their library, recipes they wrote into. Hearth is the
+ * publisher mark, not the subject. Every section that previously
+ * described features in prose is now a real mock — phone screens,
+ * a printed book page, a library grid, a two-page spread — composed
+ * from the same components the /design/* binder uses internally.
+ *
+ * We import design.css here because the mock components (.phone,
+ * .bp, .cov, .spread, .tile) are defined alongside the binder's
+ * internal chrome. The chrome classes (.design-topbar, .canvas, etc.)
+ * never apply because we don't use that markup.
+ */
+import "~/styles/design.css";
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import WaitlistForm from "~/components/WaitlistForm.astro";
+
+import PhoneFrame from "~/components/design/PhoneFrame.astro";
+import BookCover from "~/components/design/ui/BookCover.astro";
+import BookPage from "~/components/design/ui/BookPage.astro";
+import BookSpread from "~/components/design/ui/BookSpread.astro";
+
+import MobileSafariRecipe from "~/components/design/screens/MobileSafariRecipe.astro";
+import ImportSurfacePasted from "~/components/design/screens/ImportSurfacePasted.astro";
+import ImportTranscription from "~/components/design/screens/ImportTranscription.astro";
+import RecipeDetailFullyAnnotated from "~/components/design/screens/RecipeDetailFullyAnnotated.astro";
+import LibraryAfterFriendSave from "~/components/design/screens/LibraryAfterFriendSave.astro";
+
+import { cornRagu, carrotCake } from "~/lib/design/sample-recipe";
+
+const railItems = [
+  { id: "cover",      num: "",     label: "Cover" },
+  { id: "doorways",   num: "i",    label: "Save" },
+  { id: "marginalia", num: "ii",   label: "Make it yours" },
+  { id: "provenance", num: "iii",  label: "Friends" },
+  { id: "cookbook",   num: "iv",   label: "The book" },
+];
+
+const doorways = [
+  {
+    id: "link",
+    caption: "From any web page.",
+    component: "safari",
+  },
+  {
+    id: "paste",
+    caption: "From a text or a note.",
+    component: "paste",
+  },
+  {
+    id: "photo",
+    caption: "From a card in someone's hand.",
+    component: "transcription",
+  },
+];
+---
+
+<BaseLayout>
+  <div class="binder">
+    {/* ───────── Left rail · contents ───────── */}
+    <aside class="rail" aria-label="Page contents">
+      <a class="rail__mark" href="#cover" aria-label="Hearth Press — top of page">HEARTH</a>
+      <hr class="rule rail__rule" aria-hidden="true" />
+
+      <nav class="rail__nav">
+        <ul class="rail__list">
+          {railItems.map((item) => (
+            <li>
+              <a class="rail__link" href={`#${item.id}`}>
+                <em class="rail__num">{item.num}</em>
+                <span class="rail__label">{item.label}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      <a href="#reserve" class="rail__cta">Reserve a place</a>
+    </aside>
+
+    <main class="binder__pages">
+      {/* ───────── 1 · Cover · book jacket ───────── */}
+      <section id="cover" class="cover surface-sage" data-stagger-root>
+        <div class="cover__weave" aria-hidden="true"></div>
+        <div class="cover__inner" data-stagger-group>
+          <p class="cover__pressmark eyebrow" data-stagger>Hearth&nbsp;Press</p>
+          <hr class="rule cover__rule" data-stagger aria-hidden="true" />
+          <h1 class="cover__mark" data-stagger>HEARTH</h1>
+          <p class="cover__tag" data-stagger>
+            <em>Save every recipe you love. Make a book worth keeping.</em>
+          </p>
+          <div class="cover__object" data-stagger>
+            <div class="cover__book-stage">
+              <BookCover
+                layout="plate"
+                title="For Mom"
+                subtitle="Sundays at the Robertson house · 2026"
+                photoTone="corn"
+              />
+            </div>
+          </div>
+          <div class="cover__foot" data-stagger>
+            <span class="eyebrow">First&nbsp;printing&nbsp;·&nbsp;iOS&nbsp;·&nbsp;2026</span>
+            <div class="cover__actions">
+              <a class="btn cover__cta" href="#reserve">Reserve a place</a>
+              <a class="link--chevron" href="#doorways">See how it works</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ───────── 2 · Save · three doorways shown ───────── */}
+      <section id="doorways" class="page surface-cream save">
+        <header class="save__head">
+          <p class="eyebrow">Save&nbsp;anything</p>
+          <hr class="rule" aria-hidden="true" />
+          <h2 class="title save__title">A link, a paste, or a photo of a card.</h2>
+          <p class="lede">
+            Recipes come from everywhere. Three ways to save them, all
+            landing in the same library, set in the same type.
+          </p>
+        </header>
+
+        <div class="phones-row" style="--phone-scale-canvas: 0.62;">
+          {doorways.map((d) => (
+            <figure class="phone-fig">
+              <div class="phone-fig__stage">
+                {d.component === "safari" && (
+                  <PhoneFrame variant="canvas" surface="neutral" tone="ink"><MobileSafariRecipe /></PhoneFrame>
+                )}
+                {d.component === "paste" && (
+                  <PhoneFrame variant="canvas" surface="cream" tone="ink"><ImportSurfacePasted /></PhoneFrame>
+                )}
+                {d.component === "transcription" && (
+                  <PhoneFrame variant="canvas" surface="cream" tone="ink"><ImportTranscription /></PhoneFrame>
+                )}
+              </div>
+              <figcaption class="phone-fig__caption"><em>{d.caption}</em></figcaption>
+            </figure>
+          ))}
+        </div>
+
+        <p class="folio" aria-hidden="true">— i —</p>
+      </section>
+
+      {/* ───────── 3 · Make it yours · app and book, same recipe ───────── */}
+      <section id="marginalia" class="page surface-cream make">
+        <header class="make__head">
+          <p class="eyebrow">Make&nbsp;it&nbsp;yours</p>
+          <hr class="rule" aria-hidden="true" />
+          <h2 class="title make__title">Write a note above the recipe. Comment beside a step.</h2>
+          <p class="lede">
+            Notes stay private to you in the app. The same notes print
+            alongside the recipe in the book — the marginalia are part
+            of the page, the way real cookbook authors leave their mark.
+          </p>
+        </header>
+
+        <div class="twin">
+          <figure class="twin__cell" style="--phone-scale-canvas: 0.62;">
+            <div class="twin__stage">
+              <PhoneFrame variant="canvas" surface="cream" tone="ink"><RecipeDetailFullyAnnotated /></PhoneFrame>
+            </div>
+            <figcaption><em>In the app</em></figcaption>
+          </figure>
+
+          <figure class="twin__cell">
+            <div class="twin__stage twin__stage--book">
+              <div class="book-page-scale">
+                <BookPage layout="1-photo-a" recipe={cornRagu} />
+              </div>
+            </div>
+            <figcaption><em>On the printed page</em></figcaption>
+          </figure>
+        </div>
+
+        <p class="folio" aria-hidden="true">— ii —</p>
+      </section>
+
+      {/* ───────── 4 · Friends · credit chain in the library ───────── */}
+      <section id="provenance" class="page surface-sage friends">
+        <header class="friends__head">
+          <p class="eyebrow">From&nbsp;friends</p>
+          <hr class="rule" aria-hidden="true" />
+          <h2 class="title friends__title">Recipes carry the name of who shared them.</h2>
+          <p class="lede">
+            Save a recipe from a friend's collection and their name
+            comes with it — into your library, and onto the printed page
+            if you bind the book.
+          </p>
+        </header>
+
+        <div class="friends__row">
+          <figure class="friends__phone" style="--phone-scale-canvas: 0.7;">
+            <div class="friends__stage">
+              <PhoneFrame variant="canvas" surface="cream" tone="ink"><LibraryAfterFriendSave /></PhoneFrame>
+            </div>
+            <figcaption><em>Your library, after saving from a friend.</em></figcaption>
+          </figure>
+
+          <aside class="friends__note prose">
+            <p>
+              The friend graph is small and bilateral — only mutuals.
+              You see the collections your friends choose to share, and
+              never their full library. No followers, no feed.
+            </p>
+            <p>
+              <em>"From&nbsp;table.kitchen · via Sarah Chen"</em> — the credit
+              threads through the recipe and stays on the page when you
+              press the book, the way real cookbook attributions always
+              have.
+            </p>
+          </aside>
+        </div>
+
+        <p class="folio" aria-hidden="true">— iii —</p>
+      </section>
+
+      {/* ───────── 5 · The book · printed two-page spread ───────── */}
+      <section id="cookbook" class="page surface-cream book">
+        <header class="book__head">
+          <p class="eyebrow">The&nbsp;book</p>
+          <hr class="rule" aria-hidden="true" />
+          <h2 class="title book__title">Made to sit on a coffee table, not in a drawer.</h2>
+          <p class="lede">
+            Hardcover, eight by ten inches. Cloth binding,
+            foil-stamped spine, acid-free interior stock — bound to last,
+            given to keep.
+          </p>
+        </header>
+
+        <figure class="spread-stage">
+          <div class="spread-stage__inner">
+            <BookSpread
+              left={{ recipe: cornRagu, layout: "1-photo-a" }}
+              right={{ recipe: carrotCake, layout: "1-photo-b" }}
+            />
+          </div>
+          <figcaption class="spread-stage__caption">
+            <em>An opening from the printed book — your recipes, your photographs, your marginalia.</em>
+          </figcaption>
+        </figure>
+
+        <div class="book__pricing-row">
+          <p class="eyebrow">Pressed&nbsp;in&nbsp;three&nbsp;lengths</p>
+          <ol class="book__pricing" role="list">
+            <li><em>$99</em><span>40&nbsp;pp</span></li>
+            <li><em>$119</em><span>60&nbsp;pp</span></li>
+            <li><em>$139</em><span>80&nbsp;pp</span></li>
+          </ol>
+        </div>
+
+        <p class="folio" aria-hidden="true">— iv —</p>
+      </section>
+
+      {/* ───────── 6 · Reserve · waitlist (sage) ───────── */}
+      <section id="reserve" class="page surface-sage reserve">
+        <header class="reserve__head">
+          <p class="eyebrow">Reserve&nbsp;a&nbsp;place</p>
+          <hr class="rule" aria-hidden="true" />
+        </header>
+        <WaitlistForm
+          id="reserve"
+          headline="Be among the first to press a volume."
+          lede="A small iOS launch, a first printing. We'll write when the press opens."
+          cta="Join the waitlist"
+        />
+      </section>
+
+      {/* ───────── Footer ───────── */}
+      <footer class="site-footer surface-sage">
+        <div class="site-footer__inner">
+          <div class="site-footer__top">
+            <div class="site-footer__brand">
+              <a class="site-footer__mark" href="#cover" aria-label="Hearth Press — home">HEARTH</a>
+              <em class="site-footer__tag">Made slowly, in small editions.</em>
+            </div>
+            <div class="site-footer__contact">
+              <span class="eyebrow">Write&nbsp;to&nbsp;the&nbsp;press</span>
+              <a href="mailto:press@hearth.press" class="site-footer__email">press@hearth.press</a>
+            </div>
+          </div>
+          <div class="site-footer__legal">
+            <span>&copy;&nbsp;MMXXVI&nbsp;Hearth&nbsp;Press</span>
+            <span aria-hidden="true" class="site-footer__dot">·</span>
+            <span><em>A beautiful home for your recipes.</em></span>
+          </div>
+        </div>
+      </footer>
+    </main>
+  </div>
+</BaseLayout>
+
+<style>
+  /* ─────────────────────────────────────────────────────────
+   * BINDER
+   * ───────────────────────────────────────────────────────── */
+  .binder {
+    display: grid;
+    grid-template-columns: 17rem minmax(0, 1fr);
+    min-height: 100vh;
+    background: var(--c-cream);
+  }
+  @media (max-width: 60rem) {
+    .binder { grid-template-columns: 1fr; }
+  }
+
+  /* ─────────────────────────────────────────────────────────
+   * RAIL
+   * ───────────────────────────────────────────────────────── */
+  .rail {
+    position: sticky;
+    top: 0;
+    align-self: start;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+    padding: var(--space-2xl) var(--space-xl);
+    background: var(--c-chrome);
+    border-right: 1px solid rgba(31, 27, 23, 0.08);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .rail::-webkit-scrollbar { width: 4px; }
+  .rail::-webkit-scrollbar-thumb { background: rgba(31, 27, 23, 0.18); border-radius: 999px; }
+  .rail::-webkit-scrollbar-track { background: transparent; }
+  @media (max-width: 60rem) {
+    .rail { display: none; }
+  }
+
+  .rail__mark {
+    font-family: var(--f-wordmark);
+    font-weight: 400;
+    font-size: 1.125rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--c-conifer);
+    line-height: 1;
+    text-decoration: none;
+  }
+  .rail__rule { margin: 0; }
+
+  .rail__nav { flex: 1; min-height: 0; }
+  .rail__list { display: flex; flex-direction: column; gap: 2px; }
+  .rail__link {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-xs);
+    padding: 6px 0;
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 0.9375rem;
+    line-height: 1.3;
+    color: var(--c-ash);
+    text-decoration: none;
+    transition: color var(--motion-state) var(--ease-state);
+  }
+  .rail__num {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 0.875rem;
+    color: var(--c-oat);
+    width: 1.5em;
+    flex: none;
+  }
+  .rail__label { flex: 1; }
+  .rail__link:hover, .rail__link:hover .rail__num { color: var(--c-ochre); }
+  .rail__link.is-active, .rail__link.is-active .rail__num { color: var(--c-ochre); }
+  .rail__link.is-active .rail__label {
+    text-decoration: underline;
+    text-decoration-color: color-mix(in oklab, var(--c-ochre) 50%, transparent);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+  }
+
+  .rail__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.65em 1.1em;
+    border-radius: var(--r-pill);
+    background: var(--c-conifer);
+    color: var(--c-ink-inverse);
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 0.8125rem;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    text-decoration: none;
+    box-shadow: var(--shadow-button);
+    transition:
+      background-color var(--motion-state) var(--ease-state),
+      color var(--motion-state) var(--ease-state);
+  }
+  .rail__cta:hover { background: var(--c-foil-light); color: var(--c-ink); }
+
+  /* ─────────────────────────────────────────────────────────
+   * PAGES
+   * ───────────────────────────────────────────────────────── */
+  .binder__pages { display: flex; flex-direction: column; min-width: 0; }
+
+  .page {
+    padding-block: clamp(var(--space-3xl), 8vw, var(--space-4xl));
+    padding-inline: clamp(var(--space-xl), 6vw, var(--space-4xl));
+    scroll-margin-top: var(--space-md);
+    position: relative;
+  }
+
+  /* ═════════════════════════════════════════════════════════
+   * 1 · COVER
+   * ═════════════════════════════════════════════════════════ */
+  .cover {
+    min-height: 100svh;
+    display: grid;
+    place-items: center;
+    padding-inline: clamp(var(--space-xl), 6vw, var(--space-4xl));
+    padding-block: clamp(var(--space-3xl), 8vw, var(--space-4xl));
+    position: relative;
+    overflow: hidden;
+  }
+  .cover__weave {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      repeating-linear-gradient(45deg,
+        transparent 0, transparent 2px,
+        rgba(244, 239, 230, 0.014) 2px, rgba(244, 239, 230, 0.014) 3px),
+      repeating-linear-gradient(-45deg,
+        transparent 0, transparent 2px,
+        rgba(244, 239, 230, 0.012) 2px, rgba(244, 239, 230, 0.012) 3px);
+    opacity: 0.7;
+  }
+
+  .cover__inner {
+    position: relative;
+    width: 100%;
+    max-width: 64rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+    grid-template-rows: auto auto auto auto auto;
+    grid-template-areas:
+      "press   object"
+      "rule    object"
+      "mark    object"
+      "tag     object"
+      "foot    foot";
+    column-gap: clamp(var(--space-xl), 5vw, var(--space-3xl));
+    row-gap: var(--space-md);
+    align-items: start;
+  }
+  .cover__pressmark { grid-area: press; color: var(--c-foil-light); }
+  .cover__rule {
+    grid-area: rule;
+    width: var(--rule-chapter);
+    height: var(--rule-weight-chapter);
+    background: var(--c-foil);
+  }
+  .cover__mark {
+    grid-area: mark;
+    margin: 0;
+    font-family: var(--f-wordmark);
+    font-weight: 400;
+    font-size: clamp(3.5rem, 11vw, 9rem);
+    line-height: 0.95;
+    letter-spacing: 0.08em;
+    color: var(--c-foil);
+    text-transform: uppercase;
+    margin-top: var(--space-xs);
+    text-wrap: nowrap;
+  }
+  .cover__tag {
+    grid-area: tag;
+    margin: 0;
+    max-width: 34ch;
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: clamp(1rem, 1vw + 0.85rem, 1.375rem);
+    line-height: 1.5;
+    color: var(--c-linen);
+    margin-top: var(--space-md);
+  }
+  .cover__object {
+    grid-area: object;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  /* Scale the customer book up a little for marketing presence */
+  .cover__book-stage {
+    transform: scale(1.15);
+    transform-origin: center;
+    filter: drop-shadow(0 30px 60px rgba(20, 14, 4, 0.4));
+  }
+
+  .cover__foot {
+    grid-area: foot;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-lg);
+    flex-wrap: wrap;
+    margin-top: clamp(var(--space-2xl), 5vw, var(--space-3xl));
+    padding-top: var(--space-md);
+    border-top: var(--b-divider-sage);
+  }
+  .cover__foot .eyebrow { color: var(--c-foil-light); }
+  .cover__actions { display: inline-flex; align-items: center; gap: var(--space-lg); flex-wrap: wrap; }
+  .cover__cta { padding: 0.7em 1.4em; }
+
+  @media (max-width: 60rem) {
+    .cover__inner {
+      grid-template-columns: 1fr;
+      grid-template-areas: "object" "press" "rule" "mark" "tag" "foot";
+      row-gap: var(--space-sm);
+    }
+    .cover__book-stage { transform: scale(0.95); }
+    .cover__mark { font-size: clamp(3rem, 14vw, 5.5rem); }
+  }
+
+  /* ═════════════════════════════════════════════════════════
+   * SECTION HEADERS · shared
+   * ═════════════════════════════════════════════════════════ */
+  .save__head, .make__head, .friends__head, .book__head {
+    display: grid;
+    gap: var(--space-md);
+    max-width: 44rem;
+    margin-bottom: clamp(var(--space-2xl), 4vw, var(--space-3xl));
+  }
+  .save__title, .make__title, .friends__title, .book__title {
+    max-width: 22ch;
+    text-wrap: balance;
+  }
+  .save, .make, .friends, .book, .reserve { margin-inline: auto; max-width: 80rem; }
+
+  /* ═════════════════════════════════════════════════════════
+   * 2 · SAVE · phones row
+   * ═════════════════════════════════════════════════════════ */
+  .phones-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(var(--space-xl), 4vw, var(--space-3xl));
+    align-items: start;
+    justify-items: center;
+    padding-block: var(--space-xl);
+  }
+  .phone-fig {
+    margin: 0;
+    display: grid;
+    gap: var(--space-lg);
+    justify-items: center;
+  }
+  .phone-fig__stage {
+    /* PhoneFrame.canvas is auto-scaled with negative margins, so the
+     * stage box collapses to the scaled size automatically. */
+    display: inline-block;
+  }
+  .phone-fig__caption {
+    font-family: var(--f-display);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    color: var(--c-ash);
+    text-align: center;
+    max-width: 18ch;
+  }
+
+  @media (max-width: 56rem) {
+    .phones-row { grid-template-columns: 1fr; }
+  }
+
+  /* ═════════════════════════════════════════════════════════
+   * 3 · MAKE IT YOURS · twin (phone + book page)
+   * ═════════════════════════════════════════════════════════ */
+  .twin {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(var(--space-xl), 4vw, var(--space-3xl));
+    align-items: center;
+    justify-items: center;
+    padding-block: var(--space-2xl);
+  }
+  .twin__cell {
+    margin: 0;
+    display: grid;
+    gap: var(--space-lg);
+    justify-items: center;
+  }
+  .twin__cell figcaption {
+    font-family: var(--f-display);
+    font-size: var(--fs-meta);
+    color: var(--c-ash);
+    letter-spacing: 0.02em;
+    text-align: center;
+  }
+  .twin__stage { display: inline-block; }
+  .twin__stage--book {
+    /* BookPage natural 320×400 — scaled up so it sits at parity with
+     * the phone height, and gets its own paper drop-shadow. */
+    --book-scale: 1.35;
+  }
+  .book-page-scale {
+    transform: scale(var(--book-scale, 1));
+    transform-origin: center;
+    filter: drop-shadow(0 18px 30px rgba(20, 14, 4, 0.18));
+    margin: calc(200px * (var(--book-scale, 1) - 1)) calc(160px * (var(--book-scale, 1) - 1));
+  }
+
+  @media (max-width: 56rem) {
+    .twin { grid-template-columns: 1fr; }
+    .twin__stage--book { --book-scale: 1; }
+  }
+
+  /* ═════════════════════════════════════════════════════════
+   * 4 · FRIENDS · library phone + side note
+   * ═════════════════════════════════════════════════════════ */
+  .friends__row {
+    display: grid;
+    grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+    gap: clamp(var(--space-2xl), 5vw, var(--space-4xl));
+    align-items: center;
+    padding-block: var(--space-xl);
+  }
+  .friends__phone {
+    margin: 0;
+    display: grid;
+    gap: var(--space-md);
+    justify-items: center;
+  }
+  .friends__stage { display: inline-block; }
+  .friends__phone figcaption {
+    font-family: var(--f-display);
+    font-size: var(--fs-meta);
+    color: var(--c-linen);
+    letter-spacing: 0.02em;
+    max-width: 24ch;
+    text-align: center;
+  }
+  .friends__note { max-width: 38ch; }
+
+  @media (max-width: 60rem) {
+    .friends__row { grid-template-columns: 1fr; justify-items: center; }
+    .friends__note { max-width: 56ch; }
+  }
+
+  /* ═════════════════════════════════════════════════════════
+   * 5 · THE BOOK · spread stage + pricing band
+   * ═════════════════════════════════════════════════════════ */
+  .spread-stage {
+    margin: 0;
+    display: grid;
+    gap: var(--space-xl);
+    justify-items: center;
+    padding-block: clamp(var(--space-2xl), 5vw, var(--space-3xl));
+  }
+  .spread-stage__inner {
+    /* BookSpread is 640×400. Scale up for marketing presence and
+     * give it a proper paper-lift shadow. */
+    --spread-scale: 1.35;
+    transform: scale(var(--spread-scale, 1));
+    transform-origin: center;
+    filter:
+      drop-shadow(0 28px 56px rgba(20, 14, 4, 0.22))
+      drop-shadow(0 4px 12px rgba(20, 14, 4, 0.12));
+    margin: calc(200px * (var(--spread-scale, 1) - 1)) calc(320px * (var(--spread-scale, 1) - 1));
+  }
+  .spread-stage__caption {
+    font-family: var(--f-display);
+    font-size: var(--fs-meta);
+    line-height: 1.55;
+    color: var(--c-ash);
+    text-align: center;
+    max-width: 48ch;
+    margin-top: var(--space-md);
+  }
+
+  @media (max-width: 56rem) {
+    .spread-stage__inner { --spread-scale: 0.7; }
+  }
+  @media (max-width: 40rem) {
+    .spread-stage__inner { --spread-scale: 0.5; }
+  }
+
+  /* Pricing band */
+  .book__pricing-row {
+    display: grid;
+    grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
+    gap: clamp(var(--space-lg), 4vw, var(--space-3xl));
+    align-items: center;
+    padding-block: clamp(var(--space-lg), 3vw, var(--space-xl));
+    border-top: var(--b-divider);
+    border-bottom: var(--b-divider);
+    margin-top: var(--space-2xl);
+  }
+  .book__pricing-row .eyebrow { color: var(--c-ochre); }
+  .book__pricing {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(var(--space-lg), 3vw, var(--space-2xl));
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .book__pricing li {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+    padding-left: var(--space-md);
+    border-left: 1px solid color-mix(in oklab, var(--c-ochre) 25%, transparent);
+  }
+  .book__pricing em {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(1.5rem, 1.5vw + 0.85rem, 1.875rem);
+    line-height: 1;
+    color: var(--c-ink);
+  }
+  .book__pricing span {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: var(--fs-eyebrow);
+    letter-spacing: var(--ls-eyebrow);
+    text-transform: uppercase;
+    color: var(--c-ochre);
+  }
+  @media (max-width: 56rem) {
+    .book__pricing-row { grid-template-columns: 1fr; }
+  }
+
+  .book .folio { margin-top: var(--space-md); color: var(--c-ochre); }
+
+  /* Folios on cream sections */
+  .surface-cream .folio { margin-top: var(--space-2xl); color: var(--c-ochre); }
+
+  /* ═════════════════════════════════════════════════════════
+   * 6 · RESERVE
+   * ═════════════════════════════════════════════════════════ */
+  .reserve { display: grid; gap: var(--space-xl); max-width: 44rem; }
+  .reserve__head { display: grid; gap: var(--space-md); max-width: 24rem; }
+
+  /* ═════════════════════════════════════════════════════════
+   * FOOTER
+   * ═════════════════════════════════════════════════════════ */
+  .site-footer {
+    padding: clamp(var(--space-2xl), 5vw, var(--space-3xl)) clamp(var(--space-xl), 6vw, var(--space-4xl));
+    border-top: 1px solid rgba(244, 239, 230, 0.08);
+  }
+  .site-footer__inner { display: flex; flex-direction: column; gap: var(--space-xl); max-width: 72rem; }
+  .site-footer__top {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: var(--space-2xl);
+    align-items: start;
+  }
+  .site-footer__brand { display: flex; flex-direction: column; gap: var(--space-sm); }
+  .site-footer__mark {
+    font-family: var(--f-wordmark);
+    font-weight: 400;
+    font-size: clamp(1.35rem, 1.5vw + 0.75rem, 1.75rem);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--c-foil);
+    line-height: 1;
+    text-decoration: none;
+  }
+  .site-footer__tag {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: var(--fs-body);
+    line-height: 1.5;
+    color: var(--c-linen);
+    max-width: 36ch;
+  }
+  .site-footer__contact { display: flex; flex-direction: column; gap: var(--space-sm); align-items: flex-start; }
+  .site-footer__email {
+    font-family: var(--f-body);
+    font-size: var(--fs-body);
+    color: var(--c-ink-inverse);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in oklab, var(--c-foil-light) 45%, transparent);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition:
+      text-decoration-color var(--motion-state) var(--ease-state),
+      color var(--motion-state) var(--ease-state);
+  }
+  .site-footer__email:hover { text-decoration-color: var(--c-foil-light); color: var(--c-foil-light); }
+  .site-footer__legal {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-sm);
+    padding-top: var(--space-md);
+    border-top: 1px solid rgba(244, 239, 230, 0.06);
+    font-family: var(--f-body);
+    font-size: var(--fs-caption);
+    color: var(--c-stone);
+    letter-spacing: 0.02em;
+  }
+  .site-footer__legal em {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: var(--fs-meta);
+    color: var(--c-linen);
+    letter-spacing: 0;
+  }
+  .site-footer__dot { color: var(--c-foil-light); opacity: 0.55; }
+  @media (max-width: 40rem) {
+    .site-footer__top { grid-template-columns: 1fr; gap: var(--space-xl); }
+  }
+
+  /* ═════════════════════════════════════════════════════════
+   * COVER STAGGER
+   * ═════════════════════════════════════════════════════════ */
+  [data-stagger] {
+    opacity: 0;
+    transform: translateY(var(--stagger-translate));
+    animation: stagger-in var(--stagger-duration) var(--ease-out-quart) forwards;
+    animation-delay: calc(var(--i, 0) * var(--stagger-offset));
+  }
+  [data-stagger-group] > [data-stagger]:nth-child(1) { --i: 0; }
+  [data-stagger-group] > [data-stagger]:nth-child(2) { --i: 1; }
+  [data-stagger-group] > [data-stagger]:nth-child(3) { --i: 2; }
+  [data-stagger-group] > [data-stagger]:nth-child(4) { --i: 3; }
+  [data-stagger-group] > [data-stagger]:nth-child(5) { --i: 4; }
+  [data-stagger-group] > [data-stagger]:nth-child(6) { --i: 5; }
+
+  @keyframes stagger-in {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    [data-stagger] { animation: none; opacity: 1; transform: none; }
+  }
+</style>
+
+<script>
+  /* ─────────────────────────────────────────────────────────
+   * Scroll-spy for the rail
+   * ───────────────────────────────────────────────────────── */
+  (function () {
+    if (typeof window === "undefined" || !("IntersectionObserver" in window)) return;
+
+    const sections = document.querySelectorAll<HTMLElement>(".binder__pages > section[id]");
+    const links = document.querySelectorAll<HTMLAnchorElement>(".rail__link");
+    if (!sections.length || !links.length) return;
+
+    const linkById = new Map<string, HTMLAnchorElement>();
+    links.forEach((a) => {
+      const href = a.getAttribute("href") ?? "";
+      if (href.startsWith("#")) linkById.set(href.slice(1), a);
+    });
+
+    const setActive = (id: string) => {
+      links.forEach((a) => a.classList.remove("is-active"));
+      const link = linkById.get(id);
+      if (link) link.classList.add("is-active");
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries.filter((e) => e.isIntersecting);
+        if (!visible.length) return;
+        const top = visible.reduce((a, b) =>
+          a.intersectionRatio >= b.intersectionRatio ? a : b
+        );
+        if (top.target.id) setActive(top.target.id);
+      },
+      { rootMargin: "-40% 0px -50% 0px", threshold: [0, 0.25, 0.5, 0.75, 1] }
+    );
+
+    sections.forEach((s) => observer.observe(s));
+  })();
+</script>
