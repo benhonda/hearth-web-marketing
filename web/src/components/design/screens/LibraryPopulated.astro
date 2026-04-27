@@ -1,7 +1,8 @@
 ---
 /**
- * Flow II · I — Library, populated.
- * Thin wrapper around Library.astro; see that file for the full screen.
+ * Flow III · I — Library, populated.
+ * Thin wrapper around Library.astro; halos the Cookbooks row as the
+ * book-creation entry point.
  */
 import Library from "./Library.astro";
 
@@ -9,4 +10,4 @@ interface Props { showTap?: boolean; }
 const { showTap } = Astro.props;
 ---
 
-<Library state="populated" showTap={showTap} />
+<Library state="populated" showTap={showTap} optionsTapTarget="cookbooks" />

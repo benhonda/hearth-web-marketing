@@ -1,0 +1,18 @@
+---
+/**
+ * Photo-variant of the Import preview — the structured cookbook page
+ * after the photo path. Same composition as the URL preview, but the
+ * From card carries a small paper-warmth thumbnail of the cook's source
+ * photograph instead of a URL. The heirloom artifact is preserved
+ * alongside the structured recipe.
+ *
+ * Delegates to ImportPreview with source="photo" so the two states
+ * stay locked in step.
+ */
+import ImportPreview from "./ImportPreview.astro";
+
+interface Props { showTap?: boolean; }
+const { showTap = false } = Astro.props;
+---
+
+<ImportPreview showTap={showTap} source="photo" />

@@ -2,25 +2,42 @@
 /**
  * /design — every flow, rendered inline as a storyboard.
  * The topbar handles identity (HEARTH · Design). No page-level masthead —
- * the first flow is the first thing you see.
+ * the first flow is the first thing you see. A sticky left sidebar lists
+ * every flow + its steps so the binder is jumpable from the top.
  */
 import DesignLayout from "~/layouts/DesignLayout.astro";
+import DesignSidebar from "~/components/design/DesignSidebar.astro";
 import FlowStoryboard from "~/components/design/FlowStoryboard.astro";
 import { flows } from "~/lib/design/flows";
 ---
 
 <DesignLayout title="Design">
-  <div class="flows">
-    {flows.map((flow) => (
-      <FlowStoryboard flow={flow} />
-    ))}
+  <div class="design-index">
+    <DesignSidebar />
+    <div class="flows">
+      {flows.map((flow) => (
+        <FlowStoryboard flow={flow} />
+      ))}
+    </div>
   </div>
 </DesignLayout>
 
 <style>
+  .design-index {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: var(--space-2xl);
+    align-items: start;
+  }
+
+  @media (max-width: 1024px) {
+    .design-index { grid-template-columns: minmax(0, 1fr); }
+  }
+
   .flows {
     display: grid;
     gap: var(--space-4xl);
+    min-width: 0;
   }
 
   .flows > :not(:first-child) {

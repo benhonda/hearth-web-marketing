@@ -35,6 +35,21 @@ interface Props {
   comments?: Record<number, IngredientComment>;
   /** Halo a single ingredient line as a long-press tap target. */
   tapIndex?: number;
+  /** When set, render the right-side "IN ___" units affordance — the
+   *  twin to servesTap. Same DM Sans 500 small-caps 10px Ochre voice as
+   *  the eyebrow itself, with the affordance underline used by serves N.
+   *  Drives Flow VI (Measures). */
+  units?: "cups" | "grams" | "ounces";
+  /** Halo the closed units token as the next tap target (screen I). */
+  haloUnitsTap?: boolean;
+  /** When true, the right slot opens in place into a typographic radio
+   *  strip — "— cups · grams · oz —" — Lora italic, em-dash bookends,
+   *  current selection (the value of `units`) larger and Ink with the
+   *  hairline ochre underbar borrowed from the portion overlay. */
+  unitsPickerOpen?: boolean;
+  /** Which picker option carries the halo when the picker is open
+   *  (screen II). */
+  haloUnitsPick?: "cups" | "grams" | "ounces";
 }
 
 const {
@@ -44,7 +59,29 @@ const {
   haloServesTap = false,
   comments = {},
   tapIndex,
+  units,
+  haloUnitsTap = false,
+  unitsPickerOpen = false,
+  haloUnitsPick,
 } = Astro.props;
+
+const unitsLabel: Record<"cups" | "grams" | "ounces", string> = {
+  cups: "in cups",
+  grams: "in grams",
+  ounces: "in oz",
+};
+
+const pickerOptions: Array<"cups" | "grams" | "ounces"> = [
+  "cups",
+  "grams",
+  "ounces",
+];
+
+const pickerShort: Record<"cups" | "grams" | "ounces", string> = {
+  cups: "cups",
+  grams: "grams",
+  ounces: "oz",
+};
 
 import ItemComment from "./ItemComment.astro";
 ---
@@ -64,6 +101,33 @@ import ItemComment from "./ItemComment.astro";
         </>
       )}
     </span>
+    {units !== undefined && !unitsPickerOpen && (
+      <button
+        type="button"
+        class:list={["ing__units-tap", haloUnitsTap && "ing__units-tap--halo"]}
+        aria-label={`Change measure, currently ${unitsLabel[units]}`}
+      >{unitsLabel[units]}</button>
+    )}
+    {units !== undefined && unitsPickerOpen && (
+      <span class="ing__units-picker" role="radiogroup" aria-label="Measure">
+        <span class="ing__units-dash" aria-hidden="true">—</span>
+        {pickerOptions.map((opt, i) => (
+          <>
+            {i > 0 && <span class="ing__units-sep" aria-hidden="true">·</span>}
+            <button
+              type="button"
+              class:list={[
+                "ing__units-opt",
+                opt === units && "is-on",
+                haloUnitsPick === opt && "ing__units-opt--halo",
+              ]}
+              aria-pressed={opt === units}
+            >{pickerShort[opt]}</button>
+          </>
+        ))}
+        <span class="ing__units-dash" aria-hidden="true">—</span>
+      </span>
+    )}
   </div>
   <ul class="ing__list">
     {items.map((item, i) => {
@@ -155,6 +219,117 @@ import ItemComment from "./ItemComment.astro";
     inset: -4px -6px;
     border: 3px solid var(--annotation);
     border-radius: 5px;
+    box-shadow: var(--annotation-glow);
+    pointer-events: none;
+    opacity: var(--halo-opacity);
+    transition: opacity 180ms ease;
+    z-index: 50;
+  }
+
+  /* Right-side units affordance — twin to serves N, opposite end of the
+     eyebrow row. Same DM Sans 500 small-caps 10px Ochre 0.3em-tracked
+     voice as the eyebrow itself; only the 0.75px ochre underline marks
+     it as interactive. Separates concerns: left tells the cook what +
+     how much, right tells them in what measure. Drives Flow VI. */
+  .ing__units-tap {
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-style: normal;
+    font-size: 10px;
+    line-height: 1;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--c-ochre);
+    text-decoration: underline;
+    text-decoration-thickness: 0.75px;
+    text-underline-offset: 2.5px;
+    cursor: pointer;
+    position: relative;
+    transition: color var(--motion-state) var(--ease-state);
+  }
+  .ing__units-tap:hover { color: var(--c-ink); }
+
+  .ing__units-tap--halo::after {
+    content: "";
+    position: absolute;
+    inset: -4px -6px;
+    border: 3px solid var(--annotation);
+    border-radius: 5px;
+    box-shadow: var(--annotation-glow);
+    pointer-events: none;
+    opacity: var(--halo-opacity);
+    transition: opacity 180ms ease;
+    z-index: 50;
+  }
+
+  /* Open units picker — replaces the closed token in place. Same
+     typographic vocabulary as the portion overlay's scale strip
+     (em-dash bookends, middot separators, italic Lora Ochre, current
+     selection larger and Ink with the chapter-rule hairline beneath),
+     but on-page — no dim, no overlay. The quiet cousin to portion-
+     scale's theatrical moment. */
+  .ing__units-picker {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    font-family: var(--f-display);
+    font-style: italic;
+    color: var(--c-ochre);
+    line-height: 1;
+  }
+  .ing__units-dash {
+    font-size: 13px;
+    color: var(--c-ochre);
+    opacity: 0.55;
+    line-height: 1;
+  }
+  .ing__units-sep {
+    font-size: 12px;
+    color: var(--c-ochre);
+    opacity: 0.45;
+    line-height: 1;
+  }
+  .ing__units-opt {
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    border: 0;
+    padding: 2px 2px 4px;
+    margin: 0;
+    font: inherit;
+    font-size: 13px;
+    color: var(--c-ash);
+    cursor: pointer;
+    position: relative;
+    line-height: 1;
+    transition: color var(--motion-state) var(--ease-state);
+  }
+  .ing__units-opt:hover { color: var(--c-ink); }
+  .ing__units-opt.is-on {
+    color: var(--c-ink);
+    font-size: 16px;
+  }
+  .ing__units-opt.is-on::after {
+    content: "";
+    position: absolute;
+    left: 2px;
+    right: 2px;
+    bottom: 0;
+    height: 1.5px;
+    background: var(--c-ochre);
+  }
+  .ing__units-opt--halo::before {
+    content: "";
+    position: absolute;
+    inset: -5px -4px;
+    border: 3px solid var(--annotation);
+    border-radius: 6px;
     box-shadow: var(--annotation-glow);
     pointer-events: none;
     opacity: var(--halo-opacity);

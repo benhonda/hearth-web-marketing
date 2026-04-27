@@ -1,0 +1,18 @@
+---
+/**
+ * Flow V · Friends — deep-link route. Exploratory: sits beyond V1
+ * scope, visualizes the social-layer brainstorm.
+ */
+import DesignLayout from "~/layouts/DesignLayout.astro";
+import FlowStoryboard from "~/components/design/FlowStoryboard.astro";
+import { getFlow } from "~/lib/design/flows";
+
+const flow = getFlow("05-friends");
+if (!flow) {
+  throw new Error("Flow 05-friends missing from flows registry");
+}
+---
+
+<DesignLayout title={`Flow ${flow.numeral} · ${flow.title}`}>
+  <FlowStoryboard flow={flow} showHeader={true} />
+</DesignLayout>

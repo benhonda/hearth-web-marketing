@@ -1,0 +1,170 @@
+---
+/**
+ * Flow VII · II — Friends.
+ *
+ * The bilateral friend graph as a directory page, not a chapter title
+ * page. ScreenNav with the FRIENDS chapter mark above, then straight
+ * into the list — no body chapter-opener, no italic invitation, no
+ * cookbook voice misapplied to a list of names.
+ *
+ * Each row stacks Lora italic name (the recipe-title voice — names ARE
+ * titles in this index) over an italic Ash line listing the collections
+ * that friend has shared. Em-middot separators. Hairline dividers
+ * between rows.
+ *
+ * Halo lands on Sarah Chen — she's the friend whose collection the
+ * cook visits in screen III.
+ */
+import ScreenNav from "../ui/ScreenNav.astro";
+
+interface Props { showTap?: boolean; }
+const { showTap = false } = Astro.props;
+
+type Friend = {
+  key: string;
+  name: string;
+  collections: string;
+  tap?: boolean;
+};
+
+// Four friends, alphabetical by surname. Sarah Chen is the visited
+// friend in screen III; her collections include the one we open in III
+// (Sunday dinners). Collection titles use the Hearth voice — short,
+// editorial, lowercase except first word, em-middot separated.
+const friends: Friend[] = [
+  {
+    key: "brennan",
+    name: "Maya Brennan",
+    collections: "Weeknight rotations",
+  },
+  {
+    key: "chen",
+    name: "Sarah Chen",
+    collections: "Sunday dinners · A spring kitchen",
+    tap: showTap,
+  },
+  {
+    key: "fontaine",
+    name: "Tessa Fontaine",
+    collections: "A summer table · Late dinners · Bread book",
+  },
+  {
+    key: "pereira",
+    name: "Jules Pereira",
+    collections: "Bread, mostly",
+  },
+];
+---
+
+<div class="circ">
+  <ScreenNav eyebrow="Friends" />
+
+  <ul class="circ__list" role="list">
+    {friends.map((friend) => (
+      <li class="circ__row-wrap">
+        <button
+          class:list={["circ__row", friend.tap && "circ__row--tap"]}
+          type="button"
+          aria-label={`Open ${friend.name}'s shared collections`}
+        >
+          <span class="circ__row-name">{friend.name}</span>
+          <span class="circ__row-collections">{friend.collections}</span>
+          <span class="circ__row-chev" aria-hidden="true">›</span>
+        </button>
+      </li>
+    ))}
+  </ul>
+</div>
+
+<style>
+  .circ {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+  }
+
+  /* List — directory page rhythm. Top padding gives breathing room
+     under the ScreenNav chapter mark, then hairline dividers above
+     each row; last row carries a closing border. No body header above
+     the list — the FRIENDS chapter mark in ScreenNav does that work. */
+  .circ__list {
+    list-style: none;
+    margin: 0;
+    padding: 16px 22px 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .circ__row-wrap {
+    border-top: var(--b-divider);
+  }
+  .circ__row-wrap:last-child {
+    border-bottom: var(--b-divider);
+  }
+
+  /* Row — three-area grid. Name and collections stack on the left in
+     two italic registers; chevron sits centered on the right. The
+     name carries the recipe-title weight (Lora italic ink) — names
+     ARE titles in this index. */
+  .circ__row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    grid-template-areas:
+      "name        chev"
+      "collections chev";
+    gap: 4px 12px;
+    width: 100%;
+    padding: 18px 0;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    text-align: left;
+    position: relative;
+    transition: opacity var(--motion-state) var(--ease-state);
+  }
+  .circ__row:hover { opacity: 0.82; }
+
+  .circ__row-name {
+    grid-area: name;
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 19px;
+    line-height: 1.2;
+    color: var(--c-ink);
+    letter-spacing: -0.005em;
+  }
+  .circ__row-collections {
+    grid-area: collections;
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--c-ash);
+    letter-spacing: 0;
+  }
+  .circ__row-chev {
+    grid-area: chev;
+    align-self: center;
+    font-family: var(--f-display);
+    font-size: 20px;
+    line-height: 1;
+    color: var(--c-ochre);
+  }
+
+  /* Halo — same geometry as BookSettings rows. Bound to the row so it
+     hugs the divider rhythm without overflowing the gutter. */
+  .circ__row--tap::after {
+    content: "";
+    position: absolute;
+    inset: 4px -6px;
+    border: 3px solid var(--annotation);
+    border-radius: 4px;
+    box-shadow: var(--annotation-glow);
+    pointer-events: none;
+    opacity: var(--halo-opacity);
+    transition: opacity 180ms ease;
+    z-index: 50;
+  }
+</style>

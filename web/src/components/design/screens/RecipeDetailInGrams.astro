@@ -1,0 +1,19 @@
+---
+/**
+ * VI · III — Recipe · detail, in grams.
+ * The page quietly rerendered. Top ingredients carry weights — count-
+ * based and seasoning lines unchanged — and the per-step mise lines
+ * flip in lockstep. Right-side eyebrow now reads IN GRAMS. No halo —
+ * the flow is done. The book-spine test holds.
+ */
+import RecipeDetail from "./RecipeDetail.astro";
+
+interface Props { showTap?: boolean; }
+const { showTap } = Astro.props;
+void showTap;
+---
+
+<RecipeDetail
+  units="grams"
+  unitsConverted
+/>

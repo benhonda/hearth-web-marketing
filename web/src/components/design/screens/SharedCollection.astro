@@ -1,0 +1,126 @@
+---
+/**
+ * Flow VII · III — A friend's shared collection.
+ *
+ * The cookbook-page-as-collection. Sarah Chen has named and shared
+ * "Sunday dinners" — a curated subset of her library. This is the
+ * Apple-Music-playlist analog ported into Hearth's voice: the LIBRARY
+ * stays private; the COLLECTION is what travels.
+ *
+ * Surface composition:
+ *   1. ScreenNav — back chevron, no eyebrow (the chapter-opener body
+ *      below carries the editorial weight).
+ *   2. Chapter-opener — 44×1.5px ochre rule, FROM SARAH CHEN eyebrow,
+ *      Lora italic title "Sunday dinners.", italic Ash lede.
+ *   3. Photo waterfall — same primitive as Library, curated subset of
+ *      the sample library. Twelve tiles, halo on the corn ragù (index 0)
+ *      so it threads to Flow I's hero recipe in screen IV.
+ *
+ * Voice: this reads as a chapter title page in a cookbook, not as a
+ * Spotify playlist screen. The eyebrow's role here is attribution —
+ * "FROM SARAH CHEN" is the byline, the same grammar real cookbooks use
+ * for contributing-cook credits in anthology volumes.
+ */
+import ScreenNav from "../ui/ScreenNav.astro";
+import LibraryGrid, { type LibraryTileData } from "../ui/LibraryGrid.astro";
+import { sampleRecipe } from "~/lib/design/sample-recipe";
+
+interface Props { showTap?: boolean; }
+const { showTap = false } = Astro.props;
+
+// Twelve tiles, curated as plausible "Sunday dinners" from the wider
+// sample library — leans on shared continuity with Flow II so the
+// visual register stays consistent across flows. Corn ragù sits first
+// so the halo lands on the recipe that anchors Flow I.
+const tiles: LibraryTileData[] = [
+  { title: sampleRecipe.title, meta: `${sampleRecipe.minutes} min · Serves ${sampleRecipe.serves}`, photo: sampleRecipe.photo, aspect: "4 / 5" },
+  { title: "Slow-roast tomato pasta",   meta: "1 hr 30 · Serves 4", aspect: "3 / 4", tone: "corn" },
+  { title: "Whole roasted cauliflower", meta: "1 hr · Serves 4",    aspect: "1 / 1", tone: "sage" },
+  { title: "Wild mushroom toast",       meta: "20 min · Serves 2",  aspect: "4 / 5", tone: "sage" },
+  { title: "Charred leeks vinaigrette", meta: "25 min · Serves 4",  aspect: "3 / 4", tone: "sage" },
+  { title: "Saffron-onion tart",        meta: "1 hr 15 · Serves 6", aspect: "1 / 1", tone: "ochre" },
+  { title: "Burrata with stone fruit",  meta: "10 min · Serves 4",  aspect: "4 / 5", tone: "ochre" },
+  { title: "Brown-butter brassicas",    meta: "30 min · Serves 4",  aspect: "3 / 4", tone: "sage" },
+  { title: "Late-summer panzanella",    meta: "20 min · Serves 4",  aspect: "1 / 1", tone: "corn" },
+  { title: "Anchovy butter, radishes",  meta: "10 min · Serves 4",  aspect: "4 / 5", tone: "ochre" },
+  { title: "Olive oil & yogurt cake",   meta: "55 min · Serves 8",  aspect: "3 / 4", tone: "ochre" },
+  { title: "Plum clafoutis",            meta: "45 min · Serves 6",  aspect: "1 / 1", tone: "ochre" },
+];
+---
+
+<div class="coll">
+  <ScreenNav />
+
+  <header class="coll__head">
+    <hr class="coll__rule" aria-hidden="true" />
+    <span class="coll__eyebrow">From Sarah Chen</span>
+    <h1 class="coll__title">Sunday dinners.</h1>
+    <p class="coll__lede">Twelve recipes she keeps in rotation.</p>
+  </header>
+
+  <LibraryGrid tiles={tiles} showTap={showTap} tapIndex={0} />
+</div>
+
+<style>
+  .coll {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    padding-bottom: 44px; /* clear home indicator */
+  }
+
+  /* Chapter-opener — canonical rhythm from tokens.css §LAYOUT RHYTHM:
+     chapter rule → small-cap eyebrow → Lora display title → italic lede.
+     Centered to mirror the chapter-opening pages a real cookbook uses
+     to introduce a section. */
+  .coll__head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 18px 28px 28px;
+    text-align: center;
+  }
+
+  .coll__rule {
+    border: 0;
+    width: var(--rule-chapter);
+    height: var(--rule-weight-chapter);
+    background: var(--c-ochre);
+    margin: 0;
+  }
+
+  .coll__eyebrow {
+    margin-top: 4px;
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--c-ochre);
+  }
+
+  .coll__title {
+    margin: 6px 0 0;
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 32px;
+    line-height: 1.15;
+    letter-spacing: -0.012em;
+    color: var(--c-ink);
+    text-wrap: balance;
+  }
+
+  .coll__lede {
+    margin: 4px 0 0;
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--c-ash);
+    text-wrap: balance;
+    max-width: 28ch;
+  }
+</style>

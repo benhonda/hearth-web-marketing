@@ -1,0 +1,18 @@
+---
+/**
+ * VI · I — Recipe · detail, in cups.
+ * The canonical cookbook page with the right-side IN CUPS units
+ * affordance visible on the Ingredients eyebrow. Storyboard halo lands
+ * on that affordance — the next tap opens the measure picker.
+ */
+import RecipeDetail from "./RecipeDetail.astro";
+
+interface Props { showTap?: boolean; }
+const { showTap } = Astro.props;
+---
+
+<RecipeDetail
+  showTap={showTap}
+  units="cups"
+  tapTarget="units-tap"
+/>

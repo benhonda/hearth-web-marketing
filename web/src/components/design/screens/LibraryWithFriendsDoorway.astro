@@ -1,0 +1,15 @@
+---
+/**
+ * Flow V · I — Library, with the Friends row halo'd.
+ *
+ * The options list above the waterfall is part of the Library layout
+ * for every populated state — this wrapper just halos the Friends row
+ * as the next tap.
+ */
+import Library from "./Library.astro";
+
+interface Props { showTap?: boolean; }
+const { showTap } = Astro.props;
+---
+
+<Library state="populated" showTap={showTap} optionsTapTarget="friends" />

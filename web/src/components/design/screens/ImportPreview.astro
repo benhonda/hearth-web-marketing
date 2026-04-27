@@ -1,81 +1,227 @@
 ---
 /**
- * Screen V · Import preview.
+ * Screen V · Import preview — really the structured edit.
  *
- * Hearth's share-extension UI. After tapping Hearth in the iOS share
- * sheet, this appears as a full-screen cream page with the extracted
- * recipe rendered in Hearth's own typography. User taps Save — or
- * edits any section before saving.
+ * The shared destination for all three import doorways. Looks like the
+ * cookbook page it'll become; every field is inline-editable. No form
+ * chrome, no "tap any section to edit" hints — the cook treats this
+ * as the page itself, the affordances are quiet and earned.
  *
- * Top nav: Cancel (quiet) · centered "Import recipe" eyebrow · Save
- *         (the primary-style inline). Title is an input showing the
- *         extracted value to signal "you can change this." Ingredients
- *         and method are display-only with a tertiary Edit affordance.
+ * Per-field editability:
+ *   · Title           → Lora display, plain text, caret on tap
+ *   · Serves N        → small dotted-Ochre underline on the numeral
+ *                       (carried into the ingredients eyebrow's
+ *                       SERVES N twin so the two stay synced)
+ *   · Time            → dotted-underline minutes (URL/text only —
+ *                       handwritten cards rarely carry one)
+ *   · Notes           → RecipeNotes block; populated from AI
+ *                       extraction on the photo path (Grandma's voice
+ *                       arrives already in the margin), empty
+ *                       invitation otherwise
+ *   · Ingredients     → type-aware inline trio per line: qty (dotted
+ *                       underline), unit (dotted underline + ▾ —
+ *                       combobox grammar, accepts "knob", "small
+ *                       handful", "to taste"), name (plain text)
+ *   · Method steps    → MethodList grammar; each step's text is
+ *                       editable in place, AI-extracted inline
+ *                       comments arrive pre-populated where the
+ *                       source carried marginalia
+ *
+ * Source variants:
+ *   · url   — food hero with photographer credit; "From [url]" chip
+ *   · text  — food hero (sample fallback); no chip
+ *   · photo — paper-warmth artifact hero standing in for the cook's
+ *             actual photograph; no chip — the hero IS the source
+ *             attribution. Recipe content matches the transcription
+ *             gate (Grandma's Corn Ragu, serves 4, no minutes).
  */
-import IngredientsList from "../ui/IngredientsList.astro";
+import RecipeNotes from "../ui/RecipeNotes.astro";
 import MethodList from "../ui/MethodList.astro";
+import ItemComment from "../ui/ItemComment.astro";
+import type { MethodStep } from "~/lib/design/sample-recipe";
 import { sampleRecipe } from "~/lib/design/sample-recipe";
 
-interface Props { showTap?: boolean; }
-const { showTap = false } = Astro.props;
+interface Props {
+  showTap?: boolean;
+  /** Where the recipe came from. Drives the hero, the from-card, and
+   *  the recipe content shown — the photo path renders Grandma's
+   *  Corn Ragu (matching the transcription gate); URL/text render the
+   *  canonical table.kitchen corn ragù.
+   *
+   *  url   → food hero + From-URL chip + sample recipe
+   *  photo → paper-warmth artifact hero + photo-extracted recipe
+   *  text  → food hero (fallback) + no chip + sample recipe
+   */
+  source?: "url" | "photo" | "text";
+}
+
+const { showTap = false, source = "url" } = Astro.props;
+const isPhoto = source === "photo";
+
+/* Per-source recipe content. ----------------------------------- */
+
+type ParsedIngredient = {
+  /** undefined = no quantity slot rendered (the "to taste" case). */
+  qty?: string;
+  /** undefined = no unit slot rendered. Empty string = unit slot
+   *  rendered but empty (the bare-count case: "1 shallot"). Any other
+   *  string = combobox value, free text accepted. */
+  unit?: string;
+  name: string;
+  comment?: string;
+};
+
+const recipeTitle = isPhoto ? "Grandma's Corn Ragu" : sampleRecipe.title;
+const recipeServes = isPhoto ? 4 : sampleRecipe.serves;
+const recipeMinutes: number | undefined = isPhoto ? undefined : sampleRecipe.minutes;
+
+const recipeIngredients: ParsedIngredient[] = isPhoto
+  ? [
+      { qty: "4", unit: "ears", name: "corn, kernels cut off the cob" },
+      { qty: "1", unit: "", name: "large shallot, finely diced" },
+      { qty: "2", unit: "Tbsp", name: "olive oil" },
+      { qty: "1", unit: "cup", name: "dry white wine" },
+      { qty: "3", unit: "Tbsp", name: "unsalted butter" },
+      {
+        unit: "small handful",
+        name: "basil, torn",
+        comment: "grandma was heavier-handed",
+      },
+    ]
+  : [
+      { qty: "6", unit: "ears", name: "sweet corn, kernels scraped (cobs reserved)" },
+      { qty: "1", unit: "", name: "shallot, minced" },
+      { qty: "3", unit: "cloves", name: "garlic, thinly sliced" },
+      { qty: "1", unit: "cup", name: "dry white wine" },
+      {
+        qty: "1",
+        unit: "Tbsp",
+        name: "white miso",
+        comment: "Cultured if I have it.",
+      },
+      { qty: "1", unit: "cup", name: "basil leaves, torn" },
+      { qty: "3", unit: "Tbsp", name: "unsalted butter" },
+      { name: "Olive oil, salt, black pepper" },
+    ];
+
+const recipeMethod: MethodStep[] = isPhoto
+  ? [
+      { text: "sauté shallot in olive oil, 2 minutes", mise: [] },
+      { text: "add corn and wine, simmer until reduced", mise: [] },
+      { text: "swirl in butter at the end", mise: [] },
+      { text: "top with basil and a little salt", mise: [] },
+    ]
+  : sampleRecipe.method;
+
+// AI-extracted inline comments — arrive pre-populated when the source
+// carried embedded marginalia. URL path: a habitual variation note on
+// the miso line — Flow V grammar repurposed for AI extraction. Photo
+// path: a margin note on step ii of grandma's card.
+const methodComments: Record<number, { text: string }> = isPhoto
+  ? { 1: { text: "or until barely glossy" } }
+  : { 3: { text: "10–12 minutes — thickens better." } };
+
+const recipeNote = isPhoto ? "From Grandma Ruth's recipe box." : "";
 ---
 
-<div class="import">
-  <header class="import-bar">
-    <button class="import-bar__cancel" type="button">Cancel</button>
-    <span class="import-bar__eyebrow">Import recipe</span>
-    <button class={showTap ? "import-bar__save import-bar__save--tap" : "import-bar__save"} type="button">Save</button>
+<div class="ip">
+  <header class="ip-bar">
+    <button class="ip-bar__cancel" type="button">Cancel</button>
+    <span class="ip-bar__eyebrow">Import recipe</span>
+    <button
+      class={showTap ? "ip-bar__save ip-bar__save--tap" : "ip-bar__save"}
+      type="button"
+    >Save</button>
   </header>
 
-  <div class="import__body">
-    <div class="from-card">
-      <span class="from-card__eyebrow">From</span>
-      <span class="from-card__url">{sampleRecipe.source}</span>
-    </div>
+  <div class="ip__body">
+    {source === "url" && (
+      <div class="from-card">
+        <span class="from-card__eyebrow">From</span>
+        <span class="from-card__url">{sampleRecipe.source}</span>
+      </div>
+    )}
 
-    <div class="hero" aria-hidden="true" style={`background-image: url(${sampleRecipe.photo})`}>
-      <span class="hero__credit">photograph · Mia Aquilina</span>
-    </div>
+    {isPhoto ? (
+      <>
+        <div class="hero hero--artifact" aria-hidden="true"></div>
+        <p class="ip__source-caption">from your photograph</p>
+      </>
+    ) : (
+      <div
+        class="hero"
+        aria-hidden="true"
+        style={`background-image: url(${sampleRecipe.photo})`}
+      >
+        <span class="hero__credit">photograph · Mia Aquilina</span>
+      </div>
+    )}
 
-    <div class="title-field">
-      <label class="title-field__label">Recipe title</label>
-      <input
-        class="title-field__input"
-        type="text"
-        value={sampleRecipe.title}
-        aria-label="Recipe title"
-      />
-    </div>
+    <h1 class="ip__title">{recipeTitle}</h1>
 
-    <p class="import__meta">
-      <em>Serves {sampleRecipe.serves}</em>
-      <span aria-hidden="true"> · </span>
-      <em>{sampleRecipe.minutes} min</em>
+    <p class="ip__meta">
+      <em>Serves </em><button class="ip__num-edit" type="button">{recipeServes}</button>
+      {recipeMinutes !== undefined && (
+        <>
+          <span class="ip__meta-sep" aria-hidden="true"> · </span>
+          <button class="ip__num-edit" type="button">{recipeMinutes}</button><em> min</em>
+        </>
+      )}
     </p>
 
-    <hr class="import__rule" />
+    <hr class="ip__rule" />
 
-    <IngredientsList items={sampleRecipe.ingredients} />
+    <RecipeNotes text={recipeNote} invitation={!recipeNote} />
 
-    <hr class="import__rule" />
+    <hr class="ip__rule" />
 
-    <MethodList items={sampleRecipe.method} />
+    <section class="ing">
+      <span class="ing__eyebrow-row">
+        <span class="ing__eyebrow">Ingredients</span>
+        <span class="ing__sep" aria-hidden="true">·</span>
+        <span class="ing__serves">serves <button class="ing__serves-num" type="button">{recipeServes}</button></span>
+      </span>
 
-    <div class="edit-hint">
-      <span class="edit-hint__text">Tap any section to edit before saving.</span>
-    </div>
+      <ul class="ing__list">
+        {recipeIngredients.map((it) => (
+          <li class="ing__li">
+            <span class="ing__row">
+              <span class="ing__inputs">
+                {it.qty !== undefined && (
+                  <button class="ing__qty" type="button">{it.qty || "·"}</button>
+                )}
+                {it.unit !== undefined && (
+                  <button class="ing__unit" type="button">
+                    <span class="ing__unit-text">{it.unit || "—"}</span>
+                    <span class="ing__unit-chev" aria-hidden="true">▾</span>
+                  </button>
+                )}
+              </span>
+              <span class="ing__name">{it.name}</span>
+            </span>
+            {it.comment && <ItemComment text={it.comment} />}
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <hr class="ip__rule" />
+
+    <MethodList items={recipeMethod} comments={methodComments} />
   </div>
 </div>
 
 <style>
-  .import {
+  .ip {
     display: grid;
     grid-template-rows: auto 1fr;
     min-height: 100%;
     padding-bottom: 44px; /* home indicator clearance */
   }
 
-  .import-bar {
+  /* Top bar ─────────────────────────────────────────────────── */
+
+  .ip-bar {
     padding: 62px 22px 14px;
     display: grid;
     grid-template-columns: 1fr auto 1fr;
@@ -83,13 +229,13 @@ const { showTap = false } = Astro.props;
     gap: 12px;
     border-bottom: 1px solid rgba(31, 27, 23, 0.08);
   }
-  .import-bar__cancel {
+  .ip-bar__cancel {
     justify-self: flex-start;
     font-family: var(--f-body);
     font-size: 14px;
     color: var(--c-ash);
   }
-  .import-bar__eyebrow {
+  .ip-bar__eyebrow {
     font-family: var(--f-body);
     font-weight: 500;
     font-size: 10px;
@@ -97,7 +243,7 @@ const { showTap = false } = Astro.props;
     text-transform: uppercase;
     color: var(--c-ochre);
   }
-  .import-bar__save {
+  .ip-bar__save {
     position: relative;
     justify-self: flex-end;
     font-family: var(--f-body);
@@ -106,7 +252,7 @@ const { showTap = false } = Astro.props;
     color: var(--c-ochre);
     padding: 4px 8px;
   }
-  .import-bar__save--tap::after {
+  .ip-bar__save--tap::after {
     content: "";
     position: absolute;
     inset: -4px;
@@ -119,14 +265,14 @@ const { showTap = false } = Astro.props;
     z-index: 50;
   }
 
-  .import__body {
+  .ip__body {
     padding: 20px 22px 0;
     display: grid;
     gap: 18px;
   }
 
-  /* From card ─────────────────────────────────────────────── */
-
+  /* From card — URL only. Photo path's hero IS the from-card
+     semantically; rendering both would double-attribute. */
   .from-card {
     display: inline-flex;
     gap: 10px;
@@ -151,7 +297,7 @@ const { showTap = false } = Astro.props;
     color: var(--c-ink);
   }
 
-  /* Hero ──────────────────────────────────────────────────── */
+  /* Hero ────────────────────────────────────────────────────── */
 
   .hero {
     position: relative;
@@ -182,68 +328,263 @@ const { showTap = false } = Astro.props;
     z-index: 1;
   }
 
-  /* Title field ───────────────────────────────────────────── */
-
-  .title-field { display: grid; gap: 6px; }
-  .title-field__label {
-    font-family: var(--f-body);
-    font-weight: 500;
-    font-size: 10px;
-    letter-spacing: 0.28em;
-    text-transform: uppercase;
-    color: var(--c-ochre);
+  /* Source-artifact hero — paper-warmth gradient with subtle ruling.
+     Same visual vocabulary as ImportTranscription's photo placeholder
+     so the artifact reads as the same image at hero scale. No scrim
+     (no text overlay), no credit (the artifact IS the source). */
+  .hero--artifact {
+    background-color: transparent;
+    background-image:
+      radial-gradient(circle at 28% 18%, rgba(255, 255, 255, 0.55) 0%, transparent 55%),
+      linear-gradient(160deg, #efe6d4 0%, #e3d8c2 100%);
+    box-shadow: var(--shadow-paper);
   }
-  .title-field__input {
+  .hero--artifact::after {
+    /* Override the food-hero scrim — replace with horizontal ruling. */
+    background: none;
+    inset: 12% 14% 12% 14%;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 20px,
+      rgba(31, 27, 23, 0.07) 20px,
+      rgba(31, 27, 23, 0.07) 21px
+    );
+  }
+
+  /* Caption beneath the artifact hero — italic Lora Oat, mirrors the
+     "From card" voice but lives below the hero (the hero has already
+     done the visual attribution). */
+  .ip__source-caption {
+    text-align: center;
+    margin: -8px 0 0;
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 12.5px;
+    color: var(--c-oat);
+    letter-spacing: 0.04em;
+  }
+
+  /* Title ───────────────────────────────────────────────────── */
+
+  /* Plain Lora display heading — no form-field box, no border, no
+     input chrome. The cookbook-page voice is the affordance; tap-to-
+     edit is implicit. */
+  .ip__title {
     font-family: var(--f-display);
     font-weight: 400;
-    font-size: 24px;
+    font-size: 26px;
     line-height: 1.15;
     letter-spacing: -0.008em;
     color: var(--c-ink);
-    background: var(--c-input);
-    border: 1px solid rgba(31, 27, 23, 0.14);
-    border-radius: 2px;
-    padding: 10px 12px;
-    width: 100%;
-  }
-  .title-field__input:focus {
-    outline: none;
-    background: #ffffff;
-    border-color: var(--c-ink);
+    margin: 0;
   }
 
-  /* Meta line ─────────────────────────────────────────────── */
+  /* Meta line ──────────────────────────────────────────────── */
 
-  .import__meta {
+  .ip__meta {
+    margin: -2px 0 0;
     font-family: var(--f-display);
     font-size: 14px;
     color: var(--c-ash);
   }
-  .import__meta em {
+  .ip__meta em {
     font-style: italic;
-    color: var(--c-ink);
+    color: var(--c-ash);
   }
+  .ip__meta-sep { color: var(--c-ash); }
 
-  /* Rule ──────────────────────────────────────────────────── */
+  /* Inline-edit affordance for numeric values (serves, minutes). The
+     only chrome that distinguishes them as editable is a 0.75px
+     dotted-Ochre underline at a 2.5px offset — tight enough that on
+     italic Lora it reads book-typographic, not URL-y. Hover lifts
+     color to Ink. */
+  .ip__num-edit {
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    border: 0;
+    padding: 0 1px;
+    margin: 0;
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 14px;
+    line-height: inherit;
+    color: var(--c-ink);
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-decoration-thickness: 0.75px;
+    text-decoration-color: var(--c-ochre);
+    text-underline-offset: 2.5px;
+    cursor: pointer;
+    transition: color var(--motion-state) var(--ease-state);
+  }
+  .ip__num-edit:hover { color: var(--c-ink); }
 
-  .import__rule {
+  /* Rule ────────────────────────────────────────────────────── */
+
+  .ip__rule {
     border: 0;
     height: 1px;
     background: rgba(31, 27, 23, 0.08);
     margin: 4px 0;
   }
 
-  /* Edit hint ─────────────────────────────────────────────── */
+  /* Ingredients (custom inline-editable) ───────────────────── */
 
-  .edit-hint {
-    text-align: center;
-    padding: 14px 0 16px;
-    margin-top: 4px;
+  .ing__eyebrow-row {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 10px;
   }
-  .edit-hint__text {
-    font-family: var(--f-display);
-    font-style: italic;
-    font-size: 12.5px;
-    color: var(--c-oat);
+  .ing__eyebrow {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--c-ochre);
+  }
+  .ing__sep {
+    font-family: var(--f-body);
+    color: var(--c-ochre);
+    opacity: 0.45;
+    font-size: 10px;
+  }
+  .ing__serves {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--c-ochre);
+  }
+  /* Inline serves N — same dotted-Ochre underline as meta numerics so
+     the two stay grammatically synced. */
+  .ing__serves-num {
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    font: inherit;
+    color: var(--c-ochre);
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-decoration-thickness: 0.75px;
+    text-decoration-color: var(--c-ochre);
+    text-underline-offset: 2.5px;
+    cursor: pointer;
+  }
+
+  .ing__list {
+    display: grid;
+    gap: 8px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+  .ing__li {
+    padding-left: 14px;
+    position: relative;
+  }
+  .ing__li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.72em;
+    width: 6px;
+    height: 1px;
+    background: var(--c-ochre);
+    opacity: 0.85;
+  }
+
+  /* Each ingredient row sits on a baseline grid: a fixed-width inputs
+     gutter (qty + unit) on the left, free-flowing name on the right.
+     Lines without inputs (the "to taste" case) collapse the gutter
+     and the name fills the row. */
+  .ing__row {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 6px;
+    font-family: var(--f-body);
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--c-ink);
+  }
+  .ing__inputs {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+  .ing__inputs:empty { display: none; }
+
+  /* Quantity — dotted-Ochre underline. Same grammar as the meta
+     numeric edit so the entire page reads as one editable surface. */
+  .ing__qty {
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    border: 0;
+    padding: 0 1px;
+    margin: 0;
+    font-family: var(--f-body);
+    font-size: 13.5px;
+    line-height: inherit;
+    color: var(--c-ink);
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-decoration-thickness: 0.75px;
+    text-decoration-color: var(--c-ochre);
+    text-underline-offset: 2.5px;
+    cursor: pointer;
+    min-width: 1ch;
+  }
+
+  /* Unit — combobox grammar. Same dotted underline, plus a small
+     ▾ chevron in Ochre that signals a constrained-but-accepting-free-
+     text dropdown. The unit slot accepts standard units (tsp, Tbsp,
+     cup, oz, g, ml) AND the long tail (knob, pinch, dash, "small
+     handful", "to taste") — which is why the chevron is paired with a
+     freely editable text payload, not a hard select. */
+  .ing__unit {
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    border: 0;
+    padding: 0 1px;
+    margin: 0;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 2px;
+    font-family: var(--f-body);
+    font-size: 13.5px;
+    line-height: inherit;
+    color: var(--c-ink);
+    cursor: pointer;
+  }
+  .ing__unit-text {
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-decoration-thickness: 0.75px;
+    text-decoration-color: var(--c-ochre);
+    text-underline-offset: 2.5px;
+  }
+  .ing__unit-chev {
+    font-size: 9px;
+    color: var(--c-ochre);
+    line-height: 1;
+    opacity: 0.7;
+    transform: translateY(-1px);
+  }
+
+  /* Name — plain text. Tap-to-edit is implicit; no decoration. */
+  .ing__name {
+    flex: 1 1 auto;
+    min-width: 0;
   }
 </style>

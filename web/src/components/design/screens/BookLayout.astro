@@ -17,8 +17,8 @@ import BookCover, { type CoverLayout } from "../ui/BookCover.astro";
 import BookPage, { type PageLayout } from "../ui/BookPage.astro";
 import { sampleRecipe } from "~/lib/design/sample-recipe";
 
-interface Props { showTap?: boolean; }
-const { showTap = false } = Astro.props;
+interface Props { showTap?: boolean; cta?: string; }
+const { showTap = false, cta = "Continue" } = Astro.props;
 
 const coverOptions: { id: CoverLayout; active: boolean }[] = [
   { id: "plate", active: true },
@@ -116,7 +116,7 @@ const pageRows: {
 
   <div class="set__foot">
     <button class={showTap ? "set__continue set__continue--tap" : "set__continue"} type="button">
-      Done
+      {cta}
     </button>
   </div>
 </div>
@@ -175,8 +175,11 @@ const pageRows: {
 
   .set__options {
     display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: 1fr;
+    /* Two-column rail — keeps every thumb the same size regardless of
+       how many sit in the row. A solo thumb (e.g. Pages · no photo)
+       fills the first slot only; without this it would stretch to full
+       width × 4:5 and tower over the picker. */
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
   }
 

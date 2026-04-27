@@ -1,0 +1,46 @@
+---
+/**
+ * Per-recipe detail page. One page per entry in the `recipes` registry,
+ * generated at build time via getStaticPaths. Library tiles link here
+ * (sample-library.ts maps each recipe to /design/screens/recipes/<slug>),
+ * so the waterfall feels real instead of decorative — every recipe in
+ * the registry resolves to a working page.
+ *
+ * Adding a new example recipe: append a `Recipe` object to `recipes`
+ * in lib/design/sample-recipe.ts. This page (and the library tile)
+ * pick it up automatically; no boilerplate per recipe.
+ *
+ * Out of band from the flow registry on purpose — these pages are
+ * not flow-narrative screens; they're the leaf the library waterfall
+ * lands you on.
+ */
+import DesignLayout from "~/layouts/DesignLayout.astro";
+import ScreenStage from "~/components/design/ScreenStage.astro";
+import PhoneFrame from "~/components/design/PhoneFrame.astro";
+import RecipeDetail from "~/components/design/screens/RecipeDetail.astro";
+import { recipes } from "~/lib/design/sample-recipe";
+
+/* The site otherwise runs in @astrojs/node SSR mode; this single dynamic
+ * route opts into prerender so getStaticPaths runs at build time and
+ * each recipe in the registry gets a static HTML page. */
+export const prerender = true;
+
+export async function getStaticPaths() {
+  return recipes.map((recipe) => ({
+    params: { slug: recipe.slug },
+    props: { recipe },
+  }));
+}
+
+const { recipe } = Astro.props;
+const eyebrow = "Library Recipe";
+const pageTitle = `${recipe.title} · Library`;
+---
+
+<DesignLayout title={pageTitle}>
+  <ScreenStage eyebrow={eyebrow} title={recipe.title}>
+    <PhoneFrame surface="cream" variant="single" label={recipe.title}>
+      <RecipeDetail recipe={recipe} />
+    </PhoneFrame>
+  </ScreenStage>
+</DesignLayout>

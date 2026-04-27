@@ -18,6 +18,11 @@ interface Props {
   href?: string;
   showTap?: boolean;         // flow-binder halo
   dimmed?: boolean;          // selection-out state on selection screens
+  /** Curator credit ("via Sarah Chen"). When set, renders a third
+   *  caption line in italic Lora ash beneath the meta. Used by
+   *  Flow VII to thread the credit chain through into the library —
+   *  the recipe is yours, the byline preserves who saved it for you. */
+  credit?: string;
 }
 
 const {
@@ -29,6 +34,7 @@ const {
   href = "#",
   showTap = false,
   dimmed = false,
+  credit,
 } = Astro.props;
 
 const photoStyle = photo
@@ -44,6 +50,7 @@ const photoStyle = photo
   ></div>
   <h3 class="tile__title">{title}</h3>
   <p class="tile__meta">{meta}</p>
+  {credit && <p class="tile__credit">{credit}</p>}
 </a>
 
 <style>
@@ -102,6 +109,22 @@ const photoStyle = photo
     color: var(--c-ash);
     letter-spacing: 0.02em;
     margin: 0;
+  }
+
+  /* Credit line — italic Lora, smaller register than meta, ash. The
+     contributing-cook byline at tile scale, deliberately distinct
+     from the small-caps source treatment (which lives on detail per
+     tokens.css §PHOTOGRAPHY). Reads as a quiet marginalia note, not
+     a category tag. */
+  .tile__credit {
+    margin: 2px 0 0;
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 11px;
+    line-height: 1.3;
+    color: var(--c-ash);
+    letter-spacing: 0;
   }
 
   .tile--tap::after {

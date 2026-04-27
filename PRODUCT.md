@@ -4,7 +4,7 @@
 
 ## What
 
-Mobile app where home cooks save and organize recipes, and turn them into premium hardcover cookbooks whenever the occasion calls for one.
+Mobile app where home cooks save and organize recipes — from web URLs, pasted text, photos of handwritten cards, or a small circle of friends whose taste they trust — and turn their library into premium hardcover cookbooks whenever the occasion calls for one.
 
 ## Who
 
@@ -59,22 +59,26 @@ Not a scrapbook. Not a photo book. A *cookbook* that belongs on a coffee table, 
 
 ## Wedge
 
-Every recipe saved is already book-worthy. Competitors are either utilitarian recipe managers (Paprika, Whisk) or blank-canvas print tools (Shutterfly, Blurb). Hearth is neither — it's a continuous library designed as a cookbook from day one.
+Every recipe saved is already book-worthy, and every saved recipe carries who it came from. Competitors are utilitarian recipe managers (Paprika, Whisk), social recipe feeds (Tasty, Whisk again), or blank-canvas print tools (Shutterfly, Blurb). Hearth is none of these — it's a continuous library designed as a cookbook from day one, with provenance threaded through. The credit chain is preserved on the printed page the way real cookbook attributions always have been: *"submitted by Mrs. Thompson, originally her grandmother's."*
 
 ## Moat
 
 - Design system culture (app ≡ book, visually)
 - Print fulfillment wired directly into the app
-- TikTok/Instagram → structured recipe import quality
+- Structured recipe import quality across link / paste / photo
 - Brand as a boutique publishing house
+- A small bilateral friend graph that compounds *trust*, not virality — recipes pass between people who'd actually cook from each other
+- Credit chain preserved on the printed page, not just as in-app metadata
 
 ## Product model
 
-- **Library**: Apple Music–style continuous chronological list
-- **Collections**: Opt-in, created manually or automatically at book-creation time
-- **Save flow**: Frictionless — zero organization overhead
-- **Book flow**: Smart pre-selected starting point, never a blank canvas
-- **Book triggers**: Multi-occasion (Mother's Day, wedding, phase, milestone), not forced calendar
+- **Library**: Apple Music–style continuous chronological list. Private to you, always.
+- **Collections**: User-named curated buckets, drawn from your library. The unit of sharing — each collection independently opt-in friends-shareable. Apple-Music-playlist analog.
+- **Friends**: Bilateral mutual graph. Small, trusted. You see your friends' shared collections; you never see their raw libraries.
+- **Save flow**: Frictionless — from a link / paste / photo, or from a friend's shared collection. Zero organization overhead.
+- **Credit chain**: Saves from a friend thread a two-line attribution into your library — *FROM table.kitchen · VIA Sarah Chen* — and that credit is preserved on the printed cookbook page. Recipe edits travel as part of the recipe-body; private notes don't.
+- **Book flow**: Smart pre-selected starting point, never a blank canvas. The book renders both your annotations AND the credit chain.
+- **Book triggers**: Multi-occasion (Mother's Day, wedding, phase, milestone), not forced calendar.
 
 ## Economics
 
@@ -92,13 +96,14 @@ Every recipe saved is already book-worthy. Competitors are either utilitarian re
 5. **First import is the hero flow.** Screenshot-worthy.
 6. **Book spine test.** Every design decision must look right on a hardcover spine.
 7. **Annotations are the personalization layer.** Comments and notes at both recipe and line-item scope are what make someone else's recipe into yours. The printed book renders them alongside the recipe body — the marginalia are the proof-of-authorship, not ornament. A library of saved URLs can't give you this; a library of saved-and-annotated URLs can.
+8. **Credit travels with the recipe, not the user.** Every save threads a two-line attribution — origin + curator — preserved on the printed page. This is what makes the friend graph compound trust without becoming a follower economy. Identity-as-cook is your private library; identity-as-author is your published book. Nothing in between needs to exist.
 
 ## What Hearth is NOT
 
 - Not a meal planner
 - Not a shopping list app
 - Not a nutrition tracker
-- Not a social/sharing platform
+- **Not a feed.** No follower counts, no activity stream, no public profiles, no Wrapped, no FOMO. The friend graph is bilateral and small; the social atom is a curated collection, not a status post. Apple-Music-shape, never Spotify-shape.
 - Not Paprika. Do not become Paprika.
 
 ## Validation

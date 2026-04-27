@@ -1,0 +1,221 @@
+---
+/**
+ * Sidebar TOC for the /design index page. Two levels: flows + their named
+ * sub-flows (the `branches` declared on each step in `flows.ts`). Driven
+ * entirely off the `flows` array — no manual config to maintain. Adding a
+ * branch in flows.ts adds a sidebar entry automatically.
+ *
+ * Anchor ids match the targets FlowStoryboard renders: `flow-${slug}` on
+ * each flow's h2, `branch-${slug}-${stepIdx}-${branchIdx}` on each branch
+ * label. Active highlight uses IntersectionObserver against those targets.
+ */
+import { branchAnchorId, flowAnchorId, flows } from "~/lib/design/flows";
+---
+
+<aside class="design-sidebar" aria-label="Flows table of contents">
+  <nav class="design-sidebar__nav">
+    <ol class="design-sidebar__flows">
+      {flows.map((flow) => (
+        <li class="design-sidebar__flow">
+          <a
+            href={`#${flowAnchorId(flow)}`}
+            class="design-sidebar__flow-link"
+            data-anchor={flowAnchorId(flow)}
+          >
+            <span class="design-sidebar__flow-numeral">{flow.numeral}</span>
+            <span class="design-sidebar__flow-title">{flow.title}</span>
+          </a>
+          {flow.steps.some((s) => s.branches?.length) && (
+            <ol class="design-sidebar__branches">
+              {flow.steps.flatMap((step, i) =>
+                (step.branches ?? []).map((branch, b) => (
+                  <li class="design-sidebar__branch">
+                    <a
+                      href={`#${branchAnchorId(flow, i, b)}`}
+                      class="design-sidebar__branch-link"
+                      data-anchor={branchAnchorId(flow, i, b)}
+                    >
+                      {branch.label}
+                    </a>
+                  </li>
+                )),
+              )}
+            </ol>
+          )}
+        </li>
+      ))}
+    </ol>
+  </nav>
+</aside>
+
+<script is:inline>
+  (function () {
+    function syncTopbarHeight() {
+      var bar = document.querySelector(".design-topbar");
+      if (!bar) return;
+      var h = Math.ceil(bar.getBoundingClientRect().height);
+      document.documentElement.style.setProperty("--topbar-h", h + "px");
+    }
+    syncTopbarHeight();
+    window.addEventListener("resize", syncTopbarHeight);
+
+    var sidebar = document.querySelector(".design-sidebar");
+    if (!sidebar) return;
+    var links = Array.from(sidebar.querySelectorAll("[data-anchor]"));
+    if (!links.length) return;
+
+    var byAnchor = {};
+    links.forEach(function (a) {
+      byAnchor[a.getAttribute("data-anchor")] = a;
+    });
+
+    var visible = new Set();
+    function update() {
+      var best = null;
+      var bestTop = Infinity;
+      visible.forEach(function (id) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        var top = el.getBoundingClientRect().top;
+        var score = top >= 0 ? top : Math.abs(top) + 10000;
+        if (score < bestTop) {
+          bestTop = score;
+          best = id;
+        }
+      });
+      links.forEach(function (a) {
+        a.classList.toggle("is-active", a.getAttribute("data-anchor") === best);
+      });
+      if (best && byAnchor[best]) {
+        byAnchor[best].scrollIntoView({ block: "nearest", behavior: "smooth" });
+      }
+    }
+
+    var io = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (e) {
+          var id = e.target.id;
+          if (!id) return;
+          if (e.isIntersecting) visible.add(id);
+          else visible.delete(id);
+        });
+        update();
+      },
+      { rootMargin: "-20% 0px -60% 0px", threshold: 0 },
+    );
+
+    links.forEach(function (a) {
+      var id = a.getAttribute("data-anchor");
+      var el = document.getElementById(id);
+      if (el) io.observe(el);
+    });
+
+    sidebar.addEventListener("click", function (e) {
+      var t = e.target.closest("[data-anchor]");
+      if (!t) return;
+      var id = t.getAttribute("data-anchor");
+      var el = document.getElementById(id);
+      if (!el) return;
+      e.preventDefault();
+      var topbar = document.querySelector(".design-topbar");
+      var offset = topbar ? topbar.getBoundingClientRect().height + 16 : 16;
+      var y = el.getBoundingClientRect().top + window.scrollY - offset;
+      window.scrollTo({ top: y, behavior: "smooth" });
+      history.replaceState(null, "", "#" + id);
+    });
+  })();
+</script>
+
+<style>
+  .design-sidebar {
+    position: sticky;
+    top: calc(var(--topbar-h, 56px) + var(--space-md));
+    align-self: start;
+    max-height: calc(100vh - var(--topbar-h, 56px) - var(--space-md) * 2);
+    overflow-y: auto;
+    padding-right: var(--space-md);
+    padding-bottom: var(--space-2xl);
+    border-right: 1px solid rgba(31, 27, 23, 0.06);
+  }
+
+  .design-sidebar::-webkit-scrollbar { width: 4px; }
+  .design-sidebar::-webkit-scrollbar-thumb {
+    background: rgba(31, 27, 23, 0.18);
+    border-radius: 999px;
+  }
+  .design-sidebar::-webkit-scrollbar-track { background: transparent; }
+
+  .design-sidebar__nav { display: block; }
+
+  .design-sidebar__flows,
+  .design-sidebar__branches {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .design-sidebar__flows { display: grid; gap: var(--space-lg); }
+
+  .design-sidebar__branches {
+    display: grid;
+    gap: 1px;
+    margin-top: var(--space-2xs);
+    padding-left: 22px;
+    margin-left: 4px;
+    border-left: 1px solid rgba(31, 27, 23, 0.08);
+  }
+
+  .design-sidebar__flow-link {
+    display: grid;
+    grid-template-columns: 22px 1fr;
+    gap: 8px;
+    align-items: baseline;
+    color: var(--c-ink);
+    text-decoration: none;
+    padding-block: 4px;
+    transition: color var(--motion-state) var(--ease-state);
+  }
+  .design-sidebar__flow-link:hover { color: var(--c-ochre); }
+  .design-sidebar__flow-link.is-active { color: var(--c-ochre); }
+  .design-sidebar__flow-link.is-active .design-sidebar__flow-numeral { color: var(--c-ochre); }
+
+  .design-sidebar__flow-numeral {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 13px;
+    color: var(--c-ochre);
+    line-height: 1.2;
+  }
+  .design-sidebar__flow-title {
+    font-family: var(--f-display);
+    font-size: 14px;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+
+  /* Sub-flow link — small-caps eyebrow voice, mirrors the in-canvas branch label */
+  .design-sidebar__branch-link {
+    display: block;
+    color: var(--c-ash);
+    text-decoration: none;
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 10.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding-block: 4px;
+    padding-left: 4px;
+    border-left: 1px solid transparent;
+    transition: color var(--motion-state) var(--ease-state),
+      border-color var(--motion-state) var(--ease-state);
+  }
+  .design-sidebar__branch-link:hover { color: var(--c-ink); }
+  .design-sidebar__branch-link.is-active {
+    color: var(--c-ochre);
+    border-left-color: var(--c-ochre);
+  }
+
+  @media (max-width: 1024px) {
+    .design-sidebar { display: none; }
+  }
+</style>

@@ -1,0 +1,18 @@
+---
+/**
+ * Flow II · The page, lived in — deep-link route.
+ * Same storyboard that appears on /design, isolated to one flow.
+ */
+import DesignLayout from "~/layouts/DesignLayout.astro";
+import FlowStoryboard from "~/components/design/FlowStoryboard.astro";
+import { getFlow } from "~/lib/design/flows";
+
+const flow = getFlow("02-recipe-actions");
+if (!flow) {
+  throw new Error("Flow 02-recipe-actions missing from flows registry");
+}
+---
+
+<DesignLayout title={`Flow ${flow.numeral} · ${flow.title}`}>
+  <FlowStoryboard flow={flow} showHeader={true} />
+</DesignLayout>

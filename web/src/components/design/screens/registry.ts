@@ -21,7 +21,6 @@ import PhotoPicker from "./PhotoPicker.astro";
 import RecipeEdit from "./RecipeEdit.astro";
 import RecipeSaved from "./RecipeSaved.astro";
 import LibraryPopulated from "./LibraryPopulated.astro";
-import LibraryBookInProgress from "./LibraryBookInProgress.astro";
 import BookInvitation from "./BookInvitation.astro";
 import BookOccasion from "./BookOccasion.astro";
 import BookRecipes from "./BookRecipes.astro";
@@ -49,13 +48,28 @@ import RecipeStepCommentCompose from "./RecipeStepCommentCompose.astro";
 import RecipeDetailStepCommented from "./RecipeDetailStepCommented.astro";
 import RecipeIngredientCommentCompose from "./RecipeIngredientCommentCompose.astro";
 import RecipeDetailFullyAnnotated from "./RecipeDetailFullyAnnotated.astro";
+import RecipeDetailUnits from "./RecipeDetailUnits.astro";
+import RecipeDetailUnitsPicker from "./RecipeDetailUnitsPicker.astro";
+import RecipeDetailInGrams from "./RecipeDetailInGrams.astro";
+import LibraryWithFriendsDoorway from "./LibraryWithFriendsDoorway.astro";
+import CircleFriends from "./CircleFriends.astro";
+import SharedCollection from "./SharedCollection.astro";
+import RecipeWithCreditChain from "./RecipeWithCreditChain.astro";
+import LibraryAfterFriendSave from "./LibraryAfterFriendSave.astro";
+import ImportTranscription from "./ImportTranscription.astro";
+import ImportPreviewPhoto from "./ImportPreviewPhoto.astro";
 
 /**
  * Maps a FlowStep's `render` key to its Astro component. Shared by
  * FlowStoryboard (storyboard canvas) and ScreenDetail (1× detail pages) so
  * the mapping is defined once.
+ *
+ * Partial because a render key can be added to the union before its
+ * component lands; the storyboard renders missing entries as "Next pass"
+ * placeholders, which is exactly the behavior we want during
+ * in-progress drafts.
  */
-export const screenComponents: Record<ScreenRender, any> = {
+export const screenComponents: Partial<Record<ScreenRender, any>> = {
   welcome: WelcomeScreen,
   "library-empty": LibraryEmpty,
   "import-surface": ImportSurface,
@@ -78,7 +92,6 @@ export const screenComponents: Record<ScreenRender, any> = {
   "recipe-edit": RecipeEdit,
   "recipe-saved": RecipeSaved,
   "library-populated": LibraryPopulated,
-  "library-book-in-progress": LibraryBookInProgress,
   "book-invitation": BookInvitation,
   "book-occasion": BookOccasion,
   "book-recipes": BookRecipes,
@@ -106,4 +119,14 @@ export const screenComponents: Record<ScreenRender, any> = {
   "recipe-detail-step-commented": RecipeDetailStepCommented,
   "recipe-ingredient-comment-compose": RecipeIngredientCommentCompose,
   "recipe-detail-fully-annotated": RecipeDetailFullyAnnotated,
+  "recipe-detail-units": RecipeDetailUnits,
+  "recipe-detail-units-picker": RecipeDetailUnitsPicker,
+  "recipe-detail-in-grams": RecipeDetailInGrams,
+  "library-with-friends-doorway": LibraryWithFriendsDoorway,
+  "circle-friends": CircleFriends,
+  "shared-collection": SharedCollection,
+  "recipe-with-credit-chain": RecipeWithCreditChain,
+  "library-after-friend-save": LibraryAfterFriendSave,
+  "import-transcription": ImportTranscription,
+  "import-preview-photo": ImportPreviewPhoto,
 };

@@ -40,9 +40,10 @@ start a session on this skill:
    principles, what Hearth is NOT, and the validation ladder. Reach here
    for anything about audience, voice, or copy — not just positioning.
 
-3. **`/workspace/README.md`** — V1 scope, shelved features (with
-   triggers), build order, open follow-ups, and the "deferred
-   book-layout work" note. Read this to know what's in V1, what's
+3. **`/workspace/README.md`** — V1 priorities (one ordered list of
+   what's drawn and what's still to draw), shelved features (with
+   triggers), legal/copyright TODO, and the "deferred book-layout
+   work" note. Read this to know what's drawn, what's next, what's
    shelved, and what's deferred before proposing screens for a flow.
    Replaces the old `MVP.md` — there is no `MVP.md` anymore.
 
@@ -67,7 +68,7 @@ brand.
 ## The mental model
 
 - **Flow**: a sequence of screens walking the user through a journey
-  (e.g. "The first recipe" — nine screens from welcome to saved edit).
+  (e.g. "The first recipe" — twelve screens from welcome to saved edit).
 - **Screen**: one iPhone composition. Reusable across flows. The same
   `LibraryOneRecipe` can appear in an import flow and a make-a-book flow.
 - **Atom**: a sub-screen component used inside multiple screens
@@ -204,7 +205,7 @@ moves and their location in that file:
 - Chapter-opener rhythm (chapter-mark → rule → title → lede → sections → folio) → Layout Rhythm
 - Roman-numeral step markers (i. ii. iii.) → §2 character rules
 - em-middot meta lines ("Serves 4 · 50 min") → Visual Copy / UX Writing
-- Folio patterns ("— page 1 · version ii —") → §2 character rules
+- Folio patterns ("— page 1 —") → §2 character rules
 - Photography (two places only, scrim pattern, no AI enhancement) → Component Treatments
 - Motion (280ms ease, one chevron nudge, reduced-motion) → §8 motion
 

@@ -1,0 +1,231 @@
+---
+/**
+ * Photo · transcription gate (Flow I · III · Photo sub-flow).
+ *
+ * The new screen between photo capture and the structured Import preview.
+ * Hearth's vision pipeline transcribes the source verbatim — no
+ * restructuring, no reordering — and the cook reviews the transcription
+ * against the original photo before the AI structures it.
+ *
+ * Two failure modes intentionally separated: transcription errors are
+ * handled here, structure errors at the Import preview. Heirloom photos
+ * — cursive on paper from someone who isn't here to ask — carry a
+ * structurally worse OCR baseline than typed sources. This gate is
+ * where Hearth earns trust on hard inputs.
+ *
+ * Composition:
+ *   - Top bar: Cancel · BRING IN A RECIPE · Continue (halo'd)
+ *   - Photo of the source — 56% width, 3:4 portrait, paper-warmth
+ *     gradient with --shadow-paper. Stands in for the cook's actual
+ *     photograph; the original artifact is kept forever alongside
+ *     the structured recipe.
+ *   - Italic Lora caption "From your photograph." — mirrors the From
+ *     card voice on Import preview.
+ *   - Hairline rule.
+ *   - Editable transcription — Lora italic body, with dotted-Ochre
+ *     squiggles on low-confidence words (spell-check grammar; no
+ *     saturated reds). Tap a squiggle to edit; bulk-edit fix-once-
+ *     propagate lives at the structure layer.
+ *   - Italic Oat coda — "— Edit anything we got wrong. —"
+ */
+interface Props { showTap?: boolean }
+const { showTap = false } = Astro.props;
+---
+
+<div class="trans">
+  <header class="trans-bar">
+    <button class="trans-bar__cancel" type="button">Cancel</button>
+    <span class="trans-bar__eyebrow">Bring in a recipe</span>
+    <button
+      class={showTap ? "trans-bar__continue trans-bar__continue--tap" : "trans-bar__continue"}
+      type="button"
+    >Continue</button>
+  </header>
+
+  <div class="trans__body">
+    <div class="trans__photo" aria-hidden="true"></div>
+    <p class="trans__caption">From your photograph.</p>
+
+    <hr class="trans__rule" />
+
+    <div class="trans__text">
+      <p class="trans__line trans__line--title">Grandma's Corn Ragu</p>
+      <p class="trans__line trans__line--meta"><em>serves 4</em></p>
+
+      <p class="trans__line">4 ears corn, <span class="sq">kernals</span> cut off the cob</p>
+      <p class="trans__line">1 large <span class="sq">shollot</span>, finely diced</p>
+      <p class="trans__line">2 tbsp olive oil</p>
+      <p class="trans__line">1 cup dry white wine</p>
+      <p class="trans__line">3 tbsp unsalted butter</p>
+      <p class="trans__line">small handful basil, torn</p>
+
+      <p class="trans__line trans__line--gap">sauté <span class="sq">shollot</span> in olive oil, 2 minutes</p>
+      <p class="trans__line">add corn and wine, simmer until reduced</p>
+      <p class="trans__line">swirl in butter at the end</p>
+      <p class="trans__line">top with basil and a little salt</p>
+    </div>
+
+    <p class="trans__coda">— Edit anything we got wrong. —</p>
+  </div>
+</div>
+
+<style>
+  .trans {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    min-height: 100%;
+    padding-bottom: 44px; /* home indicator clearance */
+  }
+
+  /* Top bar — same grammar as ImportPreview. Continue (right) carries
+     the halo as the next handoff into the structured Import preview. */
+  .trans-bar {
+    padding: 62px 22px 14px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid rgba(31, 27, 23, 0.08);
+  }
+  .trans-bar__cancel {
+    justify-self: flex-start;
+    font-family: var(--f-body);
+    font-size: 14px;
+    color: var(--c-ash);
+  }
+  .trans-bar__eyebrow {
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--c-ochre);
+    white-space: nowrap;
+  }
+  .trans-bar__continue {
+    position: relative;
+    justify-self: flex-end;
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--c-ochre);
+    padding: 4px 8px;
+  }
+  .trans-bar__continue--tap::after {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    border-radius: 999px;
+    border: 3px solid var(--annotation);
+    box-shadow: var(--annotation-glow);
+    pointer-events: none;
+    opacity: var(--halo-opacity);
+    transition: opacity 180ms ease;
+    z-index: 50;
+  }
+
+  .trans__body {
+    padding: 18px 22px 0;
+    display: grid;
+    gap: 12px;
+    align-content: start;
+  }
+
+  /* Photo of the source. 56% width × 3:4 portrait. Paper-warmth gradient
+     stands in for the cook's photograph (binder fidelity — the real
+     screen renders the user's actual photo here, kept forever as the
+     heirloom artifact). --shadow-paper for the lifted-paper feel.
+     Faint horizontal ruling inside suggests handwritten-on-paper
+     without rendering specific text. */
+  .trans__photo {
+    width: 56%;
+    aspect-ratio: 3 / 4;
+    margin: 0 auto;
+    background:
+      radial-gradient(circle at 28% 18%, rgba(255, 255, 255, 0.55) 0%, transparent 55%),
+      linear-gradient(160deg, #efe6d4 0%, #e3d8c2 100%);
+    border-radius: 2px;
+    box-shadow: var(--shadow-paper);
+    position: relative;
+    overflow: hidden;
+  }
+  .trans__photo::before {
+    content: "";
+    position: absolute;
+    inset: 14% 16% 14% 16%;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 18px,
+      rgba(31, 27, 23, 0.07) 18px,
+      rgba(31, 27, 23, 0.07) 19px
+    );
+    border-radius: 1px;
+  }
+
+  .trans__caption {
+    text-align: center;
+    margin: 0;
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 12.5px;
+    color: var(--c-oat);
+  }
+
+  .trans__rule {
+    border: 0;
+    height: 1px;
+    background: rgba(31, 27, 23, 0.08);
+    margin: 6px 0 0;
+  }
+
+  /* Editable transcription — Lora italic body, the verbatim AI output
+     the cook reviews against the photo above. */
+  .trans__text {
+    display: grid;
+    gap: 4px;
+    margin-top: 4px;
+  }
+  .trans__line {
+    margin: 0;
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 14.5px;
+    line-height: 1.5;
+    color: var(--c-ink);
+  }
+  .trans__line--title {
+    font-size: 16px;
+    margin-bottom: 2px;
+  }
+  .trans__line--meta {
+    color: var(--c-ash);
+    margin-bottom: 6px;
+  }
+  .trans__line--meta em { font-style: italic; }
+  .trans__line--gap { margin-top: 8px; }
+
+  /* Squiggle — dotted Ochre underline on low-confidence words.
+     Voice-consistent (no saturated reds); reads as "spell-check style"
+     attention without alarming. Tap-to-edit affordance per word.
+     The "shollot" repeats so the bulk-edit fix-once-propagate pattern
+     becomes legible — the cook fixes once, the system suggests for the
+     other instance at the structure layer. */
+  .sq {
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-decoration-color: var(--c-ochre);
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 3px;
+  }
+
+  .trans__coda {
+    text-align: center;
+    margin: 12px 0 0;
+    font-family: var(--f-display);
+    font-style: italic;
+    font-size: 12px;
+    color: var(--c-oat);
+    letter-spacing: 0.04em;
+  }
+</style>

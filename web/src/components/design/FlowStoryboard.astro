@@ -9,15 +9,16 @@
  * and register it. Placeholders render as dimmed "Next pass" phones.
  *
  * BRANCH RENDERING
- *   A step with a `branch` spawns a second row of phones beneath the
- *   main line, starting at the branch point's column and extending
- *   rightward. The track is a CSS grid — main cells on row 1, a
- *   chapter-mark label for the branch on row 2 (spanning the branch
- *   width), and branch cells on row 3. This keeps the sub-flow inside
- *   the same horizontal scroller while letting it descend visually
- *   from the branch step.
+ *   A step with one or more `branches` spawns descending rows of phones
+ *   beneath the main line, starting at the branch point's column and
+ *   extending rightward. The track is a CSS grid — main cells on row 1,
+ *   then for each branch: a chapter-mark label row (spanning the branch
+ *   width) and a row of branch cells beneath it. Multiple branches stack
+ *   vertically below the main line — branch 0 at rows 2/3, branch 1 at
+ *   rows 4/5, etc. This keeps every sub-flow inside the same horizontal
+ *   scroller while letting them descend visually from the branch step.
  */
-import type { Flow, FlowStep } from "~/lib/design/flows";
+import { branchAnchorId, type Flow, type FlowStep } from "~/lib/design/flows";
 import PhoneFrame from "./PhoneFrame.astro";
 import ScreenCaption from "./ScreenCaption.astro";
 import { screenComponents } from "./screens/registry";
@@ -25,31 +26,45 @@ import { screenComponents } from "./screens/registry";
 type Props = { flow: Flow; showHeader?: boolean };
 const { flow, showHeader = true } = Astro.props;
 
-// Grid placements. Main cells walk columns 1..N. A branch on step k
-// places its label at (row 2, col k, span = branch length) and each
-// branch child at (row 3, col k + j). Columns match the main line so
-// branch child j sits directly under main step k+j.
+// Grid placements. Main cells walk columns 1..N. Each branch on step k
+// places its label at (row 2 + b*2, col k, span = branch length) and
+// each branch child at (row 3 + b*2, col k + j), where b is the
+// branch's index in the step's `branches` array. Columns match the
+// main line so branch child j sits directly under main step k+j;
+// multiple branches stack vertically beneath the main row.
 type Placement =
-  | { kind: "main"; step: FlowStep; row: 1; col: number }
-  | { kind: "branch-label"; label: string; row: 2; col: number; span: number }
-  | { kind: "branch"; step: FlowStep; row: 3; col: number };
+  | { kind: "main"; step: FlowStep; row: number; col: number }
+  | { kind: "branch-label"; label: string; id: string; row: number; col: number; span: number }
+  | { kind: "branch"; step: FlowStep; row: number; col: number };
 
 const placements: Placement[] = [];
 let col = 1;
 let maxCol = 1;
-for (const step of flow.steps) {
+flow.steps.forEach((step, i) => {
   placements.push({ kind: "main", step, row: 1, col });
-  if (step.branch && step.branch.steps.length > 0) {
-    const span = step.branch.steps.length;
-    placements.push({ kind: "branch-label", label: step.branch.label, row: 2, col, span });
-    step.branch.steps.forEach((sub, j) => {
-      placements.push({ kind: "branch", step: sub, row: 3, col: col + j });
-      maxCol = Math.max(maxCol, col + j);
+  if (step.branches) {
+    step.branches.forEach((branch, b) => {
+      if (branch.steps.length === 0) return;
+      const span = branch.steps.length;
+      const labelRow = 2 + b * 2;
+      const childRow = 3 + b * 2;
+      placements.push({
+        kind: "branch-label",
+        label: branch.label,
+        id: branchAnchorId(flow, i, b),
+        row: labelRow,
+        col,
+        span,
+      });
+      branch.steps.forEach((sub, j) => {
+        placements.push({ kind: "branch", step: sub, row: childRow, col: col + j });
+        maxCol = Math.max(maxCol, col + j);
+      });
     });
   }
   maxCol = Math.max(maxCol, col);
   col += 1;
-}
+});
 const hasBranch = placements.some((p) => p.kind === "branch");
 const totalCols = maxCol;
 ---
@@ -75,8 +90,9 @@ const totalCols = maxCol;
         if (p.kind === "branch-label") {
           return (
             <div
+              id={p.id}
               class="branch-label"
-              style={`grid-row: 2; grid-column: ${p.col} / span ${p.span};`}
+              style={`grid-row: ${p.row}; grid-column: ${p.col} / span ${p.span};`}
             >
               <span class="branch-label__eyebrow">{p.label}</span>
               <hr class="branch-label__rule" aria-hidden="true" />
@@ -98,7 +114,7 @@ const totalCols = maxCol;
           >
             {Component ? (
               <PhoneFrame surface={step.surface ?? "cream"} tone={step.tone} variant="canvas" label={label}>
-                <Component showTap={true} />
+                <Component showTap={true} cta={step.tap} />
               </PhoneFrame>
             ) : (
               <div class="cell__phone--todo">

@@ -2,42 +2,97 @@
 /**
  * Library — the home of the app.
  *
- * One screen, three data-driven states (matches how the actual app would
+ * One screen, two data-driven states (matches how the actual app would
  * render this surface):
  *
- *   empty             — no recipes yet. Chapter-opener centered, italic-
- *                       Ochre "— import a recipe →" foot invitation.
- *                       Used in Flow I · II.
- *   populated         — saved recipes; Hearth Press invitation reads
- *                       "When you're ready to make these into a book —".
- *                       Used in Flow II · I.
- *   book-in-progress  — saved recipes + a book mid-build; invitation
- *                       reads "Your book in progress" with a recipe-count
- *                       cross-reference. Used in Flow III · branch.
+ *   empty      — no recipes yet. Chapter-opener centered, italic-Ochre
+ *                "— import a recipe →" foot invitation. Used in Flow I · II.
+ *   populated  — saved recipes. Always carries the options list
+ *                (Collections · Friends · Cookbooks) above the waterfall —
+ *                it's part of the layout, not a toggle. No foot. The
+ *                book-creation entry point lives as the Cookbooks row;
+ *                the social-layer entry as Friends. Used in Flow I · VI,
+ *                Flow III · I, Flow IV · branch, Flow V · I/V.
  *
- * The three render keys (library-empty, library-populated,
- * library-book-in-progress) point at thin wrappers that pass the state
- * in. Editing this file is the single point for every Library tweak —
- * wordmark spacing, count rhythm, invitation grammar, halo geometry.
+ * Halo target on the populated state is set via `optionsTapTarget` —
+ * defaults to none (no halo). The render keys point at thin wrappers
+ * that pass state + halo target in. Editing this file is the single
+ * point for every Library tweak.
  */
 import AppHeader from "../ui/AppHeader.astro";
-import LibraryGrid from "../ui/LibraryGrid.astro";
+import LibraryGrid, { type LibraryTileData } from "../ui/LibraryGrid.astro";
 import { sampleLibraryTiles } from "~/lib/design/sample-library";
 
-export type LibraryState = "empty" | "populated" | "book-in-progress";
+export type LibraryState = "empty" | "populated";
 
 interface Props {
   state: LibraryState;
   showTap?: boolean;
+  /** Optional tiles override — when set, replaces sampleLibraryTiles for
+   *  the populated state. Used by Flow V · V to surface the just-saved
+   *  corn ragù at the head of the waterfall with a "via Sarah Chen"
+   *  credit; used by Flow I · VI to render a library of one. */
+  tilesOverride?: LibraryTileData[];
+  /** When set + `showTap`, halos the matching row in the options list.
+   *  Used by Flow III · I (cookbooks), Flow IV · branch (cookbooks),
+   *  Flow V · I (friends). */
+  optionsTapTarget?: "collections" | "friends" | "cookbooks";
 }
-const { state, showTap = false } = Astro.props;
+const {
+  state,
+  showTap = false,
+  tilesOverride,
+  optionsTapTarget,
+} = Astro.props;
 
-const tiles = state === "empty" ? [] : sampleLibraryTiles;
-const inBook = 24; // book-in-progress: how many of the library's recipes are in the book
+const tapCollections = showTap && optionsTapTarget === "collections";
+const tapFriends = showTap && optionsTapTarget === "friends";
+const tapCookbooks = showTap && optionsTapTarget === "cookbooks";
+
+const tiles =
+  state === "empty"
+    ? []
+    : tilesOverride ?? sampleLibraryTiles;
+const countLabel = tiles.length === 1 ? "recipe" : "recipes";
 ---
 
 <div class:list={["lib", `lib--${state}`]}>
   <AppHeader variant="wordmark" />
+
+  {state !== "empty" && (
+    <ul class="lib__options" role="list">
+      <li class="lib__opt-wrap">
+        <button
+          class:list={["lib__opt", tapCollections && "lib__opt--tap"]}
+          type="button"
+          aria-label="Collections"
+        >
+          <span class="lib__opt-label">Collections</span>
+          <span class="lib__opt-chev" aria-hidden="true">›</span>
+        </button>
+      </li>
+      <li class="lib__opt-wrap">
+        <button
+          class:list={["lib__opt", tapFriends && "lib__opt--tap"]}
+          type="button"
+          aria-label="Friends"
+        >
+          <span class="lib__opt-label">Friends</span>
+          <span class="lib__opt-chev" aria-hidden="true">›</span>
+        </button>
+      </li>
+      <li class="lib__opt-wrap">
+        <button
+          class:list={["lib__opt", tapCookbooks && "lib__opt--tap"]}
+          type="button"
+          aria-label="Cookbooks"
+        >
+          <span class="lib__opt-label">Cookbooks</span>
+          <span class="lib__opt-chev" aria-hidden="true">›</span>
+        </button>
+      </li>
+    </ul>
+  )}
 
   {state === "empty" && (
     <div class="lib__body">
@@ -53,32 +108,17 @@ const inBook = 24; // book-in-progress: how many of the library's recipes are in
     <Fragment>
       <div class="lib__count">
         <span class="lib__n">{tiles.length}</span>
-        <span class="lib__label">recipes</span>
+        <span class="lib__label">{countLabel}</span>
       </div>
 
       <LibraryGrid tiles={tiles} />
     </Fragment>
   )}
 
-  {state === "empty" ? (
+  {state === "empty" && (
     <div class={showTap ? "lib__invite-min lib__invite-min--tap" : "lib__invite-min"}>
       <p class="lib__invite-min-line">
         <span aria-hidden="true">—&nbsp;</span>import a recipe<span class="lib__invite-min-chev" aria-hidden="true">&nbsp;→</span>
-      </p>
-    </div>
-  ) : (
-    <div class={showTap ? "lib__invite lib__invite--tap" : "lib__invite"}>
-      <span class="lib__eyebrow">Hearth Press</span>
-      <hr class="lib__rule" aria-hidden="true" />
-      {state === "populated" && (
-        <p class="lib__line">When you're ready to make these<br />into a book —</p>
-      )}
-      {state === "book-in-progress" && (
-        <p class="lib__line">Your book in progress</p>
-      )}
-      <p class="lib__cta">
-        <span>{state === "populated" ? "Begin your book" : `${inBook} recipes`}</span>
-        <span class="lib__chev" aria-hidden="true">→</span>
       </p>
     </div>
   )}
@@ -87,8 +127,7 @@ const inBook = 24; // book-in-progress: how many of the library's recipes are in
 <style>
   /* Base — three-region grid (header, body, foot). The middle row is
      1fr in the empty state so the chapter-opener centers; auto in the
-     populated states so the waterfall sits at its natural height with
-     the invitation immediately beneath. */
+     populated state so the waterfall sits at its natural height. */
   .lib {
     position: relative;
     display: grid;
@@ -98,9 +137,77 @@ const inBook = 24; // book-in-progress: how many of the library's recipes are in
   .lib--empty {
     grid-template-rows: auto 1fr auto;
   }
-  .lib--populated,
-  .lib--book-in-progress {
-    grid-template-rows: auto auto auto auto;
+  .lib--populated {
+    /* header → options list → count → waterfall. align-content: start
+       so that with a short waterfall (e.g. library-of-one) the auto
+       rows pack at the top instead of stretching to fill min-height —
+       default `align-content: normal` resolves to `stretch` for grid
+       containers, which would distribute the extra phone-height space
+       across every row and bloat the gap above the count. */
+    grid-template-rows: repeat(4, auto);
+    align-content: start;
+  }
+
+  /* Top-of-library options list — Apple-Music-Library-tab grammar.
+     Drill-down rows (Collections, Friends, Cookbooks) sit above the
+     recipe waterfall as siblings of the implicit "all recipes" view.
+     The waterfall below is the default; the rows above are siblings
+     you can navigate into. Hairline dividers above and below each row;
+     italic Lora labels in the TOC voice; ochre chevron right. */
+  .lib__options {
+    list-style: none;
+    margin: 0 0 18px;
+    padding: 0 22px;
+    display: flex;
+    flex-direction: column;
+  }
+  .lib__opt-wrap {
+    border-top: var(--b-divider);
+  }
+  .lib__opt-wrap:last-child {
+    border-bottom: var(--b-divider);
+  }
+  .lib__opt {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    width: 100%;
+    padding: 16px 0;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    text-align: left;
+    transition: opacity var(--motion-state) var(--ease-state);
+  }
+  .lib__opt:hover { opacity: 0.82; }
+  .lib__opt-label {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 1.2;
+    color: var(--c-ink);
+    letter-spacing: -0.005em;
+  }
+  .lib__opt-chev {
+    justify-self: end;
+    font-family: var(--f-display);
+    font-size: 20px;
+    line-height: 1;
+    color: var(--c-ochre);
+  }
+  .lib__opt--tap::after {
+    content: "";
+    position: absolute;
+    inset: 4px -6px;
+    border: 3px solid var(--annotation);
+    border-radius: 4px;
+    box-shadow: var(--annotation-glow);
+    pointer-events: none;
+    opacity: var(--halo-opacity);
+    transition: opacity 180ms ease;
+    z-index: 50;
   }
 
   /* Empty state — chapter-opener centered in the 1fr middle row. */
@@ -143,7 +250,7 @@ const inBook = 24; // book-in-progress: how many of the library's recipes are in
     text-wrap: balance;
   }
 
-  /* Populated states — count line above the waterfall. */
+  /* Populated state — count line above the waterfall. */
   .lib__count {
     display: inline-flex;
     align-items: baseline;
@@ -168,8 +275,8 @@ const inBook = 24; // book-in-progress: how many of the library's recipes are in
   }
 
   /* Empty-state foot invitation — italic-Lora line in Ochre. Quieter
-     than the Hearth Press grammar because the chapter-opener above
-     already carries the editorial weight. */
+     than a Hearth Press grammar would be because the chapter-opener
+     above already carries the editorial weight. */
   .lib__invite-min {
     position: relative;
     display: grid;
@@ -194,72 +301,6 @@ const inBook = 24; // book-in-progress: how many of the library's recipes are in
     content: "";
     position: absolute;
     inset: 12px 36px 8px;
-    border: 3px solid var(--annotation);
-    border-radius: 4px;
-    box-shadow: var(--annotation-glow);
-    pointer-events: none;
-    opacity: var(--halo-opacity);
-    transition: opacity 180ms ease;
-    z-index: 50;
-  }
-
-  /* Populated / book-in-progress foot invitation — Hearth Press
-     grammar (eyebrow + chapter rule + italic line + Ochre cta). The
-     whole block is the tap target. */
-  .lib__invite {
-    position: relative;
-    display: grid;
-    justify-items: center;
-    gap: 12px;
-    padding: 56px 22px 28px;
-    text-align: center;
-  }
-  .lib__eyebrow {
-    font-family: var(--f-body);
-    font-weight: 500;
-    font-size: 10px;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--c-ochre);
-  }
-  .lib__rule {
-    border: 0;
-    width: var(--rule-chapter);
-    height: var(--rule-weight-chapter);
-    background: var(--c-ochre);
-    margin: 4px 0 6px;
-  }
-  .lib__line {
-    margin: 0;
-    font-family: var(--f-display);
-    font-style: italic;
-    font-weight: 400;
-    font-size: 17px;
-    line-height: 1.4;
-    color: var(--c-ink);
-    text-wrap: balance;
-  }
-  .lib__cta {
-    display: inline-flex;
-    align-items: baseline;
-    gap: 8px;
-    margin: 4px 0 0;
-    font-family: var(--f-body);
-    font-weight: 500;
-    font-size: 12.5px;
-    letter-spacing: 0.04em;
-    color: var(--c-ochre);
-  }
-  .lib__chev {
-    font-family: var(--f-display);
-    font-style: italic;
-    font-size: 14px;
-    line-height: 1;
-  }
-  .lib__invite--tap::after {
-    content: "";
-    position: absolute;
-    inset: 36px 12px 14px;
     border: 3px solid var(--annotation);
     border-radius: 4px;
     box-shadow: var(--annotation-glow);

@@ -62,3 +62,4 @@ YOUR GUIDING PRINCIPLE: You are an expert who double-checks things, you are skep
 
 - We use Bun. Not NPM.
 - The year is 2026
+- If I say "KISS", it's a gentle reminder to "keep it simple, stupid". 

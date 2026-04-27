@@ -24,9 +24,15 @@
 import AppHeader from "../ui/AppHeader.astro";
 import IngredientsList, { type IngredientComment } from "../ui/IngredientsList.astro";
 import MethodList, { type StepComment } from "../ui/MethodList.astro";
-import { sampleRecipe } from "~/lib/design/sample-recipe";
+import RecipeNotes from "../ui/RecipeNotes.astro";
+import { cornRagu, type Recipe } from "~/lib/design/sample-recipe";
 
 interface Props {
+  /** Which recipe to render. Defaults to corn ragù — every story
+   *  screen in the binder is written about it specifically. The
+   *  `/design/screens/recipes/[slug]` dynamic route passes in other
+   *  registry recipes so library tiles open into a real detail page. */
+  recipe?: Recipe;
   showTap?: boolean;
   /** When set, render this step (0-based) as a live textarea and
    *  use the post-edit wording. Drives the inline edit on screen XI. */
@@ -45,8 +51,15 @@ interface Props {
   doubled?: boolean;
   /** Which tap halo the storyboard should draw. Defaults to step-iv,
    *  which preserves the canonical long-press handoff. "hero" marks
-   *  the long-press entry into Flow III's photo arc. */
-  tapTarget?: "step-iv" | "serves" | "overlay-8" | "hero";
+   *  the long-press entry into Flow III's photo arc. "units-tap" /
+   *  "units-grams" mark Flow VI's measure flow. */
+  tapTarget?:
+    | "step-iv"
+    | "serves"
+    | "overlay-8"
+    | "hero"
+    | "units-tap"
+    | "units-grams";
   /** Optional folio line rendered at the foot of the body — cookbook
    *  folio grammar, e.g. "— page 1 —". */
   folio?: string;
@@ -57,8 +70,25 @@ interface Props {
   ingredientComments?: Record<number, IngredientComment>;
   /** Halo a single ingredient row as a long-press target. */
   ingredientTapIndex?: number;
+  /** Render the right-side units affordance on the Ingredients eyebrow.
+   *  Sets the current units state ("cups" | "grams" | "ounces").
+   *  Drives Flow VI (Measures). */
+  units?: "cups" | "grams" | "ounces";
+  /** When true, the units affordance opens in place into a typographic
+   *  radio strip (cups · grams · oz). */
+  unitsPickerOpen?: boolean;
+  /** When true, the top ingredients list and per-step mise lines render
+   *  with weights instead of volumes. */
+  unitsConverted?: boolean;
+  /** Hero variant — single photo (default) or a multi-photo carousel.
+   *  Carousel mode swaps the hero band for a snap-scrollable strip with
+   *  a "1 / N" counter pill; the body is unchanged. */
+  heroType?: "photo" | "carousel";
+  /** Photos for the carousel hero. Required when heroType === "carousel". */
+  heroPhotos?: string[];
 }
 const {
+  recipe = cornRagu,
   showTap = false,
   editingIndex,
   hideHeader = false,
@@ -67,21 +97,43 @@ const {
   portionOverlay = false,
   doubled = false,
   tapTarget = "step-iv",
-  folio,
+  folio = "page 1",
   methodComments,
   ingredientComments,
   ingredientTapIndex,
+  units = "cups",
+  unitsPickerOpen = false,
+  unitsConverted = false,
+  heroType = "photo",
+  heroPhotos = [],
 } = Astro.props;
 
-const methodItems = doubled
-  ? sampleRecipe.methodDoubled
-  : editingIndex !== undefined
-    ? sampleRecipe.editedMethod
-    : sampleRecipe.method;
-const ingredientItems = doubled
-  ? sampleRecipe.ingredientsDoubled
-  : sampleRecipe.ingredients;
-const servesValue = doubled ? sampleRecipe.servesDoubled : sampleRecipe.serves;
+/* Variant fallbacks. Stub recipes don't carry edit / doubled / grams
+ * fixtures (those are story-specific to corn ragù), so each variant
+ * falls back to the base when the recipe doesn't define it — the
+ * screen still renders, it just doesn't show the variant content. */
+const methodItems = unitsConverted
+  ? recipe.methodInGrams ?? recipe.method
+  : doubled
+    ? recipe.methodDoubled ?? recipe.method
+    : editingIndex !== undefined
+      ? recipe.editedMethod ?? recipe.method
+      : recipe.method;
+const ingredientItems = unitsConverted
+  ? recipe.ingredientsInGrams ?? recipe.ingredients
+  : doubled
+    ? recipe.ingredientsDoubled ?? recipe.ingredients
+    : recipe.ingredients;
+const servesValue = doubled
+  ? recipe.servesDoubled ?? recipe.serves
+  : recipe.serves;
+
+/* Hero variant. Real photo when the recipe has one; otherwise a
+ * toned gradient using the recipe's `tone` (corn / sage / ochre) —
+ * same palette LibraryTile uses, so a tile and its detail page read
+ * as the same recipe. */
+const heroTone = recipe.tone ?? "corn";
+const hasPhoto = Boolean(recipe.photo);
 
 /* Scale-strip presets bracket the native yield and stretch up toward a
  * dinner-party size. Honest to how people actually cook — 2 / 4 / 6 /
@@ -93,34 +145,67 @@ const haloStepIv =
   showTap && editingIndex === undefined && tapTarget === "step-iv";
 const haloServes = showTap && tapTarget === "serves";
 const haloOverlay8 = showTap && portionOverlay && tapTarget === "overlay-8";
-const haloHero = showTap && tapTarget === "hero";
+const haloHero = showTap && heroType === "photo" && tapTarget === "hero";
+const haloCarousel = showTap && heroType === "carousel";
+const haloUnitsTap = showTap && tapTarget === "units-tap";
+const haloUnitsPick: "cups" | "grams" | "ounces" | undefined =
+  showTap && tapTarget === "units-grams" ? "grams" : undefined;
+const carouselTotal = heroPhotos.length;
 ---
 
 <div class="detail">
   {!hideHeader && <AppHeader variant="title" title="" />}
 
-  <div
-    class:list={["detail__hero", haloHero && "detail__hero--halo"]}
-    aria-hidden="true"
-    style={`background-image: url(${sampleRecipe.photo})`}
-  >
-    <span class="detail__hero-credit">photograph · Mia Aquilina</span>
-  </div>
+  {heroType === "photo" ? (
+    <div
+      class:list={[
+        "detail__hero",
+        !hasPhoto && `detail__hero--${heroTone}`,
+        haloHero && "detail__hero--halo",
+      ]}
+      aria-hidden="true"
+      style={hasPhoto ? `background-image: url(${recipe.photo})` : undefined}
+    >
+    </div>
+  ) : (
+    <div
+      class:list={["carousel", haloCarousel && "carousel--halo"]}
+      role="button"
+      aria-label="Open photo gallery"
+      tabindex="0"
+    >
+      <ol class="carousel__track" role="list">
+        {heroPhotos.map((src, i) => (
+          <li
+            class="carousel__slide"
+            role="listitem"
+            aria-hidden={i !== 0}
+            style={`background-image: url(${src})`}
+          >
+          </li>
+        ))}
+      </ol>
+
+      <span class="carousel__counter" aria-hidden="true">
+        <span class="carousel__counter-num">1</span>
+        <span class="carousel__counter-sep">/</span>
+        <span class="carousel__counter-den">{carouselTotal}</span>
+      </span>
+    </div>
+  )}
 
   <div class="detail__body">
-    <span class="detail__source">From {sampleRecipe.source}</span>
-    <h1 class="detail__title">{sampleRecipe.title}</h1>
-    <p class="detail__lede">{sampleRecipe.lede}</p>
+    <span class="detail__source">From {recipe.source}</span>
+    <h1 class="detail__title">{recipe.title}</h1>
+    <p class="detail__lede">{recipe.lede}</p>
     <p class="detail__meta">
       <em>Serves {servesValue}</em>
       <span aria-hidden="true"> · </span>
-      <em>{sampleRecipe.minutes} minutes</em>
-      <span aria-hidden="true"> · </span>
-      <em>One pan</em>
+      <em>{recipe.minutes} minutes</em>
     </p>
 
-    {Astro.slots.has("notes") && <hr class="detail__rule" />}
-    <slot name="notes" />
+    <hr class="detail__rule" />
+    {Astro.slots.has("notes") ? <slot name="notes" /> : <RecipeNotes invitation />}
 
     <hr class="detail__rule" />
 
@@ -130,6 +215,10 @@ const haloHero = showTap && tapTarget === "hero";
       haloServesTap={haloServes}
       comments={ingredientComments}
       tapIndex={ingredientTapIndex}
+      units={units}
+      haloUnitsTap={haloUnitsTap}
+      unitsPickerOpen={unitsPickerOpen}
+      haloUnitsPick={haloUnitsPick}
     />
 
     <hr class="detail__rule" />
@@ -198,20 +287,100 @@ const haloHero = showTap && tapTarget === "hero";
     inset: 0;
     background: linear-gradient(180deg, transparent 58%, rgba(0, 0, 0, 0.4) 100%);
   }
-  .detail__hero-credit {
+  /* Toned hero — photoless variant. Same palette as LibraryTile so the
+     tile and the detail page read as the same recipe; scaled and
+     repositioned for the larger hero canvas (light source upper-left,
+     warm darkness lower-right). Drop a real `photo` on the recipe
+     and the override gives way. */
+  .detail__hero--corn {
+    background: radial-gradient(ellipse at 22% 18%, #f5d990 0%, #d6a34e 50%, #8a5c1f 100%);
+  }
+  .detail__hero--sage {
+    background: radial-gradient(ellipse at 22% 18%, #7d9b8a 0%, #4a6a58 55%, #243829 100%);
+  }
+  .detail__hero--ochre {
+    background: radial-gradient(ellipse at 22% 18%, #d4b062 0%, #7a5a26 55%, #3b2910 100%);
+  }
+  /* Storyboard halo — long-press handoff into Flow IV's photo arc. */
+  .detail__hero--halo::before {
+    content: "";
     position: absolute;
-    bottom: 10px;
-    right: 14px;
-    font-family: var(--f-body);
-    font-size: 9px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.82);
-    z-index: 1;
+    inset: 6px;
+    border: 3px solid var(--annotation);
+    border-radius: 2px;
+    box-shadow: var(--annotation-glow);
+    pointer-events: none;
+    opacity: var(--halo-opacity);
+    transition: opacity 180ms ease;
+    z-index: 50;
   }
 
-  /* Storyboard halo — long-press handoff into Flow III's photo arc. */
-  .detail__hero--halo::before {
+  /* Carousel hero — same physical real estate as the single-photo hero
+     (full-width, 5:4) but a snap-scrollable strip with a "1 / N" counter
+     pill bottom-right. Realtor / Airbnb grammar. The whole image is the
+     tap target — the pill is a visual indicator, not a button. */
+
+  .carousel {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 5 / 4;
+    overflow: hidden;
+    background-color: var(--c-oat);
+  }
+
+  .carousel__track {
+    display: flex;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+  .carousel__track::-webkit-scrollbar { display: none; }
+
+  .carousel__slide {
+    position: relative;
+    flex: 0 0 100%;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    scroll-snap-align: start;
+  }
+  .carousel__slide::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 62%, rgba(0, 0, 0, 0.34) 100%);
+  }
+
+  .carousel__counter {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 2px;
+    padding: 6px 12px;
+    background: rgba(20, 16, 12, 0.55);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: #fff;
+    border-radius: 999px;
+    font-family: var(--f-body);
+    font-size: 11.5px;
+    letter-spacing: 0.02em;
+    pointer-events: none;
+    z-index: 2;
+  }
+  .carousel__counter-num { font-weight: 500; }
+  .carousel__counter-sep { opacity: 0.6; }
+  .carousel__counter-den { opacity: 0.85; }
+
+  .carousel--halo::after {
     content: "";
     position: absolute;
     inset: 6px;

@@ -1,0 +1,39 @@
+---
+/**
+ * Flow V · V — Library, just after a friend-save.
+ *
+ * The library quietly grew by one. The corn ragù sits at the head of
+ * the waterfall carrying its credit chain — "via Sarah Chen" — as a
+ * third caption line in italic Lora ash beneath the meta. Same
+ * populated layout as Flow V · I; same options list (Collections,
+ * Friends); same Hearth Press foot. No banner, no toast, no
+ * celebration. The book-spine test holds.
+ *
+ * The visual signal that something was saved is the credit
+ * annotation on the head tile — provenance threaded through into the
+ * library view. Every other tile shows just title + meta; only the
+ * recipe with a curator carries the byline. That's how the credit
+ * chain stays visible without ever shouting.
+ *
+ * No halo — terminal beat in the social arc.
+ */
+import Library from "./Library.astro";
+import { sampleLibraryTiles } from "~/lib/design/sample-library";
+import type { LibraryTileData } from "../ui/LibraryGrid.astro";
+
+interface Props { showTap?: boolean; }
+const { showTap = false } = Astro.props;
+void showTap; // declared for registry consistency; no halo on this terminal screen.
+
+// Tiles array with the credit chain threaded through the head tile.
+// Same library content as Flow III · I; only the corn ragù gains the
+// "via Sarah Chen" byline. Length stays at 27 — the brainstorm
+// chooses to honor the credit-as-marker rather than a count bump,
+// because the count change would imply a banner/toast moment that
+// Hearth's voice forbids.
+const tiles: LibraryTileData[] = sampleLibraryTiles.map((tile, i) =>
+  i === 0 ? { ...tile, credit: "via Sarah Chen" } : tile,
+);
+---
+
+<Library state="populated" showTap={false} tilesOverride={tiles} />

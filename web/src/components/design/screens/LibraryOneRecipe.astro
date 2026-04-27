@@ -1,17 +1,19 @@
 ---
 /**
- * Screen VI · Library · one recipe.
+ * Flow I · VI — Library, of one.
  *
- * VSCO-style two-column waterfall — the library-of-one is the first
- * tile sitting in the left column of a grid that fills in as more
- * recipes save. Rules live in tokens.css §PHOTOGRAPHY (2).
+ * Same Library layout as Flow III · I — wordmark header, options list
+ * (Collections · Friends), count line, photo waterfall, Hearth Press
+ * foot — with a single tile in the waterfall. The emotional payoff
+ * sits in the count rhythm, not in a different chrome.
  */
-import AppHeader from "../ui/AppHeader.astro";
-import LibraryGrid, { type LibraryTileData } from "../ui/LibraryGrid.astro";
+import Library from "./Library.astro";
 import { sampleRecipe } from "~/lib/design/sample-recipe";
+import type { LibraryTileData } from "../ui/LibraryGrid.astro";
 
 interface Props { showTap?: boolean; }
 const { showTap = false } = Astro.props;
+void showTap; // terminal screen — no halo.
 
 const tiles: LibraryTileData[] = [
   {
@@ -23,46 +25,4 @@ const tiles: LibraryTileData[] = [
 ];
 ---
 
-<div class="lib-one">
-  <AppHeader variant="wordmark" />
-
-  <div class="lib-one__count">
-    <span class="lib-one__n">1</span>
-    <span class="lib-one__label">recipe</span>
-  </div>
-
-  <LibraryGrid tiles={tiles} showTap={showTap} tapIndex={0} />
-</div>
-
-<style>
-  .lib-one {
-    display: grid;
-    grid-template-rows: auto auto 1fr;
-    min-height: 100%;
-    padding-bottom: 44px;
-  }
-
-  .lib-one__count {
-    display: inline-flex;
-    align-items: baseline;
-    gap: 6px;
-    padding: 0 22px;
-    margin: 4px 0 18px;
-  }
-  .lib-one__n {
-    font-family: var(--f-display);
-    font-style: italic;
-    font-weight: 400;
-    font-size: 15px;
-    color: var(--c-ochre);
-  }
-  .lib-one__label {
-    font-family: var(--f-body);
-    font-weight: 500;
-    font-size: 9.5px;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--c-oat);
-  }
-
-</style>
+<Library state="populated" showTap={false} tilesOverride={tiles} />

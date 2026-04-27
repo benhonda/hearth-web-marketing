@@ -1,21 +1,35 @@
 /**
  * Sample library used by Flow II screens that render the photo
  * waterfall (LibraryPopulated, BookRecipes). Keeping this in one place
- * means continuity holds — the same 27 recipes appear across screens I
- * and V of the book flow, and the corn ragù anchors both to the real
- * photo used everywhere else in the binder.
+ * means continuity holds — the same set of recipes appears across
+ * screens I and V of the book flow, and the corn ragù anchors both to
+ * the real photo used everywhere else in the binder.
  *
- * Voice is the archetype's: farmers-market-y, Chez Panisse / Ottolenghi
- * register, mixed day-parts. Not tech-bro meal-prep.
+ * The first N tiles are derived from the `recipes` registry — adding a
+ * recipe there automatically populates the head of the waterfall and
+ * gives that tile a working `href` into its `/design/screens/recipes/
+ * <slug>` detail page. The trailing tiles are phantom decoration —
+ * titles + meta + tone, no destination — there to give the waterfall
+ * length and texture without inventing detail-screen content for them.
+ *
+ * Voice for the phantom tiles is the same farmers-market-y, Chez
+ * Panisse / Ottolenghi register, mixed day-parts. Not tech-bro
+ * meal-prep.
  */
 
 import type { LibraryTileData } from "~/components/design/ui/LibraryGrid.astro";
-import { sampleRecipe } from "./sample-recipe";
+import { recipes } from "./sample-recipe";
 
-export const sampleLibraryTiles: LibraryTileData[] = [
-  { title: sampleRecipe.title, meta: `${sampleRecipe.minutes} min · Serves ${sampleRecipe.serves}`, photo: sampleRecipe.photo, aspect: "4 / 5" },
-  { title: "Olive oil & yogurt cake",        meta: "55 min · Serves 8", aspect: "3 / 4", tone: "ochre" },
-  { title: "Wild mushroom toast",            meta: "20 min · Serves 2", aspect: "1 / 1", tone: "sage" },
+const recipeTiles: LibraryTileData[] = recipes.map((r) => ({
+  title: r.title,
+  meta: `${r.minutes} min · Serves ${r.serves}`,
+  photo: r.photo,
+  tone: r.tone,
+  aspect: r.tileAspect ?? "4 / 5",
+  href: `/design/screens/recipes/${r.slug}`,
+}));
+
+const phantomTiles: LibraryTileData[] = [
   { title: "Slow-roast tomato pasta",        meta: "1 hr 30 · Serves 4", aspect: "4 / 5", tone: "corn" },
   { title: "Brown-butter brassicas",         meta: "30 min · Serves 4", aspect: "3 / 4", tone: "sage" },
   { title: "Chickpea & preserved-lemon stew", meta: "45 min · Serves 4", aspect: "1 / 1", tone: "ochre" },
@@ -34,10 +48,14 @@ export const sampleLibraryTiles: LibraryTileData[] = [
   { title: "Sweet-potato dahl",              meta: "45 min · Serves 6", aspect: "4 / 5", tone: "ochre" },
   { title: "Brûléed grapefruit",             meta: "5 min · Serves 2", aspect: "3 / 4", tone: "corn" },
   { title: "Cardamom buns",                  meta: "3 hr · 12 buns", aspect: "1 / 1", tone: "ochre" },
-  { title: "Charred leeks vinaigrette",      meta: "25 min · Serves 4", aspect: "4 / 5", tone: "sage" },
   { title: "Smoked-trout rillette",          meta: "10 min · 1 jar", aspect: "3 / 4", tone: "ochre" },
   { title: "Fig & sherry galette",           meta: "1 hr · Serves 8", aspect: "1 / 1", tone: "corn" },
   { title: "Plum clafoutis",                 meta: "45 min · Serves 6", aspect: "4 / 5", tone: "ochre" },
   { title: "Cucumber-buttermilk soup",       meta: "10 min · Serves 4", aspect: "3 / 4", tone: "sage" },
   { title: "Anchovy butter, radishes",       meta: "10 min · Serves 4", aspect: "1 / 1", tone: "ochre" },
+];
+
+export const sampleLibraryTiles: LibraryTileData[] = [
+  ...recipeTiles,
+  ...phantomTiles,
 ];

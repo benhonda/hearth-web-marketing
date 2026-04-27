@@ -1,0 +1,21 @@
+---
+/**
+ * VI · II — Measure picker open.
+ * The IN CUPS token has bloomed in place into a typographic radio
+ * strip — "— cups · grams · oz —" — em-dash bookends, middot
+ * separators, italic Lora Ochre. Current selection (cups) sits Ink +
+ * larger with the chapter-rule hairline beneath, exactly like portion
+ * scale's selected numeral. Halo lands on grams.
+ */
+import RecipeDetail from "./RecipeDetail.astro";
+
+interface Props { showTap?: boolean; }
+const { showTap } = Astro.props;
+---
+
+<RecipeDetail
+  showTap={showTap}
+  units="cups"
+  unitsPickerOpen
+  tapTarget="units-grams"
+/>
