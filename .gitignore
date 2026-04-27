@@ -197,3 +197,5 @@ terraform.rc
 
 .claude/settings.local.json
 .env*.local
+
+__pycache__/
